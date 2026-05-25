@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS HOST — Enterprise Laravel Hosting</title>
+  <meta name="description" content="NEXUS HOST — Premium enterprise Laravel hosting platform with advanced DevOps tools">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <link rel="stylesheet" href="css/nexus.css">
+  <style>
+    body { background: #0a0a0f; overflow: hidden; }
+    .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+    #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.3; }
+    .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, rgba(10,10,15,0.3) 0%, #0a0a0f 80%); z-index: 1; }
+    .particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .auth-card { position: relative; z-index: 2; width: 100%; max-width: 480px; padding: 3rem; }
+    .logo-section { text-align: center; margin-bottom: 2.5rem; }
+    .logo-section img { width: 72px; height: 72px; border-radius: 20px; margin-bottom: 1rem; filter: drop-shadow(0 0 30px rgba(255,69,0,0.3)); }
+    .logo-section h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #ff4500, #ff6a00, #ff8c00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
+    .logo-section p { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    .auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
+    .auth-tab { flex: 1; padding: 0.85rem; text-align: center; border-radius: 12px; cursor: pointer; font-weight: 600; color: rgba(255,255,255,0.4); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); background: transparent; border: none; font-size: 0.9rem; letter-spacing: 0.02em; }
+    .auth-tab.active { background: linear-gradient(135deg, rgba(255,69,0,0.2), rgba(255,106,0,0.1)); color: #fff; box-shadow: 0 0 30px rgba(255,69,0,0.1); }
+    .auth-form { display: none; animation: fadeInUp 0.6s ease; }
+    .auth-form.active { display: block; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 500; margin-bottom: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .form-group input { width: 100%; padding: 1rem 1.25rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; color: #fff; font-size: 0.95rem; font-family: inherit; transition: all 0.3s ease; outline: none; }
+    .form-group input:focus { border-color: rgba(255,69,0,0.5); box-shadow: 0 0 30px rgba(255,69,0,0.08); background: rgba(255,255,255,0.06); }
+    .form-group input::placeholder { color: rgba(255,255,255,0.2); }
+    .btn-primary { width: 100%; padding: 1rem; background: linear-gradient(135deg, #ff4500, #ff6a00); border: none; border-radius: 12px; color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; letter-spacing: 0.02em; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(255,69,0,0.3); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-google { width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.4s ease; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+    .btn-google:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+    .btn-google svg { width: 20px; height: 20px; }
+    .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: rgba(255,255,255,0.2); font-size: 0.8rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); }
+    .error-msg { color: #ff4444; font-size: 0.85rem; margin-top: 0.75rem; text-align: center; display: none; }
+    .auth-footer { text-align: center; margin-top: 1.5rem; color: rgba(255,255,255,0.3); font-size: 0.85rem; }
+    .auth-footer a { color: #ff6a00; text-decoration: none; font-weight: 500; }
+    .auth-footer a:hover { color: #ff8c00; }
+    .loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-primary.loading .btn-text { display: none; }
+    .btn-primary.loading .loading-spinner { display: block; }
+  </style>
+</head>
+<body id="loginBody">
+  <script>
+    if (!window.NEXUS_INITIALIZED) {
+      document.getElementById('loginBody').innerHTML = '' +
+        '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0a0a0f;padding:2rem">' +
+        '<div style="max-width:480px;text-align:center">' +
+        '<div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#F9322C,#ff6a33);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;margin:0 auto 1.5rem;box-shadow:0 0 60px rgba(249,50,44,0.3)">N</div>' +
+        '<h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin-bottom:0.5rem">NEXUS HOST</h1>' +
+        '<p style="color:rgba(255,255,255,0.4);margin-bottom:2rem;font-size:0.95rem">Configure Firebase to enable authentication</p>' +
+        '<div style="background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border:1px solid rgba(249,50,44,0.1);border-radius:16px;padding:2rem;text-align:left">' +
+        '<h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem;color:#F9322C">Firebase Setup Required</h2>' +
+        '<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:1rem">Add this script tag before your Firebase config:</p>' +
+        '<div style="background:#0a0a0f;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:1rem;font-family:\'JetBrains Mono\',monospace;font-size:0.7rem;color:rgba(255,255,255,0.6);overflow-x:auto;word-break:break-all">' +
+        '&lt;script id="nexus-firebase-config"<br>' +
+        '&nbsp;&nbsp;data-api-key="AIzaSy..."<br>' +
+        '&nbsp;&nbsp;data-auth-domain="my-project.firebaseapp.com"<br>' +
+        '&nbsp;&nbsp;data-database-url="https://my-project-default-rtdb.firebaseio.com"<br>' +
+        '&nbsp;&nbsp;data-project-id="my-project"<br>' +
+        '&nbsp;&nbsp;data-storage-bucket="my-project.appspot.com"<br>' +
+        '&nbsp;&nbsp;data-app-id="1:123:web:abc"<br>' +
+        '&nbsp;&nbsp;src="config/firebase-config.js"&gt;&lt;/script&gt;' +
+        '</div>' +
+        '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;margin-top:1rem;text-align:center">Or set window.__NEXUS_FIREBASE_API_KEY before loading</p>' +
+        '</div>' +
+        '<p style="color:rgba(255,255,255,0.15);font-size:0.7rem;margin-top:2rem;letter-spacing:0.1em;text-transform:uppercase">Powered by NEXUS HOST — All Credit Nexus</p>' +
+        '</div></div>';
+    }
+  </script>
+  <div class="auth-container">
+    <video id="bg-video" autoplay muted loop playsinline>
+      <source src="assets/background.mp4" type="video/mp4">
+    </video>
+    <div class="auth-overlay"></div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40vw;font-weight:900;color:rgba(249,50,44,0.02);pointer-events:none;z-index:1;font-family:'Inter',sans-serif;letter-spacing:-0.05em;user-select:none">LARAVEL</div>
+    <canvas class="particles-canvas" id="particlesCanvas"></canvas>
+
+    <div class="glass-panel auth-card" style="animation: fadeInUp 0.8s ease;">
+      <div class="logo-section">
+        <img src="assets/logo.png" alt="NEXUS HOST" onerror="this.style.display='none'">
+        <h1 style="background:linear-gradient(135deg, #F9322C, #ff6a33, #ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent">NEXUS HOST</h1>
+        <p><span style="color:#F9322C;font-weight:700">LARAVEL</span> ENTERPRISE HOSTING PLATFORM</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+      </div>
+
+      <div id="loginForm" class="auth-form active">
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="you@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-primary" id="loginBtn">
+            <span class="btn-text">Sign In to Dashboard</span>
+            <div class="loading-spinner"></div>
+          </button>
+          <div class="error-msg" id="loginError"></div>
+        </form>
+
+        <div class="divider">or continue with</div>
+
+        <button class="btn-google" onclick="handleGoogleLogin()">
+          <svg viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <div id="registerForm" class="auth-form">
+        <form onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="regName" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="regEmail" placeholder="you@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" placeholder="Min. 8 characters" minlength="8" required>
+          </div>
+          <button type="submit" class="btn-primary" id="registerBtn">
+            <span class="btn-text">Create Account</span>
+            <div class="loading-spinner"></div>
+          </button>
+          <div class="error-msg" id="registerError"></div>
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        By continuing, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+      </div>
+      <div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05)">
+        <span style="color:rgba(255,255,255,0.2);font-size:0.75rem;letter-spacing:0.05em">
+          POWERED BY <span style="color:#F9322C;font-weight:700">NEXUS</span> HOST
+          <span style="margin:0 0.5rem;opacity:0.3">|</span>
+          <span style="color:#F9322C;font-weight:600">LARAVEL</span> EDITION
+          <span style="margin:0 0.5rem;opacity:0.3">|</span>
+          ALL CREDIT NEXUS
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <script src="config/firebase-config.js"></script>
+  <script>
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.querySelector(`.auth-tab[onclick*="${tab}"]`).classList.add('active');
+      document.getElementById(tab + 'Form').classList.add('active');
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('registerError').style.display = 'none';
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (loading) { btn.classList.add('loading'); btn.disabled = true; }
+      else { btn.classList.remove('loading'); btn.disabled = false; }
+    }
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      setLoading('loginBtn', true);
+      try {
+        var a = window.auth || window.NEXUS_AUTH;
+        await a.signInWithEmailAndPassword(
+          document.getElementById('loginEmail').value,
+          document.getElementById('loginPassword').value
+        );
+        window.location.href = 'index.html';
+      } catch (err) {
+        showError('loginError', err.message);
+      } finally { setLoading('loginBtn', false); }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      setLoading('registerBtn', true);
+      try {
+        var a = window.auth || window.NEXUS_AUTH;
+        var d = window.db || window.NEXUS_DB;
+        const cred = await a.createUserWithEmailAndPassword(
+          document.getElementById('regEmail').value,
+          document.getElementById('regPassword').value
+        );
+        await cred.user.updateProfile({ displayName: document.getElementById('regName').value });
+        await d.ref('users/' + cred.user.uid + '/profile').set({
+          displayName: document.getElementById('regName').value,
+          email: cred.user.email,
+          createdAt: Date.now()
+        });
+        window.location.href = 'index.html';
+      } catch (err) {
+        showError('registerError', err.message);
+      } finally { setLoading('registerBtn', false); }
+    }
+
+    async function handleGoogleLogin() {
+      try {
+        var a = window.auth || window.NEXUS_AUTH;
+        var g = window.googleProvider || window.NEXUS_GOOGLE_PROVIDER;
+        var d = window.db || window.NEXUS_DB;
+        await a.signInWithPopup(g);
+        const user = a.currentUser;
+        if (user) {
+          const snap = await d.ref('users/' + user.uid + '/profile').once('value');
+          if (!snap.exists()) {
+            await d.ref('users/' + user.uid + '/profile').set({
+              displayName: user.displayName,
+              email: user.email,
+              createdAt: Date.now()
+            });
+          }
+        }
+        window.location.href = 'index.html';
+      } catch (err) { showError('loginError', err.message); }
+    }
+
+    if (window.NEXUS_INITIALIZED) {
+      var a = window.auth || window.NEXUS_AUTH;
+      if (a) {
+        a.onAuthStateChanged(function(user) {
+          if (user && window.location.pathname.includes('login')) {
+            window.location.href = 'index.html';
+          }
+        });
+      }
+    }
+
+    const canvas = document.getElementById('particlesCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const particles = Array.from({length: 80}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 2 + 0.5,
+      a: Math.random() * 0.5 + 0.1
+    }));
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,69,0,${p.a})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+  </script>
+</body>
+</html>

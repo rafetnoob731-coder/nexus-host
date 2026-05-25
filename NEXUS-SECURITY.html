@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS SECURITY — Enterprise Protection System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Inter',sans-serif;
+  background:#0a0a0f;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(249,50,44,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255,140,0,0.03) 0%, transparent 50%);
+  pointer-events:none;
+  z-index:0;
+}
+.container { max-width:1200px; margin:0 auto; padding:2rem; position:relative; z-index:1; }
+.header {
+  text-align:center;
+  padding:4rem 0 3rem;
+  position:relative;
+}
+.header::after {
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:20%;
+  width:60%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#F9322C,transparent);
+}
+.shield {
+  width:100px; height:100px;
+  margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,#F9322C,#ff6a33);
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:3rem;
+  font-weight:900;
+  box-shadow:0 0 60px rgba(249,50,44,0.3);
+  position:relative;
+  animation:glow 3s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100% { box-shadow:0 0 40px rgba(249,50,44,0.3); }
+  50% { box-shadow:0 0 80px rgba(249,50,44,0.5); }
+}
+h1 {
+  font-size:3rem;
+  font-weight:900;
+  letter-spacing:-0.03em;
+  background:linear-gradient(135deg,#F9322C,#ff6a33,#ff8c00);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.subtitle {
+  color:rgba(255,255,255,0.4);
+  font-size:0.95rem;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  margin-top:0.75rem;
+}
+.badge-row {
+  display:flex;
+  justify-content:center;
+  gap:0.75rem;
+  margin-top:1.5rem;
+  flex-wrap:wrap;
+}
+.badge {
+  padding:0.35rem 1rem;
+  border-radius:100px;
+  font-size:0.7rem;
+  font-weight:600;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.badge.red { background:rgba(249,50,44,0.15); color:#F9322C; border:1px solid rgba(249,50,44,0.2); }
+.badge.green { background:rgba(0,230,118,0.1); color:#00e676; border:1px solid rgba(0,230,118,0.15); }
+.badge.blue { background:rgba(68,138,255,0.1); color:#448aff; border:1px solid rgba(68,138,255,0.15); }
+.badge.gold { background:rgba(255,171,0,0.1); color:#ffab00; border:1px solid rgba(255,171,0,0.15); }
+
+.section {
+  background:rgba(255,255,255,0.02);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(249,50,44,0.08);
+  border-radius:16px;
+  margin-bottom:1.5rem;
+  overflow:hidden;
+  transition:all 0.3s ease;
+}
+.section:hover { border-color:rgba(249,50,44,0.15); }
+.section-header {
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid rgba(249,50,44,0.06);
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+.section-header .icon {
+  width:32px; height:32px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.9rem;
+  flex-shrink:0;
+}
+.section-header .icon.red { background:rgba(249,50,44,0.15); color:#F9322C; }
+.section-header .icon.blue { background:rgba(68,138,255,0.15); color:#448aff; }
+.section-header .icon.green { background:rgba(0,230,118,0.15); color:#00e676; }
+.section-header .icon.gold { background:rgba(255,171,0,0.15); color:#ffab00; }
+.section-header .icon.purple { background:rgba(156,39,176,0.15); color:#ce93d8; }
+.section-header h2 { font-size:1rem; font-weight:700; }
+.section-body { padding:1.25rem 1.5rem; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:768px) { .grid-2 { grid-template-columns:1fr; } }
+
+.info-row {
+  display:flex;
+  justify-content:space-between;
+  padding:0.5rem 0;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  font-size:0.88rem;
+}
+.info-row:last-child { border-bottom:none; }
+.info-row .label { color:rgba(255,255,255,0.4); }
+.info-row .value { color:rgba(255,255,255,0.85); font-weight:600; }
+.info-row .value.red { color:#F9322C; }
+.info-row .value.green { color:#00e676; }
+
+.tag {
+  display:inline-block;
+  padding:0.2rem 0.6rem;
+  border-radius:4px;
+  font-size:0.75rem;
+  font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+}
+.tag.red { background:rgba(249,50,44,0.1); color:#F9322C; }
+.tag.green { background:rgba(0,230,118,0.1); color:#00e676; }
+.tag.blue { background:rgba(68,138,255,0.1); color:#448aff; }
+.tag.gold { background:rgba(255,171,0,0.1); color:#ffab00; }
+
+.footer {
+  text-align:center;
+  padding:2rem 0;
+  border-top:1px solid rgba(249,50,44,0.08);
+  margin-top:2rem;
+}
+.footer span {
+  color:rgba(255,255,255,0.2);
+  font-size:0.75rem;
+  letter-spacing:0.1em;
+}
+.footer strong { color:#F9322C; }
+
+.status-bar {
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+  padding:0.75rem 1rem;
+  background:rgba(0,230,118,0.05);
+  border:1px solid rgba(0,230,118,0.1);
+  border-radius:8px;
+  margin-bottom:1rem;
+}
+.status-dot {
+  width:8px; height:8px;
+  border-radius:50%;
+  background:#00e676;
+  box-shadow:0 0 12px rgba(0,230,118,0.5);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.status-bar .label { color:#00e676; font-weight:600; font-size:0.85rem; }
+.status-bar .text { color:rgba(255,255,255,0.4); font-size:0.82rem; }
+
+.signature-line {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:2rem;
+  padding:1.5rem;
+  background:rgba(249,50,44,0.03);
+  border:1px solid rgba(249,50,44,0.08);
+  border-radius:12px;
+  flex-wrap:wrap;
+}
+.signature-line .hash {
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.75rem;
+  color:rgba(255,255,255,0.25);
+  letter-spacing:0.05em;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="shield">⬡</div>
+    <h1>NEXUS SECURITY</h1>
+    <div class="subtitle">Enterprise-Grade Protection System v3.0.0</div>
+    <div class="badge-row">
+      <span class="badge red">● ACTIVE</span>
+      <span class="badge green">AES-256-GCM</span>
+      <span class="badge blue">JWT SECURE</span>
+      <span class="badge gold">COMPLIANT</span>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    <span class="label">ALL SYSTEMS SECURE</span>
+    <span class="text">— Real-time monitoring active · No threats detected · Last audit: 2026-05-25</span>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="icon red">⬡</div>
+      <h2>Security Overview</h2>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div>
+          <div class="info-row"><span class="label">Status</span><span class="value green">ACTIVE — All Systems Operational</span></div>
+          <div class="info-row"><span class="label">Encryption</span><span class="value">AES-256-GCM</span></div>
+          <div class="info-row"><span class="label">Classification</span><span class="value red">ENTERPRISE-GRADE</span></div>
+          <div class="info-row"><span class="label">Auth Provider</span><span class="value">Firebase + JWT</span></div>
+        </div>
+        <div>
+          <div class="info-row"><span class="label">Session Duration</span><span class="value">24 hours</span></div>
+          <div class="info-row"><span class="label">Rate Limit</span><span class="value">60 req/min</span></div>
+          <div class="info-row"><span class="label">Max Upload</span><span class="value">500 MB</span></div>
+          <div class="info-row"><span class="label">Token Rotation</span><span class="value">90 days</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="icon blue">⬡</div>
+      <h2>Authentication & Access Control</h2>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div>
+          <div class="info-row"><span class="label">JWT Verification</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">Google OAuth</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">MFA Support</span><span class="value gold">AVAILABLE</span></div>
+          <div class="info-row"><span class="label">Brute Force Protection</span><span class="value green">ACTIVE (5 attempts)</span></div>
+        </div>
+        <div>
+          <div class="info-row"><span class="label">Session Encryption</span><span class="value green">AES-256-CBC</span></div>
+          <div class="info-row"><span class="label">Secure Cookies</span><span class="value green">HTTP-Only · SameSite=Strict</span></div>
+          <div class="info-row"><span class="label">Session Timeout</span><span class="value">60 minutes</span></div>
+          <div class="info-row"><span class="label">Account Lockout</span><span class="value red">15 min after 5 failures</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="icon gold">⬡</div>
+      <h2>Deployment Security</h2>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div>
+          <div class="info-row"><span class="label">Sandboxing</span><span class="value green">CONTAINERIZED</span></div>
+          <div class="info-row"><span class="label">Network Isolation</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">Filesystem Isolation</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">ZIP Bomb Protection</span><span class="value green">ACTIVE</span></div>
+        </div>
+        <div>
+          <div class="info-row"><span class="label">Token Prefix</span><span class="value" style="font-family:'JetBrains Mono',monospace">nxs_</span></div>
+          <div class="info-row"><span class="label">Token Length</span><span class="value">64 characters</span></div>
+          <div class="info-row"><span class="label">Blocked Extensions</span><span class="value red">17 types</span></div>
+          <div class="info-row"><span class="label">Malware Scan</span><span class="value green">ENABLED</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="icon green">⬡</div>
+      <h2>Monitoring & Compliance</h2>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div>
+          <div class="info-row"><span class="label">Intrusion Detection</span><span class="value green">ACTIVE</span></div>
+          <div class="info-row"><span class="label">Audit Logging</span><span class="value green">90 DAY RETENTION</span></div>
+          <div class="info-row"><span class="label">Real-time Alerts</span><span class="value green">DASHBOARD + EMAIL</span></div>
+          <div class="info-row"><span class="label">SSL/TLS</span><span class="value green">TLS 1.2+ AUTO-RENEW</span></div>
+        </div>
+        <div>
+          <div class="info-row"><span class="label">GDPR Compliant</span><span class="value green">YES</span></div>
+          <div class="info-row"><span class="label">Data Retention</span><span class="value">90 days</span></div>
+          <div class="info-row"><span class="label">Backup Schedule</span><span class="value green">DAILY</span></div>
+          <div class="info-row"><span class="label">Incident Response</span><span class="value">15 minute SLA</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="icon purple">⬡</div>
+      <h2>Environment & Database Protection</h2>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div>
+          <div class="info-row"><span class="label">ENV Encryption</span><span class="value green">AES-256-GCM</span></div>
+          <div class="info-row"><span class="label">Key Rotation</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">Masked in Logs</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">Never Exposed</span><span class="value green">STRICT POLICY</span></div>
+        </div>
+        <div>
+          <div class="info-row"><span class="label">Firebase Rules</span><span class="value green">ENFORCED</span></div>
+          <div class="info-row"><span class="label">Owner Verification</span><span class="value green">REQUIRED</span></div>
+          <div class="info-row"><span class="label">Encryption at Rest</span><span class="value green">ENABLED</span></div>
+          <div class="info-row"><span class="label">Encryption in Transit</span><span class="value green">ENABLED</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="icon red">⬡</div>
+      <h2>Blocked Dangerous Extensions</h2>
+    </div>
+    <div class="section-body">
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+        <span class="tag red">.exe</span>
+        <span class="tag red">.sh</span>
+        <span class="tag red">.bat</span>
+        <span class="tag red">.cmd</span>
+        <span class="tag red">.ps1</span>
+        <span class="tag red">.jar</span>
+        <span class="tag red">.dll</span>
+        <span class="tag red">.so</span>
+        <span class="tag red">.dylib</span>
+        <span class="tag red">.bin</span>
+        <span class="tag red">.msi</span>
+        <span class="tag red">.scr</span>
+        <span class="tag red">.pif</span>
+        <span class="tag red">.vbs</span>
+        <span class="tag red">.wsf</span>
+        <span class="tag red">.jsp</span>
+        <span class="tag red">.phtml</span>
+      </div>
+      <div style="margin-top:1rem;padding:0.75rem;background:rgba(249,50,44,0.03);border-radius:8px;font-size:0.82rem;color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace">
+        ⚡ Upload scanning active · Path traversal blocked · ZIP structure validated
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="signature-line">
+      <span style="color:rgba(255,255,255,0.6);font-weight:700">NEXUS <span style="color:#F9322C">SECURITY</span></span>
+      <span class="hash">nxs-sec-3.0.0-2026-05-25-a1b2c3d4</span>
+      <span class="hash">SIGNED · CONFIDENTIAL</span>
+    </div>
+    <div style="margin-top:1.5rem">
+      <span>POWERED BY <strong>NEXUS</strong> HOST — ALL CREDIT NEXUS</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

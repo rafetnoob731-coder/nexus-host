@@ -1,0 +1,10 @@
+node_modules/
+.env
+*.local
+.DS_Store
+Thumbs.db
+assets/*.png
+assets/*.mp4
+assets/*.gif
+*.log
+firebase-debug.log

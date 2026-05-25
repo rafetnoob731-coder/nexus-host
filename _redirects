@@ -1,0 +1,4 @@
+/           /login.html   301
+/login      /login.html   200
+/dashboard  /index.html   200
+/*          /index.html   200
