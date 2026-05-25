@@ -10,42 +10,32 @@ let monitorInterval = null;
 let envMonitorInterval = null;
 
 // ==================== AUTH ====================
-if (!window.NEXUS_INITIALIZED) {
-  document.addEventListener('DOMContentLoaded', function() {
+(function waitForFirebase(attempts) {
+  if (window.NEXUS_INITIALIZED && window.auth) {
+    window.auth.onAuthStateChanged(function(user) {
+      if (user) {
+        currentUser = user;
+        initApp();
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+    return;
+  }
+  if (attempts > 20) {
     document.body.innerHTML = '' +
       '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0a0a0f;padding:2rem">' +
-      '<div style="max-width:480px;text-align:center">' +
+      '<div style="max-width:520px;text-align:center">' +
       '<div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#F9322C,#ff6a33);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;margin:0 auto 1.5rem;box-shadow:0 0 60px rgba(249,50,44,0.3)">N</div>' +
       '<h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin-bottom:0.5rem">NEXUS HOST</h1>' +
-      '<p style="color:rgba(255,255,255,0.4);margin-bottom:2rem;font-size:0.95rem">Set up your Firebase configuration to get started</p>' +
-      '<div style="background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border:1px solid rgba(249,50,44,0.1);border-radius:16px;padding:2rem;text-align:left">' +
-      '<h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem;color:#F9322C">Quick Setup</h2>' +
-      '<p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:1.5rem">Add this script tag before the firebase-config.js include:</p>' +
-      '<div style="background:#0a0a0f;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:1rem;font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;color:rgba(255,255,255,0.6);overflow-x:auto;word-break:break-all">' +
-      '&lt;script id="nexus-firebase-config"<br>' +
-      '&nbsp;&nbsp;data-api-key="AIzaSy..."<br>' +
-      '&nbsp;&nbsp;data-auth-domain="my-project.firebaseapp.com"<br>' +
-      '&nbsp;&nbsp;data-database-url="https://my-project-default-rtdb.firebaseio.com"<br>' +
-      '&nbsp;&nbsp;data-project-id="my-project"<br>' +
-      '&nbsp;&nbsp;data-storage-bucket="my-project.appspot.com"<br>' +
-      '&nbsp;&nbsp;data-app-id="1:123:web:abc"<br>' +
-      '&nbsp;&nbsp;src="config/firebase-config.js"&gt;&lt;/script&gt;' +
-      '</div>' +
-      '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;margin-top:1rem;text-align:center">Or set window.__NEXUS_FIREBASE_API_KEY before loading</p>' +
-      '</div>' +
+      '<p style="color:rgba(255,255,255,0.4);margin-bottom:2rem;font-size:0.95rem">Firebase not available</p>' +
+      '<p style="color:rgba(255,255,255,0.3);font-size:0.85rem">Check console for errors (F12 → Console)</p>' +
       '<p style="color:rgba(255,255,255,0.15);font-size:0.7rem;margin-top:2rem;letter-spacing:0.1em;text-transform:uppercase">Powered by NEXUS HOST — All Credit Nexus</p>' +
       '</div></div>';
-  });
-} else if (window.auth) {
-  window.auth.onAuthStateChanged(function(user) {
-    if (user) {
-      currentUser = user;
-      initApp();
-    } else {
-      window.location.href = 'login.html';
-    }
-  });
-}
+    return;
+  }
+  setTimeout(function() { waitForFirebase(attempts + 1); }, 500);
+})(0);
 
 async function initApp() {
   displayUserInfo();
