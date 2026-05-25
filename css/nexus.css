@@ -660,10 +660,27 @@ a:hover { color: var(--accent); }
 .stat-change.up { color: var(--success); }
 .stat-change.down { color: var(--danger); }
 
+/* Premium Project Cards */
+.project-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(249,50,44,0.2);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 40px rgba(249,50,44,0.06);
+}
+
+.project-card:hover > div:first-child {
+  box-shadow: 0 0 30px currentColor;
+}
+
 /* Grid Layouts */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
-.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; }
 
 @media (max-width: 1024px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
 

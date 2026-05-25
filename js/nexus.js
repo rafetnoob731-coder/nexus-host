@@ -168,8 +168,10 @@ async function createProject() {
   btn.textContent = 'Creating...';
   btn.disabled = true;
 
+  var d = window.db || window.NEXUS_DB;
+  if (!d) { showToast('error', 'Firebase database not connected. Check console.'); btn.textContent = 'Create Project'; btn.disabled = false; return; }
+
   try {
-    // Detect runtime from uploaded files if any
     let detectedRuntime = deploymentEngine.detectRuntime([]);
     if (runtime !== 'php') detectedRuntime = { runtime, framework: runtime, version: '1.0', php: null };
     if (runtime === 'php') detectedRuntime.php = php;
@@ -189,19 +191,20 @@ async function createProject() {
       updatedAt: Date.now()
     };
 
-    const ref = db.ref('projects').push();
+    const ref = d.ref('projects').push();
     await ref.set(projectData);
     projectData.id = ref.key;
 
     currentProjects[ref.key] = projectData;
     document.getElementById('projectCount').textContent = Object.keys(currentProjects).length;
 
-    showToast('success', `Project "${name}" created successfully`);
+    showToast('success', 'Project "' + name + '" created');
     closeModal('createProjectModal');
     await loadProjects();
     updateStats();
   } catch (err) {
-    showToast('error', 'Failed to create project: ' + err.message);
+    showToast('error', 'Create failed: ' + (err.message || 'Firebase DB not enabled. Go to Firebase Console → Realtime Database → Create Database'));
+    console.error('[NEXUS] Create error:', err);
   } finally {
     btn.textContent = 'Create Project';
     btn.disabled = false;
@@ -229,46 +232,68 @@ function renderProjects() {
   const vals = Object.values(currentProjects).sort((a, b) => b.createdAt - a.createdAt);
 
   if (vals.length === 0) {
-    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <h3>No projects yet</h3>
-      <p>Create your first project to get started</p>
-      <button class="btn btn-primary" onclick="openCreateProject()">Create Project</button>
-    </div>`;
-    recentContainer.innerHTML = `<div class="empty-state" style="padding:2rem"><p>No projects yet</p></div>`;
+    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:5rem 2rem">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="72" height="72" style="opacity:0.3;margin-bottom:1.5rem"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>' +
+      '<h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">No projects yet</h3>' +
+      '<p style="color:var(--text-tertiary);margin-bottom:1.5rem">Create your first Laravel application and deploy it to the cloud</p>' +
+      '<button class="btn btn-primary btn-lg" onclick="openCreateProject()">Create Your First Project</button>' +
+      '</div>';
+    recentContainer.innerHTML = '<div class="empty-state" style="padding:2rem"><p>No projects yet</p></div>';
     return;
   }
 
-  container.innerHTML = vals.map(p => {
-    const colors = { php: '#ff4500', node: '#00e676', python: '#448aff', static: '#ffab00' };
-    const color = colors[p.runtime] || '#ff4500';
-    const statusClass = p.status === 'active' ? 'active' : p.status === 'deploying' ? 'deploying' : 'pending';
-    return `<div class="glass-card project-card animate-in" onclick="openProject('${p.id}')">
-      <div class="project-icon" style="background:${color}20;color:${color}">${p.name.charAt(0).toUpperCase()}</div>
-      <div class="project-info">
-        <h3>${p.name}</h3>
-        <p>${p.framework || p.runtime} ${p.version || ''}</p>
-      </div>
-      <div class="project-meta">
-        <span class="status-badge ${statusClass}">${p.status}</span>
-        <span style="font-size:0.8rem;color:var(--text-tertiary)">${new Date(p.createdAt).toLocaleDateString()}</span>
-      </div>
-      <div class="project-actions">
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openDeployModalFor('${p.id}')">Deploy</button>
-      </div>
-    </div>`;
+  container.innerHTML = vals.map(function(p) {
+    var colors = { php: '#F9322C', node: '#00e676', python: '#448aff', static: '#ffab00' };
+    var color = colors[p.runtime] || '#F9322C';
+    var statusClass = p.status === 'active' ? 'active' : p.status === 'deploying' ? 'deploying' : 'pending';
+    var statusText = p.status === 'active' ? 'Live' : p.status === 'deploying' ? 'Deploying' : 'Pending';
+    var icon = p.runtime === 'php' ? 'L' : p.name.charAt(0).toUpperCase();
+    var date = new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    var deploymentUrl = p.deploymentUrl || '';
+
+    return '<div class="project-card glass-card" onclick="openProject(\'' + p.id + '\')" style="cursor:pointer;overflow:hidden;position:relative">' +
+      '<div style="position:absolute;top:0;left:0;width:4px;height:100%;background:' + color + ';box-shadow:0 0 16px ' + color + '40"></div>' +
+      '<div style="padding:1.5rem 1.5rem 1.25rem 2rem">' +
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">' +
+      '<div style="display:flex;align-items:center;gap:1rem">' +
+      '<div style="width:44px;height:44px;border-radius:12px;background:' + color + '15;color:' + color + ';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;box-shadow:0 0 20px ' + color + '20">' + icon + '</div>' +
+      '<div>' +
+      '<div style="font-weight:700;font-size:1.05rem;color:var(--text-primary)">' + p.name + '</div>' +
+      '<div style="font-size:0.8rem;color:var(--text-tertiary);margin-top:0.15rem">' + (p.framework || p.runtime).toUpperCase() + (p.version ? ' ' + p.version : '') + '</div>' +
+      '</div>' +
+      '</div>' +
+      '<span class="status-badge ' + statusClass + '" style="font-size:0.7rem">' + statusText + '</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;padding-top:0.75rem;border-top:1px solid var(--glass-border)">' +
+      '<div style="display:flex;align-items:center;gap:0.35rem;font-size:0.75rem;color:var(--text-muted)">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>' +
+      (p.runtime || 'php') +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:0.35rem;font-size:0.75rem;color:var(--text-muted)">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+      date +
+      '</div>' +
+      (deploymentUrl ? '<div style="display:flex;align-items:center;gap:0.35rem;font-size:0.75rem;color:var(--success)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Deployed</div>' : '') +
+      '</div>' +
+      '</div>' +
+      '<div style="padding:0.75rem 1.5rem 0.75rem 2rem;background:var(--surface);border-top:1px solid var(--glass-border);display:flex;gap:0.5rem;justify-content:flex-end">' +
+      '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openDeployModalFor(\'' + p.id + '\')" style="font-size:0.75rem">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>' +
+      'Deploy</button>' +
+      '</div>' +
+      '</div>';
   }).join('');
 
-  // Recent projects (top 3)
-  recentContainer.innerHTML = vals.slice(0, 3).map(p => {
-    const statusClass = p.status === 'active' ? 'active' : p.status === 'deploying' ? 'deploying' : 'pending';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--glass-border);cursor:pointer" onclick="openProject('${p.id}')">
-      <div>
-        <div style="font-weight:600">${p.name}</div>
-        <div style="font-size:0.8rem;color:var(--text-tertiary)">${p.framework || p.runtime}</div>
-      </div>
-      <span class="status-badge ${statusClass}">${p.status}</span>
-    </div>`;
+  recentContainer.innerHTML = vals.slice(0, 3).map(function(p) {
+    var statusClass = p.status === 'active' ? 'active' : p.status === 'deploying' ? 'deploying' : 'pending';
+    return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0;border-bottom:1px solid var(--glass-border);cursor:pointer" onclick="openProject(\'' + p.id + '\')">' +
+      '<div style="width:32px;height:32px;border-radius:8px;background:rgba(249,50,44,0.1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#F9322C;flex-shrink:0">' + p.name.charAt(0).toUpperCase() + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+      '<div style="font-weight:600;font-size:0.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + p.name + '</div>' +
+      '<div style="font-size:0.75rem;color:var(--text-tertiary)">' + (p.framework || p.runtime).toUpperCase() + '</div>' +
+      '</div>' +
+      '<span class="status-badge ' + statusClass + '" style="font-size:0.65rem">' + p.status + '</span>' +
+      '</div>';
   }).join('');
 }
 
