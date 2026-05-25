@@ -4,353 +4,487 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEXUS HOSTING — Deploy. Scale. Dominate.</title>
-  <meta name="description" content="Laravel-powered bot hosting with auto-scaling, real-time logs, and one-click deploy. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts.">
+  <meta name="description" content="Laravel-based bot hosting platform. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts on elastic infrastructure.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/nexus.css">
   <style>
-    .landing-body { font-family: var(--font-sans); background: #0B0F1E; color: #fff; }
+    .landing-body { font-family: var(--font-sans); background: var(--void-black); color: var(--titanium); }
     .landing-body::before { display: none; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
 
-    /* Nav */
-    .navbar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,15,30,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(6,230,242,0.06); }
-    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.25rem; font-family: var(--font-heading); text-decoration: none; color: #fff; }
-    .nav-logo .logo-mark { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #06E6F2, #B026FF); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; }
+    /* Ambient glow background */
+    .landing-body {
+      background: #050507;
+      background-image:
+        radial-gradient(ellipse 600px 400px at 20% 30%, rgba(0,240,255,0.04) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 500px at 80% 70%, rgba(123,97,255,0.03) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 50% 10%, rgba(0,240,255,0.02) 0%, transparent 70%);
+    }
+
+    .section-title { text-align: center; margin-bottom: 4rem; }
+    .section-title h2 { font-size: 2.5rem; font-weight: 700; font-family: var(--font-display); color: var(--signal-white); letter-spacing: -0.02em; }
+    .section-title p { font-size: 1.125rem; color: var(--titanium); margin-top: 0.75rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+    .gradient-text { background: var(--gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ===== NAV ===== */
+    .navbar {
+      position: fixed; top: 16px; left: 16px; right: 16px;
+      height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(5,5,7,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      z-index: 100;
+      transition: all 0.3s ease;
+      max-width: 1280px; margin: 0 auto;
+      left: 50%; transform: translateX(-50%);
+      width: calc(100% - 32px);
+    }
+    .navbar.scrolled { background: rgba(5,5,7,0.95); box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+    .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.15rem; font-family: var(--font-display); color: var(--signal-white); text-decoration: none; }
+    .nav-logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nexus-cyan); box-shadow: 0 0 12px var(--nexus-cyan-glow); animation: pulse 2s infinite; }
     .nav-links { display: flex; align-items: center; gap: 0.25rem; }
-    .nav-links a { padding: 0.5rem 1rem; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: var(--transition); }
-    .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .nav-links a { padding: 0.5rem 1rem; border-radius: 8px; color: var(--titanium); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: var(--transition); position: relative; }
+    .nav-links a:hover { color: var(--signal-white); background: var(--surface-glass-hover); }
+    .nav-links .nav-status { display: flex; align-items: center; gap: 0.35rem; padding: 0.5rem 1rem; border-radius: 8px; color: var(--success); font-size: 0.8rem; font-weight: 600; }
+    .nav-links .nav-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
     .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
-    .nav-actions .btn-ghost-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; }
-    .nav-actions .btn-ghost-nav:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
-    .nav-actions .btn-solid-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; box-shadow: 0 4px 20px rgba(6,230,242,0.2); }
-    .nav-actions .btn-solid-nav:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(6,230,242,0.3); }
-    .mobile-toggle-nav { display: none; width: 40px; height: 40px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; cursor: pointer; align-items: center; justify-content: center; }
-    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0; background: rgba(11,15,30,0.98); backdrop-filter: blur(20px); z-index: 99; padding: 1.5rem; flex-direction: column; gap: 0.5rem; }
+    .nav-actions .btn-ghost-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: transparent; border: 1px solid var(--border-glass); color: var(--signal-white); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; }
+    .nav-actions .btn-ghost-nav:hover { border-color: rgba(255,255,255,0.2); background: var(--surface-glass-hover); }
+    .nav-actions .btn-solid-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: var(--gradient-brand); color: var(--signal-white); border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; box-shadow: 0 4px 20px var(--nexus-cyan-glow); position: relative; overflow: hidden; }
+    .nav-actions .btn-solid-nav:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--nexus-cyan-glow); }
+    .mobile-toggle-nav { display: none; width: 40px; height: 40px; border-radius: 8px; background: var(--surface-glass); border: 1px solid var(--border-glass); color: var(--signal-white); cursor: pointer; align-items: center; justify-content: center; }
+    .mobile-menu { display: none; position: fixed; top: 88px; left: 16px; right: 16px; background: rgba(5,5,7,0.98); backdrop-filter: blur(24px); border: 1px solid var(--border-glass); border-radius: 16px; z-index: 99; padding: 1rem; flex-direction: column; gap: 0.25rem; }
     .mobile-menu.open { display: flex; }
-    .mobile-menu a { padding: 0.75rem 1rem; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 1rem; }
-    .mobile-menu a:hover { background: rgba(255,255,255,0.04); color: #fff; }
+    .mobile-menu a { padding: 0.75rem 1rem; border-radius: 8px; color: var(--titanium); text-decoration: none; font-size: 0.95rem; }
+    .mobile-menu a:hover { background: var(--surface-glass-hover); color: var(--signal-white); }
 
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .nav-actions .btn-ghost-nav { display: none; }
       .mobile-toggle-nav { display: flex; }
-      .nav-actions .btn-solid-nav { padding: 0.5rem 1rem; font-size: 0.8rem; }
+      .navbar { padding: 0 1rem; height: 64px; top: 12px; width: calc(100% - 24px); }
     }
 
-    /* Section styling */
-    .section-title { text-align: center; margin-bottom: 3rem; }
-    .section-title h2 { font-size: 2.25rem; font-weight: 800; font-family: var(--font-heading); letter-spacing: -0.02em; }
-    .section-title p { color: var(--text-muted); font-size: 1.05rem; margin-top: 0.75rem; max-width: 600px; margin-left: auto; margin-right: auto; }
-
-    .gradient-text { background: linear-gradient(135deg, #06E6F2, #B026FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    /* Hero */
-    .hero { padding: 10rem 0 6rem; text-align: center; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(6,230,242,0.06) 0%, transparent 70%); pointer-events: none; }
-    .hero h1 { font-size: 4rem; font-weight: 900; font-family: var(--font-heading); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.25rem; }
-    .hero h1 span { background: linear-gradient(135deg, #06E6F2, #B026FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; line-height: 1.7; }
-    .hero-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    /* ===== HERO ===== */
+    .hero { padding: 10rem 0 6rem; position: relative; overflow: hidden; min-height: 100vh; display: flex; align-items: center; }
+    .hero-inner { display: grid; grid-template-columns: 55% 45%; gap: 3rem; align-items: center; }
+    .hero-eyebrow { font-family: var(--font-mono); font-size: 0.85rem; color: var(--nexus-cyan); font-weight: 500; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .hero-eyebrow::before { content: '>'; opacity: 0.6; }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; color: var(--signal-white); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+    .hero p { font-size: 1.125rem; color: var(--titanium); max-width: 520px; line-height: 1.7; margin-bottom: 2rem; }
+    .hero-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
     .hero-actions .btn-hero { padding: 0.85rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
-    .hero-actions .btn-hero.primary { background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; border: none; box-shadow: 0 4px 30px rgba(6,230,242,0.25); }
-    .hero-actions .btn-hero.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(6,230,242,0.35); }
-    .hero-actions .btn-hero.secondary { background: rgba(255,255,255,0.04); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-    .hero-actions .btn-hero.secondary:hover { background: rgba(255,255,255,0.08); }
-    .hero-trust { margin-top: 2.5rem; display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
-    .hero-trust span { color: var(--text-muted); font-size: 0.85rem; }
-    .hero-trust .avatars { display: flex; }
-    .hero-trust .avatars div { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #0B0F1E; margin-left: -8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; }
-    .hero-trust .avatars div:first-child { margin-left: 0; }
-    @media (max-width: 768px) { .hero { padding: 7rem 0 4rem; } .hero h1 { font-size: 2.5rem; } .hero p { font-size: 1rem; } }
+    .hero-actions .btn-hero.primary { background: var(--gradient-brand); color: var(--signal-white); border: none; box-shadow: 0 4px 30px var(--nexus-cyan-glow); }
+    .hero-actions .btn-hero.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 50px var(--nexus-cyan-glow); }
+    .hero-actions .btn-hero.secondary { background: transparent; color: var(--signal-white); border: 1px solid var(--border-glass); }
+    .hero-actions .btn-hero.secondary:hover { background: var(--surface-glass-hover); border-color: rgba(255,255,255,0.2); }
+    .hero-actions .btn-hero.secondary .arrow { transition: transform 0.3s ease; display: inline-block; }
+    .hero-actions .btn-hero.secondary:hover .arrow { transform: translateX(4px); }
+    .hero-trust { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+    .hero-trust .logos { display: flex; align-items: center; gap: 1.5rem; opacity: 0.4; }
+    .hero-trust .logos span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--titanium); font-family: var(--font-display); }
+    .hero-trust .logos span::after { content: ' •'; color: var(--nexus-cyan); }
+    .hero-trust .logos span:last-child::after { display: none; }
 
-    /* How It Works */
-    .steps-section { padding: 5rem 0; }
-    .steps-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; position: relative; }
-    .steps-grid::before { content: ''; position: absolute; top: 40px; left: 15%; right: 15%; height: 2px; background: linear-gradient(90deg, #06E6F2, #B026FF, #06E6F2); opacity: 0.2; }
-    .step-card { text-align: center; padding: 2rem; position: relative; }
-    .step-number { width: 80px; height: 80px; border-radius: 20px; background: rgba(6,230,242,0.06); border: 1px solid rgba(6,230,242,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.75rem; font-weight: 800; color: var(--brand-cyan); font-family: var(--font-heading); }
-    .step-card h3 { font-size: 1.15rem; font-weight: 700; font-family: var(--font-heading); margin-bottom: 0.5rem; }
-    .step-card p { color: var(--text-muted); font-size: 0.9rem; }
-    @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } .steps-grid::before { display: none; } }
+    /* Nexus Core Visual */
+    .hero-visual { display: flex; align-items: center; justify-content: center; position: relative; height: 500px; }
+    .nexus-core { position: relative; width: 280px; height: 280px; }
+    .nexus-core .center-node { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 72px; height: 72px; border-radius: 50%; background: var(--gradient-brand); box-shadow: 0 0 60px var(--nexus-cyan-glow), 0 0 120px rgba(123,97,255,0.15); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; color: var(--signal-white); z-index: 2; }
+    .nexus-core .center-node::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: var(--gradient-brand); opacity: 0.2; filter: blur(12px); animation: pulse 2s infinite; }
+    .nexus-core .orbit-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid rgba(0,240,255,0.08); }
+    .nexus-core .orbit-ring.r1 { width: 160px; height: 160px; }
+    .nexus-core .orbit-ring.r2 { width: 240px; height: 240px; }
+    .nexus-core .orbit-ring.r3 { width: 320px; height: 320px; }
+    .nexus-core .satellite { position: absolute; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; z-index: 3; }
+    .nexus-core .satellite.s1 { top: 50%; left: -14px; transform: translateY(-50%); background: rgba(0,240,255,0.15); border: 1px solid rgba(0,240,255,0.3); color: var(--nexus-cyan); }
+    .nexus-core .satellite.s2 { top: 50%; right: -14px; transform: translateY(-50%); background: rgba(123,97,255,0.15); border: 1px solid rgba(123,97,255,0.3); color: var(--plasma-purple); }
+    .nexus-core .satellite.s3 { top: -14px; left: 50%; transform: translateX(-50%); background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.2); color: var(--nexus-cyan); }
+    .nexus-core .satellite.s4 { bottom: -14px; left: 50%; transform: translateX(-50%); background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.2); color: var(--plasma-purple); }
+    .nexus-core .satellite.s5 { top: 15%; right: -8px; background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.15); color: var(--nexus-cyan); }
+    .nexus-core .satellite.s6 { bottom: 15%; left: -8px; background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.15); color: var(--plasma-purple); }
+    .nexus-core .data-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--nexus-cyan); box-shadow: 0 0 8px var(--nexus-cyan); animation: orbitData 3s linear infinite; }
+    .nexus-core .data-particle.p2 { width: 3px; height: 3px; background: var(--plasma-purple); box-shadow: 0 0 6px var(--plasma-purple); animation-duration: 4s; animation-delay: -1.5s; }
+    @keyframes orbitData {
+      0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+    }
+    .nexus-core .data-particle.p2 { animation-name: orbitData2; }
+    @keyframes orbitData2 {
+      0% { transform: rotate(180deg) translateX(160px) rotate(-180deg); }
+      100% { transform: rotate(540deg) translateX(160px) rotate(-540deg); }
+    }
 
-    /* Features */
-    .features-section { padding: 5rem 0; }
+    .data-ticker { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: rgba(255,255,255,0.2); display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
+    .data-ticker span { display: flex; align-items: center; gap: 0.3rem; }
+    .data-ticker .val { color: var(--nexus-cyan); }
+
+    @media (max-width: 768px) {
+      .hero { padding: 8rem 0 3rem; min-height: auto; }
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-visual { height: 350px; }
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1rem; }
+      .hero-trust .logos { flex-wrap: wrap; gap: 0.75rem; }
+    }
+
+    /* ===== FEATURES ===== */
+    .features-section { padding: 6rem 0; }
     .features-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
-    .feature-card { padding: 2rem; border-radius: var(--radius-lg); background: rgba(17,24,39,0.6); border: 1px solid rgba(255,255,255,0.04); transition: var(--transition); }
-    .feature-card:hover { border-color: rgba(6,230,242,0.15); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
-    .feature-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(6,230,242,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1rem; }
-    .feature-card h3 { font-size: 1rem; font-weight: 700; font-family: var(--font-heading); margin-bottom: 0.4rem; }
-    .feature-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
-    @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 480px) { .features-grid { grid-template-columns: 1fr; } }
+    .feature-card { padding: 2.5rem 2rem; border-radius: var(--radius-lg); background: var(--steel-grey); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; overflow: hidden; }
+    .feature-card:hover { transform: translateY(-8px); border-color: rgba(0,240,255,0.3); }
+    .feature-card:hover .feature-icon { box-shadow: 0 0 30px var(--nexus-cyan-glow); }
+    .feature-card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity 0.3s ease; background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.06), transparent 70%); }
+    .feature-card:hover::after { opacity: 1; }
+    .feature-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.25rem; transition: box-shadow 0.3s ease; }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--signal-white); margin-bottom: 0.5rem; }
+    .feature-card p { color: var(--titanium); font-size: 0.88rem; line-height: 1.7; }
 
-    /* Dashboard Preview */
-    .preview-section { padding: 5rem 0; }
-    .preview-card { border-radius: var(--radius-xl); background: rgba(17,24,39,0.8); border: 1px solid rgba(6,230,242,0.08); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
-    .preview-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; }
-    .preview-header .dots { display: flex; gap: 6px; }
-    .preview-header .dots span { width: 10px; height: 10px; border-radius: 50%; }
-    .preview-header .dots span:nth-child(1) { background: #ff5f56; }
-    .preview-header .dots span:nth-child(2) { background: #ffbd2e; }
-    .preview-header .dots span:nth-child(3) { background: #27c93f; }
-    .preview-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .preview-bot { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.04); }
-    .preview-bot-avatar { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #06E6F2, #B026FF); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
-    .preview-bot-info .name { font-weight: 700; font-size: 0.95rem; }
-    .preview-bot-info .status { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #10B981; margin-top: 0.15rem; }
-    .preview-bot-info .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px rgba(16,185,129,0.5); animation: pulse 2s infinite; }
-    .preview-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
-    .preview-metric { padding: 1rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); text-align: center; }
-    .preview-metric .val { font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading); }
-    .preview-metric .lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .preview-log { grid-column: 1 / -1; padding: 1rem; background: #050914; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.8; }
-    .preview-log .highlight { color: #06E6F2; }
-    .preview-log .success { color: #10B981; }
-    .preview-actions { display: flex; gap: 0.5rem; }
-    .preview-actions button { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit; }
-    .preview-actions .btn-preview { background: rgba(6,230,242,0.1); color: var(--brand-cyan); border: 1px solid rgba(6,230,242,0.15); }
-    .preview-actions .btn-preview-outline { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.08); }
-    @media (max-width: 768px) { .preview-body { grid-template-columns: 1fr; } .preview-metrics { grid-template-columns: 1fr 1fr 1fr; } }
+    @media (max-width: 1024px) { .features-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
 
-    /* Pricing */
-    .pricing-section { padding: 5rem 0; }
+    /* ===== INFRASTRUCTURE ===== */
+    .infra-section { padding: 6rem 0; background: var(--void-black); position: relative; }
+    .infra-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,240,255,0.02), transparent 70%); pointer-events: none; }
+    .infra-diagram { display: flex; align-items: center; justify-content: center; gap: 0; padding: 3rem 0; position: relative; }
+    .infra-step { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; z-index: 2; }
+    .infra-step .icon { width: 64px; height: 64px; border-radius: 16px; background: var(--steel-grey); border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: all 0.3s ease; }
+    .infra-step.active .icon { border-color: var(--nexus-cyan); box-shadow: 0 0 30px var(--nexus-cyan-glow); }
+    .infra-step .label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--titanium); }
+    .infra-connector { width: 80px; height: 2px; background: linear-gradient(90deg, var(--nexus-cyan), transparent); opacity: 0.3; position: relative; }
+    .infra-connector.active { background: var(--gradient-brand); opacity: 0.8; }
+    .infra-connector .particle { position: absolute; top: -2px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--nexus-cyan); box-shadow: 0 0 10px var(--nexus-cyan); animation: flowParticle 2s linear infinite; }
+    @keyframes flowParticle {
+      0% { left: 0; opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+    .infra-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; flex-wrap: wrap; }
+    .infra-stat { padding: 1rem 2rem; background: rgba(26,26,31,0.8); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 100px; display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--titanium); }
+    .infra-stat .num { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--signal-white); }
+
+    @media (max-width: 768px) {
+      .infra-diagram { flex-direction: column; gap: 1rem; }
+      .infra-connector { width: 2px; height: 40px; }
+      .infra-connector .particle { top: 0; left: -2px; width: 6px; height: 6px; animation: flowParticleVert 2s linear infinite; }
+      @keyframes flowParticleVert { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+      .infra-stat { border-radius: 16px; width: 100%; justify-content: center; }
+    }
+
+    /* ===== PRICING ===== */
+    .pricing-section { padding: 6rem 0; }
     .pricing-toggle { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
-    .pricing-toggle span { font-size: 0.9rem; color: var(--text-muted); }
+    .pricing-toggle span { font-size: 0.9rem; color: var(--titanium); }
     .pricing-toggle .toggle-track { width: 48px; height: 26px; border-radius: 100px; background: rgba(255,255,255,0.08); cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.06); }
-    .pricing-toggle .toggle-track .thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--brand-cyan); position: absolute; top: 2px; left: 2px; transition: var(--transition); box-shadow: 0 0 12px var(--brand-cyan-glow); }
+    .pricing-toggle .toggle-track .thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--nexus-cyan); position: absolute; top: 2px; left: 2px; transition: var(--transition); box-shadow: 0 0 12px var(--nexus-cyan-glow); }
     .pricing-toggle .toggle-track.active .thumb { transform: translateX(22px); }
-    .pricing-toggle .badge-free { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 100px; background: rgba(16,185,129,0.1); color: #10B981; border: 1px solid rgba(16,185,129,0.15); }
+    .pricing-toggle .badge-free { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 100px; background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.15); }
     .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start; }
-    .pricing-card { padding: 2.5rem 2rem; border-radius: var(--radius-xl); background: rgba(17,24,39,0.6); border: 1px solid rgba(255,255,255,0.04); transition: var(--transition); position: relative; }
-    .pricing-card.featured { border-color: rgba(6,230,242,0.2); background: rgba(17,24,39,0.8); box-shadow: 0 0 40px rgba(6,230,242,0.05); }
-    .pricing-card.featured::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 0.25rem 1rem; border-radius: 100px; background: linear-gradient(135deg, #06E6F2, #B026FF); font-size: 0.7rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
-    .pricing-card:hover { border-color: rgba(176,38,255,0.2); transform: translateY(-4px); }
-    .pricing-card .plan-name { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-cyan); margin-bottom: 0.5rem; }
-    .pricing-card .price { font-size: 3rem; font-weight: 900; font-family: var(--font-heading); letter-spacing: -0.03em; }
-    .pricing-card .price span { font-size: 1rem; font-weight: 500; color: var(--text-muted); }
-    .pricing-card .desc { color: var(--text-muted); font-size: 0.88rem; margin: 0.75rem 0 1.5rem; }
+    .pricing-card { padding: 2.5rem 2rem; border-radius: var(--radius-xl); background: var(--steel-grey); border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); position: relative; }
+    .pricing-card.featured { border: 1px solid rgba(0,240,255,0.15); box-shadow: 0 0 60px rgba(0,240,255,0.06); }
+    .pricing-card.featured::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 0.25rem 1rem; border-radius: 100px; background: var(--gradient-brand); font-size: 0.7rem; font-weight: 700; color: var(--signal-white); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .pricing-card.featured .pc-top-border { position: absolute; top: -1px; left: -1px; right: -1px; height: 2px; background: var(--gradient-brand); border-radius: 24px 24px 0 0; }
+    .pricing-card:hover { transform: translateY(-4px); border-color: rgba(123,97,255,0.2); }
+    .pricing-card .plan-name { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--nexus-cyan); margin-bottom: 0.5rem; }
+    .pricing-card .price { font-size: 3rem; font-weight: 700; font-family: var(--font-display); color: var(--signal-white); letter-spacing: -0.03em; }
+    .pricing-card .price span { font-size: 1rem; font-weight: 500; color: var(--titanium); }
+    .pricing-card .desc { color: var(--titanium); font-size: 0.88rem; margin: 0.75rem 0 1.5rem; }
     .pricing-card ul { list-style: none; padding: 0; margin: 0 0 1.5rem; }
-    .pricing-card ul li { padding: 0.5rem 0; font-size: 0.88rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 0.6rem; }
-    .pricing-card ul li::before { content: '✓'; color: #10B981; font-weight: 700; }
-    .pricing-card .btn-pricing { width: 100%; padding: 0.85rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
-    .pricing-card .btn-pricing.primary { background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; border: none; box-shadow: 0 4px 20px rgba(6,230,242,0.2); }
-    .pricing-card .btn-pricing.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(6,230,242,0.3); }
-    .pricing-card .btn-pricing.secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .pricing-card ul li { padding: 0.5rem 0; font-size: 0.88rem; color: var(--titanium); display: flex; align-items: center; gap: 0.6rem; }
+    .pricing-card ul li::before { content: '✓'; color: var(--nexus-cyan); font-weight: 700; }
+    .pricing-card .btn-pricing { width: 100%; padding: 0.85rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
+    .pricing-card .btn-pricing.primary { background: var(--gradient-brand); color: var(--signal-white); border: none; box-shadow: 0 4px 20px var(--nexus-cyan-glow); }
+    .pricing-card .btn-pricing.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--nexus-cyan-glow); }
+    .pricing-card .btn-pricing.secondary { background: transparent; color: var(--signal-white); border: 1px solid var(--border-glass); }
+    .pricing-card .btn-pricing.secondary:hover { background: var(--surface-glass-hover); border-color: rgba(255,255,255,0.2); }
+
     @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
 
-    /* Dev Tools */
-    .devtools-section { padding: 5rem 0; }
-    .devtools-content { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
-    .devtools-icons { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
-    .devtools-icons span { padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-    .devtools-icons span:hover { border-color: rgba(6,230,242,0.15); color: #fff; }
-    .devtools-code { background: #050914; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid rgba(255,255,255,0.04); }
-    .devtools-code .code-header { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem; color: var(--text-muted); }
-    .devtools-code .code-body { padding: 1rem; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.8; color: rgba(255,255,255,0.5); }
-    .devtools-code .code-body .cyan { color: #06E6F2; }
-    .devtools-code .code-body .purple { color: #B026FF; }
-    .devtools-code .code-body .green { color: #10B981; }
-    @media (max-width: 768px) { .devtools-content { grid-template-columns: 1fr; } }
+    /* ===== TERMINAL DEMO ===== */
+    .terminal-section { padding: 6rem 0; }
+    .terminal-demo { max-width: 820px; margin: 0 auto; background: #0d0d12; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
+    .terminal-demo .term-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.25rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .terminal-demo .term-header .dots { display: flex; gap: 8px; }
+    .terminal-demo .term-header .dots span { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-demo .term-header .dots span:nth-child(1) { background: #ff5f56; }
+    .terminal-demo .term-header .dots span:nth-child(2) { background: #ffbd2e; }
+    .terminal-demo .term-header .dots span:nth-child(3) { background: #27c93f; }
+    .terminal-demo .term-header .title { margin-left: auto; font-size: 0.8rem; color: var(--titanium); font-family: var(--font-mono); }
+    .terminal-demo .term-body { padding: 1.5rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.9; min-height: 280px; }
+    .terminal-demo .term-body .line { opacity: 0; animation: typeIn 0.4s ease forwards; }
+    .terminal-demo .term-body .line.d0 { animation-delay: 0.2s; }
+    .terminal-demo .term-body .line.d1 { animation-delay: 0.6s; }
+    .terminal-demo .term-body .line.d2 { animation-delay: 1.0s; }
+    .terminal-demo .term-body .line.d3 { animation-delay: 1.4s; }
+    .terminal-demo .term-body .line.d4 { animation-delay: 1.8s; }
+    .terminal-demo .term-body .line.d5 { animation-delay: 2.2s; }
+    .terminal-demo .term-body .line.d6 { animation-delay: 2.6s; }
+    .terminal-demo .term-body .line.d7 { animation-delay: 3.0s; }
+    .terminal-demo .term-body .prompt { color: var(--nexus-cyan); }
+    .terminal-demo .term-body .output { color: var(--titanium); }
+    .terminal-demo .term-body .ok { color: var(--success); }
+    .terminal-demo .term-body .highlight { color: var(--signal-white); font-weight: 500; }
+    .terminal-demo .term-body .url { color: var(--nexus-cyan); }
+    .terminal-demo .term-body .cursor { display: inline-block; width: 8px; height: 1.1em; background: var(--signal-white); margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
 
-    /* Section padding fix for fixed nav */
-    section { scroll-margin-top: 80px; }
+    @keyframes typeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    /* Footer */
-    .footer { padding: 4rem 0 2rem; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 2rem; }
-    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
-    .footer-brand .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.1rem; font-family: var(--font-heading); margin-bottom: 0.75rem; }
-    .footer-brand p { color: var(--text-muted); font-size: 0.85rem; max-width: 280px; line-height: 1.6; }
+    @media (max-width: 768px) { .terminal-demo .term-body { font-size: 0.75rem; padding: 1rem; } }
+
+    /* ===== TESTIMONIALS ===== */
+    .testimonials-section { padding: 6rem 0; overflow: hidden; }
+    .testimonial-marquee { display: flex; gap: 1.5rem; animation: scrollMarquee 30s linear infinite; width: max-content; }
+    .testimonial-marquee:hover { animation-play-state: paused; }
+    .testimonial-card { min-width: 320px; padding: 1.5rem; background: rgba(26,26,31,0.6); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); }
+    .testimonial-card .t-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .testimonial-card .t-avatar { width: 40px; height: 40px; border-radius: 10px; background: var(--gradient-brand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--signal-white); }
+    .testimonial-card .t-name { font-weight: 600; font-size: 0.9rem; color: var(--signal-white); }
+    .testimonial-card .t-handle { font-size: 0.75rem; color: var(--titanium); }
+    .testimonial-card .t-stars { display: flex; gap: 2px; margin-bottom: 0.75rem; }
+    .testimonial-card .t-stars span { color: var(--nexus-cyan); font-size: 0.85rem; }
+    .testimonial-card .t-text { font-size: 0.85rem; color: var(--titanium); line-height: 1.7; font-style: italic; }
+    @keyframes scrollMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ===== FOOTER ===== */
+    .footer { padding: 5rem 0 2rem; border-top: 1px solid var(--border-glass); }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-brand .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem; font-family: var(--font-display); color: var(--signal-white); margin-bottom: 1rem; }
+    .footer-brand p { color: var(--titanium); font-size: 0.88rem; max-width: 320px; line-height: 1.7; }
+    .footer-newsletter { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
+    .footer-newsletter input { flex: 1; padding: 0.65rem 1rem; background: var(--surface-glass); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--signal-white); font-size: 0.85rem; font-family: var(--font-mono); outline: none; transition: var(--transition); }
+    .footer-newsletter input:focus { border-color: var(--nexus-cyan); box-shadow: 0 0 20px rgba(0,240,255,0.05); }
+    .footer-newsletter input::placeholder { color: var(--titanium); }
+    .footer-newsletter button { padding: 0.65rem 1.25rem; border-radius: 8px; background: var(--gradient-brand); color: var(--signal-white); border: none; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: var(--transition); }
+    .footer-newsletter button:hover { box-shadow: 0 0 30px var(--nexus-cyan-glow); }
     .footer-social { display: flex; gap: 0.75rem; margin-top: 1rem; }
-    .footer-social a { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; transition: var(--transition); font-size: 0.85rem; }
-    .footer-social a:hover { background: rgba(6,230,242,0.08); color: var(--brand-cyan); }
-    .footer-col h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading); }
-    .footer-col a { display: block; color: var(--text-muted); font-size: 0.85rem; padding: 0.3rem 0; text-decoration: none; transition: var(--transition); }
-    .footer-col a:hover { color: #fff; }
-    .footer-bottom { padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-    .footer-bottom span { color: var(--text-muted); font-size: 0.8rem; }
-    .footer-bottom select { padding: 0.4rem 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: var(--text-muted); font-size: 0.8rem; font-family: inherit; cursor: pointer; }
-    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-brand { grid-column: 1 / -1; } }
+    .footer-social a { width: 36px; height: 36px; border-radius: 8px; background: var(--surface-glass); border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center; color: var(--titanium); text-decoration: none; transition: var(--transition); font-size: 0.85rem; font-weight: 600; }
+    .footer-social a:hover { background: rgba(0,240,255,0.08); border-color: rgba(0,240,255,0.2); color: var(--signal-white); }
+    .footer-col h4 { font-size: 0.85rem; font-weight: 600; color: var(--signal-white); margin-bottom: 1.25rem; font-family: var(--font-display); }
+    .footer-col a { display: block; color: var(--titanium); font-size: 0.85rem; padding: 0.35rem 0; text-decoration: none; transition: var(--transition); }
+    .footer-col a:hover { color: var(--signal-white); }
+    .footer-bottom { padding-top: 1.5rem; border-top: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom span { color: var(--titanium); font-size: 0.8rem; }
+    .footer-bottom a { color: var(--titanium); font-size: 0.8rem; transition: var(--transition); }
+    .footer-bottom a:hover { color: var(--signal-white); }
+
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } .footer-brand { grid-column: 1 / -1; } }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
 
-    /* Animations */
-    .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    section { scroll-margin-top: 100px; }
+
+    /* Scroll animation */
+    .fade-up { opacity: 0; transform: translateY(20px); transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
     .delay-1 { transition-delay: 0.1s; }
     .delay-2 { transition-delay: 0.2s; }
     .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { opacity: 1; transform: none; }
+      .nexus-core .data-particle { animation: none; }
+      .testimonial-marquee { animation: none; }
+      .terminal-demo .term-body .line { opacity: 1; animation: none; }
+    }
   </style>
 </head>
 <body class="landing-body">
-  <!-- Nav -->
-  <nav class="navbar">
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
     <a href="/" class="nav-logo">
-      <div class="logo-mark">N</div>
+      <span class="dot"></span>
       NEXUS HOSTING
     </a>
     <div class="nav-links">
-      <a href="#features">Features</a>
+      <a href="#features">Bots</a>
       <a href="#pricing">Pricing</a>
-      <a href="#devtools">Developers</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="#terminal">API</a>
+      <a href="#docs">Docs</a>
+      <span class="nav-status"><span class="dot"></span> Status</span>
     </div>
     <div class="nav-actions">
-      <a href="login.html" class="btn-ghost-nav">Sign In</a>
-      <a href="login.html" class="btn-solid-nav">Control Panel</a>
-      <button class="mobile-toggle-nav" onclick="toggleMobile()">
+      <a href="login.html" class="btn-ghost-nav">Client Login</a>
+      <a href="login.html" class="btn-solid-nav">Deploy Bot →</a>
+      <button class="mobile-toggle-nav" onclick="toggleMobile()" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
       </button>
     </div>
   </nav>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#features" onclick="toggleMobile()">Features</a>
+    <a href="#features" onclick="toggleMobile()">Bots</a>
     <a href="#pricing" onclick="toggleMobile()">Pricing</a>
-    <a href="#devtools" onclick="toggleMobile()">Developers</a>
-    <a href="dashboard.html" onclick="toggleMobile()">Dashboard</a>
-    <a href="login.html" onclick="toggleMobile()">Sign In</a>
-    <a href="login.html" onclick="toggleMobile()" style="margin-top:0.5rem;background:linear-gradient(135deg,#06E6F2,#B026FF);color:#fff;text-align:center;border-radius:10px;font-weight:700">Control Panel</a>
+    <a href="#terminal" onclick="toggleMobile()">API</a>
+    <a href="#docs" onclick="toggleMobile()">Docs</a>
+    <a href="login.html" onclick="toggleMobile()">Client Login</a>
+    <a href="login.html" onclick="toggleMobile()" style="margin-top:0.5rem;background:var(--gradient-brand);color:var(--signal-white);text-align:center;border-radius:10px;font-weight:700">Deploy Bot →</a>
   </div>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>Launch Your Bots<br>at <span>Lightspeed</span></h1>
-      <p>Laravel-powered bot hosting with auto-scaling, real-time logs, and one-click deploy — starting at $4.99/mo.</p>
-      <div class="hero-actions">
-        <a href="login.html" class="btn-hero primary">Deploy a Bot →</a>
-        <a href="#features" class="btn-hero secondary">▸ Watch Demo</a>
-      </div>
-      <div class="hero-trust">
-        <div class="avatars">
-          <div>D</div><div>T</div><div>M</div><div>+</div>
+  <!-- HERO -->
+  <section class="hero" id="docs">
+    <div class="container hero-inner">
+      <div>
+        <div class="hero-eyebrow"> LARAVEL BOT INFRASTRUCTURE</div>
+        <h1>HOSTING THAT<br>NEVER SLEEPS</h1>
+        <p>Deploy Laravel-based automation bots on elastic infrastructure. Zero-downtime scaling, global edge routing, and real-time telemetry.</p>
+        <div class="hero-actions">
+          <a href="login.html" class="btn-hero primary">Start Free Trial →</a>
+          <a href="#features" class="btn-hero secondary">View Documentation <span class="arrow">→</span></a>
         </div>
-        <span>Trusted by <strong style="color:#fff">2,500+</strong> bot developers</span>
+        <div class="hero-trust">
+          <div class="logos">
+            <span>Discord</span>
+            <span>Telegram</span>
+            <span>Slack</span>
+            <span>Webhook</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="nexus-core">
+          <div class="orbit-ring r3"></div>
+          <div class="orbit-ring r2"></div>
+          <div class="orbit-ring r1"></div>
+          <div class="data-particle" style="top:50%;left:50%;margin-top:-2px;margin-left:-2px;"></div>
+          <div class="data-particle p2" style="top:50%;left:50%;margin-top:-1.5px;margin-left:-1.5px;"></div>
+          <div class="center-node">N</div>
+          <div class="satellite s1">D</div>
+          <div class="satellite s2">T</div>
+          <div class="satellite s3">M</div>
+          <div class="satellite s4">A</div>
+          <div class="satellite s5">S</div>
+          <div class="satellite s6">W</div>
+        </div>
+        <div class="data-ticker">
+          <span>Uptime: <span class="val">99.99%</span></span>
+          <span>Nodes: <span class="val">142 Active</span></span>
+          <span>Latency: <span class="val">12ms</span></span>
+          <span>Region: <span class="val">Global</span></span>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- How It Works -->
-  <section class="steps-section" id="how">
-    <div class="container">
-      <div class="section-title fade-up">
-        <h2>Deploy in <span class="gradient-text">3 Steps</span></h2>
-        <p>From code to cloud in under a minute. Zero configuration required.</p>
-      </div>
-      <div class="steps-grid">
-        <div class="step-card fade-up delay-1">
-          <div class="step-number">01</div>
-          <h3>Connect Git / Upload ZIP</h3>
-          <p>Link your GitHub repository or upload your bot's ZIP file directly to Nexus.</p>
-        </div>
-        <div class="step-card fade-up delay-2">
-          <div class="step-number">02</div>
-          <h3>Choose Resources</h3>
-          <p>Select CPU, RAM, and region. Our auto-scaler handles the rest.</p>
-        </div>
-        <div class="step-card fade-up delay-3">
-          <div class="step-number">03</div>
-          <h3>Laravel Auto-Deploys</h3>
-          <p>Nexus detects your framework, installs dependencies, and deploys instantly.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
+  <!-- FEATURES -->
   <section class="features-section" id="features">
     <div class="container">
       <div class="section-title fade-up">
         <h2>Everything You <span class="gradient-text">Need</span></h2>
-        <p>Built for bot developers who demand performance, reliability, and simplicity.</p>
+        <p>Six core capabilities engineered for production bot hosting.</p>
       </div>
       <div class="features-grid">
         <div class="feature-card fade-up delay-1">
-          <div class="feature-icon">⚡</div>
-          <h3>Auto-Scaling</h3>
-          <p>Handles traffic spikes from 0 to 10k concurrent users without breaking a sweat.</p>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>Elastic Scaling</h3>
+          <p>Auto-scale from 1 to 10,000 bot instances in seconds. Pay only for what you use.</p>
         </div>
         <div class="feature-card fade-up delay-2">
-          <div class="feature-icon">📦</div>
-          <h3>One-Click Bot Templates</h3>
-          <p>Pre-built for Discord.js, Telegraf, BotMan, and Laravel chatbots.</p>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <h3>Laravel Native</h3>
+          <p>First-class support for Laravel Queue, Scheduler, Horizon, and Octane.</p>
         </div>
         <div class="feature-card fade-up delay-3">
-          <div class="feature-icon">🔐</div>
-          <h3>Encrypted Secrets</h3>
-          <p>.env variables encrypted with AES-256-GCM. Never exposed in logs.</p>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3>Global Edge</h3>
+          <p>Deploy to 35+ regions with intelligent latency routing to your user base.</p>
         </div>
         <div class="feature-card fade-up delay-1">
-          <div class="feature-icon">📊</div>
-          <h3>Real-Time Metrics</h3>
-          <p>CPU, RAM, network, and bot uptime — all streamed live to your dashboard.</p>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </div>
+          <h3>Zero-Downtime</h3>
+          <p>Rolling deployments with health checks, instant rollback, and canary releases.</p>
         </div>
         <div class="feature-card fade-up delay-2">
-          <div class="feature-icon">🔄</div>
-          <h3>Zero-Downtime Updates</h3>
-          <p>Webhook-based redeploys with zero downtime. Your bot never sleeps.</p>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3>Observability</h3>
+          <p>Real-time logs, metrics, and alerting baked into every bot instance.</p>
         </div>
         <div class="feature-card fade-up delay-3">
-          <div class="feature-icon">🌍</div>
-          <h3>Global Edge Network</h3>
-          <p>200+ edge locations worldwide for the lowest latency to your users.</p>
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <h3>Bot Marketplace</h3>
+          <p>One-click templates for moderation, analytics, automation, and AI chatbots.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Live Dashboard Preview -->
-  <section class="preview-section">
-    <div class="container">
+  <!-- INFRASTRUCTURE -->
+  <section class="infra-section">
+    <div class="container" style="text-align:center">
       <div class="section-title fade-up">
-        <h2>Live at <span class="gradient-text">a Glance</span></h2>
-        <p>Real-time bot monitoring dashboard with live logs and performance metrics.</p>
+        <h2>The <span class="gradient-text">Nexus</span> Backbone</h2>
+        <p>From code to global edge delivery in milliseconds.</p>
       </div>
-      <div class="preview-card fade-up">
-        <div class="preview-header">
-          <div class="dots"><span></span><span></span><span></span></div>
-          <div class="preview-actions">
-            <button class="btn-preview">Restart</button>
-            <button class="btn-preview-outline">View Logs</button>
-            <button class="btn-preview-outline">Scale Up</button>
+      <div class="infra-diagram fade-up">
+        <div class="infra-step active">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="22" height="22"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg>
           </div>
+          <span class="label">User Code</span>
         </div>
-        <div class="preview-body">
-          <div class="preview-bot" style="grid-column:1/-1">
-            <div class="preview-bot-avatar">M</div>
-            <div class="preview-bot-info">
-              <div class="name">ModBot#4721</div>
-              <div class="status">Online — 12 servers connected</div>
-            </div>
-            <div style="margin-left:auto;display:flex;gap:1rem">
-              <div style="text-align:right"><div style="font-size:0.75rem;color:var(--text-muted)">CPU</div><div style="font-weight:700">12%</div></div>
-              <div style="text-align:right"><div style="font-size:0.75rem;color:var(--text-muted)">RAM</div><div style="font-weight:700">256MB</div></div>
-              <div style="text-align:right"><div style="font-size:0.75rem;color:var(--text-muted)">Req/s</div><div style="font-weight:700">47</div></div>
-            </div>
+        <div class="infra-connector active"><span class="particle"></span></div>
+        <div class="infra-step">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7B61FF" stroke-width="1.5" width="22" height="22"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           </div>
-          <div class="preview-log">
-            <div><span class="success">[INFO]</span> Bot connected to Discord gateway</div>
-            <div><span class="success">[INFO]</span> Guild joined: <span class="highlight">291 members</span></div>
-            <div><span class="highlight">[DEPLOY]</span> Zero-downtime update applied</div>
-            <div><span class="success">[OK]</span> Laravel queue worker active — 3 jobs processed</div>
-            <div>[STATUS] Uptime: 99.97% — Last restart: 12d ago</div>
-          </div>
-          <div class="preview-metrics" style="grid-column:1/-1">
-            <div class="preview-metric"><div class="val">99.97%</div><div class="lbl">Uptime</div></div>
-            <div class="preview-metric"><div class="val">1.2M</div><div class="lbl">Requests Today</div></div>
-            <div class="preview-metric"><div class="val">23ms</div><div class="lbl">Avg Latency</div></div>
-          </div>
+          <span class="label">Build Pipeline</span>
         </div>
+        <div class="infra-connector"><span class="particle"></span></div>
+        <div class="infra-step">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M16.5 7.5L12 12l4.5 4.5"/><path d="M7.5 7.5L12 12l-4.5 4.5"/></svg>
+          </div>
+          <span class="label">Container Registry</span>
+        </div>
+        <div class="infra-connector"><span class="particle"></span></div>
+        <div class="infra-step">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7B61FF" stroke-width="1.5" width="22" height="22"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
+          <span class="label">Orchestrator</span>
+        </div>
+        <div class="infra-connector"><span class="particle"></span></div>
+        <div class="infra-step">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <span class="label">Edge Nodes</span>
+        </div>
+      </div>
+      <div class="infra-stats fade-up delay-2">
+        <div class="infra-stat"><span class="num">&lt; 30s</span> Build Times</div>
+        <div class="infra-stat"><span class="num">99.99%</span> Uptime SLA</div>
+        <div class="infra-stat"><span class="num">24/7</span> Human Support</div>
       </div>
     </div>
   </section>
 
-  <!-- Pricing -->
+  <!-- PRICING -->
   <section class="pricing-section" id="pricing">
     <div class="container">
       <div class="section-title fade-up">
         <h2>Simple <span class="gradient-text">Pricing</span></h2>
-        <p>Start small, scale big. All plans include 24/7 uptime and DDoS protection.</p>
+        <p>Start small, scale infinitely. All plans include DDoS protection and 99.99% uptime.</p>
       </div>
       <div class="pricing-toggle fade-up">
         <span>Monthly</span>
@@ -361,98 +495,149 @@
       </div>
       <div class="pricing-grid">
         <div class="pricing-card fade-up delay-1">
-          <div class="plan-name">Bot Starter</div>
-          <div class="price" id="price1">$4.99<span>/mo</span></div>
-          <div class="desc">Perfect for small moderation bots and hobby projects</div>
+          <div class="plan-name">Starter</div>
+          <div class="price" id="price1">$9<span>/mo</span></div>
+          <div class="desc">Perfect for small bots and hobby projects</div>
           <ul>
+            <li>1 bot instance</li>
             <li>512MB RAM</li>
-            <li>0.5 vCPU</li>
-            <li>10k messages/day</li>
-            <li>Backups every 6h</li>
+            <li>Shared CPU</li>
             <li>Community support</li>
+            <li>Basic monitoring</li>
           </ul>
           <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Get Started</button>
         </div>
         <div class="pricing-card featured fade-up delay-2">
-          <div class="plan-name">Bot Pro</div>
-          <div class="price" id="price2">$14.99<span>/mo</span></div>
-          <div class="desc">Ideal for economy bots, music bots, and growing communities</div>
+          <div class="pc-top-border"></div>
+          <div class="plan-name">Pro</div>
+          <div class="price" id="price2">$29<span>/mo</span></div>
+          <div class="desc">Ideal for growing communities and multi-bot setups</div>
           <ul>
+            <li>5 bot instances</li>
             <li>2GB RAM</li>
-            <li>1 vCPU</li>
-            <li>100k messages/day</li>
-            <li>Backups every 4h</li>
+            <li>Dedicated vCPU</li>
             <li>Priority support</li>
-            <li>Laravel Octane</li>
+            <li>Custom domains</li>
+            <li>Team access</li>
           </ul>
           <button class="btn-pricing primary" onclick="window.location.href='login.html'">Get Started</button>
         </div>
         <div class="pricing-card fade-up delay-3">
-          <div class="plan-name">Bot Elite</div>
-          <div class="price" id="price3">$49.99<span>/mo</span></div>
-          <div class="desc">For AI chatbots, large communities, and enterprise workloads</div>
+          <div class="plan-name">Enterprise</div>
+          <div class="price">Custom</div>
+          <div class="desc">For large-scale deployments with dedicated infrastructure</div>
           <ul>
-            <li>8GB RAM</li>
-            <li>4 vCPU</li>
-            <li>1M messages/day</li>
-            <li>Real-time backups</li>
-            <li>Dedicated support</li>
-            <li>Custom domains</li>
+            <li>Unlimited bots</li>
+            <li>Dedicated cluster</li>
+            <li>SLA guarantee</li>
+            <li>SSO &amp; audit logs</li>
+            <li>Custom integrations</li>
+            <li>24/7 phone support</li>
           </ul>
-          <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Get Started</button>
+          <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Contact Sales</button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Dev Tools -->
-  <section class="devtools-section" id="devtools">
+  <!-- TERMINAL DEMO -->
+  <section class="terminal-section" id="terminal">
     <div class="container">
       <div class="section-title fade-up">
-        <h2>Built for <span class="gradient-text">Developers</span></h2>
-        <p>Native support for Laravel and all major bot frameworks.</p>
+        <h2>Developer <span class="gradient-text">Experience</span></h2>
+        <p>One CLI command to deploy — zero friction from local to production.</p>
       </div>
-      <div class="devtools-content fade-up">
-        <div>
-          <h3 style="font-size:1.5rem;font-weight:800;font-family:var(--font-heading);margin-bottom:0.75rem">Laravel-Native Deployment</h3>
-          <p style="color:var(--text-muted);line-height:1.7">Nexus detects your Laravel version, installs Composer dependencies, compiles assets, runs migrations, and deploys your queue workers — automatically.</p>
-          <div class="devtools-icons">
-            <span>Laravel</span>
-            <span>Discord.js</span>
-            <span>Telegraf</span>
-            <span>BotMan</span>
-            <span>WhatsApp API</span>
-          </div>
-          <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:1.5rem;color:var(--brand-cyan);font-weight:600;font-size:0.9rem">Read API Docs →</a>
+      <div class="terminal-demo fade-up">
+        <div class="term-header">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <span class="title">nexus-cli</span>
         </div>
-        <div class="devtools-code">
-          <div class="code-header">Terminal — nexus deploy</div>
-          <div class="code-body">
-            <div>$ <span class="cyan">nexus</span> deploy my-bot --laravel</div>
-            <div> </div>
-            <div><span class="cyan">[NEXUS]</span> Detected: Laravel 11.x</div>
-            <div><span class="green">[OK]</span> Composer dependencies installed</div>
-            <div><span class="green">[OK]</span> Queue worker configured</div>
-            <div><span class="purple">[DEPLOY]</span> Bot deployed to 3 regions</div>
-            <div> </div>
-            <div>$ <span class="cyan">nexus</span> logs my-bot --live</div>
-            <div><span class="green">[INFO]</span> Bot is online — 291 users</div>
-          </div>
+        <div class="term-body" id="termBody">
+          <div class="line d0"><span class="prompt">$ </span>nexus deploy --bot=moderator --region=eu-west</div>
+          <div class="line d1"><span class="output">> Building Laravel container...</span><span class="ok"> [OK]</span></div>
+          <div class="line d2"><span class="output">> Pushing to registry...</span><span class="ok"> [OK]</span></div>
+          <div class="line d3"><span class="output">> Provisioning 3 nodes...</span><span class="ok"> [OK]</span></div>
+          <div class="line d4"><span class="output">> Bot live at:</span> <span class="url">https://mod-bot.nexus.host</span></div>
+          <div class="line d5">&nbsp;</div>
+          <div class="line d6"><span class="prompt">$ </span>nexus logs moderator --live</div>
+          <div class="line d7"><span class="ok">[INFO]</span> <span class="output">Bot online — 291 users — 0 errors</span><span class="cursor"></span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- TESTIMONIALS -->
+  <section class="testimonials-section">
+    <div class="section-title fade-up" style="padding:0 1.5rem">
+      <h2>Trusted by <span class="gradient-text">Developers</span></h2>
+      <p>From indie bot makers to enterprise teams.</p>
+    </div>
+    <div class="testimonial-marquee">
+      <div class="testimonial-card">
+        <div class="t-header">
+          <div class="t-avatar">J</div>
+          <div><div class="t-name">James Chen</div><div class="t-handle">@jamesbotdev</div></div>
+        </div>
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="t-text">"Deployed my Discord moderation bot in under 3 minutes. The Laravel integration is flawless."</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-header">
+          <div class="t-avatar">S</div>
+          <div><div class="t-name">Sarah K.</div><div class="t-handle">@sarahk</div></div>
+        </div>
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="t-text">"We migrated 12 Telegram bots to Nexus. Zero downtime and 40% lower latency across the board."</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-header">
+          <div class="t-avatar">M</div>
+          <div><div class="t-name">Marcus Rivera</div><div class="t-handle">@marcusdev</div></div>
+        </div>
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="t-text">"The auto-scaling is incredible. One of our bots went viral and Nexus handled 50k concurrent users."</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-header">
+          <div class="t-avatar">A</div>
+          <div><div class="t-name">Anika Patel</div><div class="t-handle">@anika_ai</div></div>
+        </div>
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="t-text">"Hosting our AI chatbot on Nexus was the best decision. The queue worker integration is perfect."</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-header">
+          <div class="t-avatar">T</div>
+          <div><div class="t-name">Tom Wagner</div><div class="t-handle">@tomw</div></div>
+        </div>
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="t-text">"Custom webhook support saved us weeks of integration work. Enterprise-grade infrastructure."</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-header">
+          <div class="t-avatar">L</div>
+          <div><div class="t-name">Lisa Park</div><div class="t-handle">@lisapark</div></div>
+        </div>
+        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <div class="t-text">"The real-time monitoring dashboard is beautiful. I can see every metric for all my bots at a glance."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
           <div class="logo">
-            <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#06E6F2,#B026FF);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:900">N</div>
+            <div style="width:32px;height:32px;border-radius:8px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:900;color:var(--signal-white)">N</div>
             NEXUS HOSTING
           </div>
-          <p>Laravel-powered bot hosting platform. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts at lightspeed.</p>
+          <p>Laravel-based bot hosting platform. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts on elastic global infrastructure.</p>
+          <div class="footer-newsletter">
+            <input type="email" placeholder="your@email.com" aria-label="Subscribe">
+            <button>Subscribe</button>
+          </div>
           <div class="footer-social">
             <a href="#" aria-label="Discord">D</a>
             <a href="https://github.com/rafetnoob731-coder/nexus-host" aria-label="GitHub">G</a>
@@ -461,36 +646,45 @@
         </div>
         <div class="footer-col">
           <h4>Product</h4>
+          <a href="#features">Bots</a>
           <a href="#pricing">Pricing</a>
+          <a href="#">Marketplace</a>
           <a href="#">Changelog</a>
-          <a href="#">Roadmap</a>
         </div>
         <div class="footer-col">
           <h4>Resources</h4>
           <a href="#">Documentation</a>
-          <a href="#">Status Page</a>
-          <a href="#">Community</a>
+          <a href="#">API Reference</a>
+          <a href="#">Laravel Guide</a>
+          <a href="#">Status</a>
         </div>
         <div class="footer-col">
-          <h4>Legal</h4>
-          <a href="#">Terms of Service</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">GDPR</a>
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Security</a>
+          <a href="#">Privacy</a>
+          <a href="#">Contact</a>
         </div>
       </div>
       <div class="footer-bottom">
         <span>© 2026 NEXUS HOSTING. All rights reserved. ALL CREDIT NEXUS</span>
-        <select>
-          <option>US East</option>
-          <option>EU West</option>
-          <option>Asia Pacific</option>
-        </select>
+        <div style="display:flex;gap:1.5rem">
+          <a href="#">Terms</a>
+          <a href="#">Privacy</a>
+        </div>
       </div>
     </div>
   </footer>
 
   <script>
     function toggleMobile() { document.getElementById('mobileMenu').classList.toggle('open'); }
+
+    // Nav scroll effect
+    var navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    });
 
     // Scroll animations
     var observer = new IntersectionObserver(function(entries) {
@@ -502,14 +696,17 @@
 
     // Pricing toggle
     var yearly = false;
-    var prices = { 1: [4.99, 49.99], 2: [14.99, 149.99], 3: [49.99, 499.99] };
+    var prices = { 1: [9, 99], 2: [29, 299], 3: [0, 0] };
     function togglePricing() {
       yearly = !yearly;
       document.getElementById('pricingToggle').classList.toggle('active');
-      for (var i = 1; i <= 3; i++) {
+      for (var i = 1; i <= 2; i++) {
         var el = document.getElementById('price' + i);
-        var val = yearly ? prices[i][1] : prices[i][0];
-        el.innerHTML = '$' + val.toFixed(2) + '<span>/' + (yearly ? 'yr' : 'mo') + '</span>';
+        if (yearly) {
+          el.innerHTML = '$' + prices[i][1] + '<span>/yr</span>';
+        } else {
+          el.innerHTML = '$' + prices[i][0] + '<span>/mo</span>';
+        }
       }
     }
   </script>
