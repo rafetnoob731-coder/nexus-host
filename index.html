@@ -3,931 +3,515 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEXUS HOST — Enterprise Laravel Hosting Platform</title>
-  <meta name="description" content="NEXUS HOST - Premium enterprise Laravel hosting with advanced DevOps tools">
-  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <title>NEXUS HOSTING — Deploy. Scale. Dominate.</title>
+  <meta name="description" content="Laravel-powered bot hosting with auto-scaling, real-time logs, and one-click deploy. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/nexus.css">
+  <style>
+    .landing-body { font-family: var(--font-sans); background: #0B0F1E; color: #fff; }
+    .landing-body::before { display: none; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Nav */
+    .navbar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(11,15,30,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(6,230,242,0.06); }
+    .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.25rem; font-family: var(--font-heading); text-decoration: none; color: #fff; }
+    .nav-logo .logo-mark { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #06E6F2, #B026FF); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 900; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-links a { padding: 0.5rem 1rem; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: var(--transition); }
+    .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-actions .btn-ghost-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; }
+    .nav-actions .btn-ghost-nav:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+    .nav-actions .btn-solid-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; box-shadow: 0 4px 20px rgba(6,230,242,0.2); }
+    .nav-actions .btn-solid-nav:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(6,230,242,0.3); }
+    .mobile-toggle-nav { display: none; width: 40px; height: 40px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; cursor: pointer; align-items: center; justify-content: center; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0; background: rgba(11,15,30,0.98); backdrop-filter: blur(20px); z-index: 99; padding: 1.5rem; flex-direction: column; gap: 0.5rem; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { padding: 0.75rem 1rem; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-size: 1rem; }
+    .mobile-menu a:hover { background: rgba(255,255,255,0.04); color: #fff; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-actions .btn-ghost-nav { display: none; }
+      .mobile-toggle-nav { display: flex; }
+      .nav-actions .btn-solid-nav { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    }
+
+    /* Section styling */
+    .section-title { text-align: center; margin-bottom: 3rem; }
+    .section-title h2 { font-size: 2.25rem; font-weight: 800; font-family: var(--font-heading); letter-spacing: -0.02em; }
+    .section-title p { color: var(--text-muted); font-size: 1.05rem; margin-top: 0.75rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+    .gradient-text { background: linear-gradient(135deg, #06E6F2, #B026FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* Hero */
+    .hero { padding: 10rem 0 6rem; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(6,230,242,0.06) 0%, transparent 70%); pointer-events: none; }
+    .hero h1 { font-size: 4rem; font-weight: 900; font-family: var(--font-heading); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.25rem; }
+    .hero h1 span { background: linear-gradient(135deg, #06E6F2, #B026FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; line-height: 1.7; }
+    .hero-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .hero-actions .btn-hero { padding: 0.85rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .hero-actions .btn-hero.primary { background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; border: none; box-shadow: 0 4px 30px rgba(6,230,242,0.25); }
+    .hero-actions .btn-hero.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(6,230,242,0.35); }
+    .hero-actions .btn-hero.secondary { background: rgba(255,255,255,0.04); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    .hero-actions .btn-hero.secondary:hover { background: rgba(255,255,255,0.08); }
+    .hero-trust { margin-top: 2.5rem; display: flex; align-items: center; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+    .hero-trust span { color: var(--text-muted); font-size: 0.85rem; }
+    .hero-trust .avatars { display: flex; }
+    .hero-trust .avatars div { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #0B0F1E; margin-left: -8px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; }
+    .hero-trust .avatars div:first-child { margin-left: 0; }
+    @media (max-width: 768px) { .hero { padding: 7rem 0 4rem; } .hero h1 { font-size: 2.5rem; } .hero p { font-size: 1rem; } }
+
+    /* How It Works */
+    .steps-section { padding: 5rem 0; }
+    .steps-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; position: relative; }
+    .steps-grid::before { content: ''; position: absolute; top: 40px; left: 15%; right: 15%; height: 2px; background: linear-gradient(90deg, #06E6F2, #B026FF, #06E6F2); opacity: 0.2; }
+    .step-card { text-align: center; padding: 2rem; position: relative; }
+    .step-number { width: 80px; height: 80px; border-radius: 20px; background: rgba(6,230,242,0.06); border: 1px solid rgba(6,230,242,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.75rem; font-weight: 800; color: var(--brand-cyan); font-family: var(--font-heading); }
+    .step-card h3 { font-size: 1.15rem; font-weight: 700; font-family: var(--font-heading); margin-bottom: 0.5rem; }
+    .step-card p { color: var(--text-muted); font-size: 0.9rem; }
+    @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } .steps-grid::before { display: none; } }
+
+    /* Features */
+    .features-section { padding: 5rem 0; }
+    .features-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+    .feature-card { padding: 2rem; border-radius: var(--radius-lg); background: rgba(17,24,39,0.6); border: 1px solid rgba(255,255,255,0.04); transition: var(--transition); }
+    .feature-card:hover { border-color: rgba(6,230,242,0.15); transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+    .feature-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(6,230,242,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1rem; }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; font-family: var(--font-heading); margin-bottom: 0.4rem; }
+    .feature-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
+    @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .features-grid { grid-template-columns: 1fr; } }
+
+    /* Dashboard Preview */
+    .preview-section { padding: 5rem 0; }
+    .preview-card { border-radius: var(--radius-xl); background: rgba(17,24,39,0.8); border: 1px solid rgba(6,230,242,0.08); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
+    .preview-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; }
+    .preview-header .dots { display: flex; gap: 6px; }
+    .preview-header .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .preview-header .dots span:nth-child(1) { background: #ff5f56; }
+    .preview-header .dots span:nth-child(2) { background: #ffbd2e; }
+    .preview-header .dots span:nth-child(3) { background: #27c93f; }
+    .preview-body { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .preview-bot { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.04); }
+    .preview-bot-avatar { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #06E6F2, #B026FF); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
+    .preview-bot-info .name { font-weight: 700; font-size: 0.95rem; }
+    .preview-bot-info .status { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #10B981; margin-top: 0.15rem; }
+    .preview-bot-info .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px rgba(16,185,129,0.5); animation: pulse 2s infinite; }
+    .preview-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+    .preview-metric { padding: 1rem; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); text-align: center; }
+    .preview-metric .val { font-size: 1.1rem; font-weight: 700; font-family: var(--font-heading); }
+    .preview-metric .lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .preview-log { grid-column: 1 / -1; padding: 1rem; background: #050914; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.8rem; color: rgba(255,255,255,0.6); line-height: 1.8; }
+    .preview-log .highlight { color: #06E6F2; }
+    .preview-log .success { color: #10B981; }
+    .preview-actions { display: flex; gap: 0.5rem; }
+    .preview-actions button { padding: 0.5rem 1rem; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .preview-actions .btn-preview { background: rgba(6,230,242,0.1); color: var(--brand-cyan); border: 1px solid rgba(6,230,242,0.15); }
+    .preview-actions .btn-preview-outline { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.08); }
+    @media (max-width: 768px) { .preview-body { grid-template-columns: 1fr; } .preview-metrics { grid-template-columns: 1fr 1fr 1fr; } }
+
+    /* Pricing */
+    .pricing-section { padding: 5rem 0; }
+    .pricing-toggle { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
+    .pricing-toggle span { font-size: 0.9rem; color: var(--text-muted); }
+    .pricing-toggle .toggle-track { width: 48px; height: 26px; border-radius: 100px; background: rgba(255,255,255,0.08); cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.06); }
+    .pricing-toggle .toggle-track .thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--brand-cyan); position: absolute; top: 2px; left: 2px; transition: var(--transition); box-shadow: 0 0 12px var(--brand-cyan-glow); }
+    .pricing-toggle .toggle-track.active .thumb { transform: translateX(22px); }
+    .pricing-toggle .badge-free { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 100px; background: rgba(16,185,129,0.1); color: #10B981; border: 1px solid rgba(16,185,129,0.15); }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start; }
+    .pricing-card { padding: 2.5rem 2rem; border-radius: var(--radius-xl); background: rgba(17,24,39,0.6); border: 1px solid rgba(255,255,255,0.04); transition: var(--transition); position: relative; }
+    .pricing-card.featured { border-color: rgba(6,230,242,0.2); background: rgba(17,24,39,0.8); box-shadow: 0 0 40px rgba(6,230,242,0.05); }
+    .pricing-card.featured::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 0.25rem 1rem; border-radius: 100px; background: linear-gradient(135deg, #06E6F2, #B026FF); font-size: 0.7rem; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pricing-card:hover { border-color: rgba(176,38,255,0.2); transform: translateY(-4px); }
+    .pricing-card .plan-name { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-cyan); margin-bottom: 0.5rem; }
+    .pricing-card .price { font-size: 3rem; font-weight: 900; font-family: var(--font-heading); letter-spacing: -0.03em; }
+    .pricing-card .price span { font-size: 1rem; font-weight: 500; color: var(--text-muted); }
+    .pricing-card .desc { color: var(--text-muted); font-size: 0.88rem; margin: 0.75rem 0 1.5rem; }
+    .pricing-card ul { list-style: none; padding: 0; margin: 0 0 1.5rem; }
+    .pricing-card ul li { padding: 0.5rem 0; font-size: 0.88rem; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 0.6rem; }
+    .pricing-card ul li::before { content: '✓'; color: #10B981; font-weight: 700; }
+    .pricing-card .btn-pricing { width: 100%; padding: 0.85rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; }
+    .pricing-card .btn-pricing.primary { background: linear-gradient(135deg, #06E6F2, #B026FF); color: #fff; border: none; box-shadow: 0 4px 20px rgba(6,230,242,0.2); }
+    .pricing-card .btn-pricing.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(6,230,242,0.3); }
+    .pricing-card .btn-pricing.secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+    @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
+
+    /* Dev Tools */
+    .devtools-section { padding: 5rem 0; }
+    .devtools-content { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .devtools-icons { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+    .devtools-icons span { padding: 0.5rem 1rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .devtools-icons span:hover { border-color: rgba(6,230,242,0.15); color: #fff; }
+    .devtools-code { background: #050914; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid rgba(255,255,255,0.04); }
+    .devtools-code .code-header { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.8rem; color: var(--text-muted); }
+    .devtools-code .code-body { padding: 1rem; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.8; color: rgba(255,255,255,0.5); }
+    .devtools-code .code-body .cyan { color: #06E6F2; }
+    .devtools-code .code-body .purple { color: #B026FF; }
+    .devtools-code .code-body .green { color: #10B981; }
+    @media (max-width: 768px) { .devtools-content { grid-template-columns: 1fr; } }
+
+    /* Section padding fix for fixed nav */
+    section { scroll-margin-top: 80px; }
+
+    /* Footer */
+    .footer { padding: 4rem 0 2rem; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 2rem; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+    .footer-brand .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.1rem; font-family: var(--font-heading); margin-bottom: 0.75rem; }
+    .footer-brand p { color: var(--text-muted); font-size: 0.85rem; max-width: 280px; line-height: 1.6; }
+    .footer-social { display: flex; gap: 0.75rem; margin-top: 1rem; }
+    .footer-social a { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; transition: var(--transition); font-size: 0.85rem; }
+    .footer-social a:hover { background: rgba(6,230,242,0.08); color: var(--brand-cyan); }
+    .footer-col h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-heading); }
+    .footer-col a { display: block; color: var(--text-muted); font-size: 0.85rem; padding: 0.3rem 0; text-decoration: none; transition: var(--transition); }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom { padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom span { color: var(--text-muted); font-size: 0.8rem; }
+    .footer-bottom select { padding: 0.4rem 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: var(--text-muted); font-size: 0.8rem; font-family: inherit; cursor: pointer; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-brand { grid-column: 1 / -1; } }
+    @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
+
+    /* Animations */
+    .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+  </style>
 </head>
-<body>
-  <!-- Background Watermark -->
-  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:50vw;font-weight:900;color:rgba(249,50,44,0.015);pointer-events:none;z-index:0;font-family:'Inter',sans-serif;letter-spacing:-0.05em;user-select:none;white-space:nowrap">LARAVEL</div>
-
-  <!-- Toast Container -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <!-- Mobile Overlay -->
-  <div class="modal-overlay" id="mobileOverlay" style="display:none;z-index:99" onclick="closeMobileSidebar()"></div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-<div class="sidebar-logo">L</div>
-    <div class="sidebar-brand">NEXUS <span>HOST</span></div>
-    <div style="font-size:0.55rem;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-left:auto;position:absolute;bottom:0.85rem;right:1rem;background:rgba(249,50,44,0.1);padding:0.15rem 0.4rem;border-radius:4px;border:1px solid rgba(249,50,44,0.15)">LARAVEL</div>
+<body class="landing-body">
+  <!-- Nav -->
+  <nav class="navbar">
+    <a href="/" class="nav-logo">
+      <div class="logo-mark">N</div>
+      NEXUS HOSTING
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#devtools">Developers</a>
+      <a href="dashboard.html">Dashboard</a>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-title">Main</div>
-        <div class="nav-item active" data-section="overview" onclick="switchSection('overview')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Overview
-        </div>
-        <div class="nav-item" data-section="projects" onclick="switchSection('projects')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          Projects
-          <span class="nav-badge" id="projectCount">0</span>
-        </div>
-        <div class="nav-item" data-section="deployments" onclick="switchSection('deployments')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
-          Deployments
-        </div>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">Management</div>
-        <div class="nav-item" data-section="database" onclick="switchSection('database')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-          Database
-        </div>
-        <div class="nav-item" data-section="queue" onclick="switchSection('queue')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Queue & Scheduler
-        </div>
-        <div class="nav-item" data-section="domains" onclick="switchSection('domains')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Domains
-        </div>
-      </div>
-      <div class="nav-section">
-        <div class="nav-section-title">System</div>
-        <div class="nav-item" data-section="monitoring" onclick="switchSection('monitoring')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-          Monitoring
-        </div>
-        <div class="nav-item" data-section="settings" onclick="switchSection('settings')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          Settings
-        </div>
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="user-card" onclick="toggleUserMenu()">
-        <div class="user-avatar" id="userAvatar">N</div>
-        <div class="user-info">
-          <div class="user-name" id="userName">Loading...</div>
-          <div class="user-email" id="userEmail">loading@nexus.host</div>
-        </div>
-      </div>
-      <div style="padding:0.5rem 0.85rem 0;text-align:center">
-        <span style="font-size:0.6rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:0.35rem">
-          <span style="width:16px;height:1px;background:linear-gradient(90deg,transparent,var(--laravel))"></span>
-          LARAVEL EDITION
-          <span style="width:16px;height:1px;background:linear-gradient(90deg,var(--laravel),transparent)"></span>
-        </span>
-      </div>
+    <div class="nav-actions">
+      <a href="login.html" class="btn-ghost-nav">Sign In</a>
+      <a href="login.html" class="btn-solid-nav">Control Panel</a>
+      <button class="mobile-toggle-nav" onclick="toggleMobile()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      </button>
     </div>
-  </aside>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <button class="mobile-toggle" onclick="toggleMobileSidebar()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <div class="header-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search projects, deployments..." id="globalSearch">
-        </div>
-      </div>
-      <div class="header-right">
-        <button class="header-btn" data-tooltip="Notifications" onclick="showToast('info', 'No new notifications')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span class="dot"></span>
-        </button>
-        <button class="header-btn" data-tooltip="Help & Support">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        </button>
-        <button class="btn btn-primary btn-sm" onclick="openCreateProject()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New Project
-        </button>
-      </div>
-    </header>
-
-    <div class="page-content">
-      <!-- ==================== OVERVIEW SECTION ==================== -->
-      <section id="section-overview" class="section active">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Dashboard</h1>
-            <p id="greeting">Welcome back — manage your Laravel infrastructure</p>
-          </div>
-          <div style="display:flex;align-items:center;gap:0.75rem">
-            <span style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;background:rgba(249,50,44,0.08);padding:0.3rem 0.75rem;border-radius:100px;border:1px solid rgba(249,50,44,0.12)">
-              <span style="color:var(--laravel);font-weight:700">●</span> LARAVEL 11.x
-            </span>
-            <div class="tabs">
-              <button class="tab active" onclick="switchOverviewTab('overview')">Overview</button>
-              <button class="tab" onclick="switchOverviewTab('deployments')">Deployments</button>
-              <button class="tab" onclick="switchOverviewTab('analytics')">Analytics</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-grid" id="statsGrid">
-          <div class="glass-card stat-card primary animate-in animate-in-1">
-            <div class="stat-icon primary">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <div class="stat-value" id="statProjects">0</div>
-            <div class="stat-label">Total Projects</div>
-            <div class="stat-change up">↑ 0 this month</div>
-          </div>
-          <div class="glass-card stat-card success animate-in animate-in-2">
-            <div class="stat-icon success">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
-            </div>
-            <div class="stat-value" id="statDeployments">0</div>
-            <div class="stat-label">Active Deployments</div>
-            <div class="stat-change up">↑ All running</div>
-          </div>
-          <div class="glass-card stat-card warning animate-in animate-in-3">
-            <div class="stat-icon warning">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-            </div>
-            <div class="stat-value" id="statDatabases">0</div>
-            <div class="stat-label">Databases</div>
-            <div class="stat-change up">↑ Connected</div>
-          </div>
-          <div class="glass-card stat-card info animate-in animate-in-4">
-            <div class="stat-icon info">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <div class="stat-value" id="statDomains">0</div>
-            <div class="stat-label">Connected Domains</div>
-            <div class="stat-change up">↑ SSL Active</div>
-          </div>
-        </div>
-
-        <!-- Resource Usage -->
-        <div class="grid-2" style="margin-bottom:1.5rem">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Resource Usage</div>
-            </div>
-            <div class="card-body">
-              <div class="resource-item">
-                <div class="resource-header">
-                  <span class="resource-name">CPU</span>
-                  <span class="resource-value" id="cpuUsage">0%</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="cpuFill" style="width:0%"></div></div>
-              </div>
-              <div class="resource-item">
-                <div class="resource-header">
-                  <span class="resource-name">Memory</span>
-                  <span class="resource-value" id="memUsage">0%</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="memFill" style="width:0%"></div></div>
-              </div>
-              <div class="resource-item">
-                <div class="resource-header">
-                  <span class="resource-name">Storage</span>
-                  <span class="resource-value" id="storageUsage">0%</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="storageFill" style="width:0%"></div></div>
-              </div>
-              <div class="resource-item">
-                <div class="resource-header">
-                  <span class="resource-name">Bandwidth</span>
-                  <span class="resource-value" id="bandwidthUsage">0 MB</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" id="bandwidthFill" style="width:0%"></div></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Recent Activity</div>
-            </div>
-            <div class="card-body" id="recentActivity">
-              <div class="empty-state" style="padding:2rem">
-                <p>No recent activity to display</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Projects -->
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Recent Projects</div>
-            <button class="btn btn-ghost btn-sm" onclick="switchSection('projects')">View All</button>
-          </div>
-          <div class="card-body" id="recentProjectsList">
-            <div class="empty-state">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              <h3>No projects yet</h3>
-              <p>Create your first Laravel project to get started with deployment</p>
-              <button class="btn btn-primary" onclick="openCreateProject()">Create Project</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== PROJECTS SECTION ==================== -->
-      <section id="section-projects" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Projects</h1>
-            <p>Manage your Laravel applications and deployments</p>
-          </div>
-          <button class="btn btn-primary" onclick="openCreateProject()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New Project
-          </button>
-        </div>
-
-        <div class="grid-4" id="projectsList">
-          <!-- Projects rendered by JS -->
-        </div>
-      </section>
-
-      <!-- ==================== PROJECT DETAIL SECTION ==================== -->
-      <section id="section-project-detail" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <button class="btn btn-ghost btn-sm" onclick="switchSection('projects')" style="margin-bottom:0.5rem">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-              Back to Projects
-            </button>
-            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem">
-          <h1 id="projectDetailName" style="font-size:1.75rem;font-weight:800">Project Name</h1>
-          <span style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(249,50,44,0.1);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.7rem;font-weight:600;color:var(--laravel-light);border:1px solid rgba(249,50,44,0.15)">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            LARAVEL
-          </span>
-        </div>
-        <p id="projectDetailMeta">Loading...</p>
-          </div>
-          <div style="display:flex;gap:0.75rem">
-            <button class="btn btn-secondary btn-sm" onclick="openDeployModal()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
-              Deploy
-            </button>
-            <button class="btn btn-danger btn-sm" onclick="deleteCurrentProject()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              Delete
-            </button>
-          </div>
-        </div>
-
-        <!-- Project Detail Tabs -->
-        <div class="tabs" style="margin-bottom:1.5rem">
-          <button class="tab active" onclick="switchProjectTab('overview')">Overview</button>
-          <button class="tab" onclick="switchProjectTab('files')">File Manager</button>
-          <button class="tab" onclick="switchProjectTab('terminal')">Artisan Terminal</button>
-          <button class="tab" onclick="switchProjectTab('env')">Environment</button>
-          <button class="tab" onclick="switchProjectTab('deployments')">Deployments</button>
-          <button class="tab" onclick="switchProjectTab('logs')">Live Logs</button>
-        </div>
-
-        <!-- Project Overview Tab -->
-        <div id="projectTab-overview" class="project-tab-content active">
-          <div class="grid-2" style="margin-bottom:1.5rem">
-            <div class="card">
-              <div class="card-header"><div class="card-title">Project Info</div></div>
-              <div class="card-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Runtime</div><div style="font-weight:600;margin-top:0.25rem" id="pdRuntime">-</div></div>
-                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Framework</div><div style="font-weight:600;margin-top:0.25rem" id="pdFramework">-</div></div>
-                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">PHP Version</div><div style="font-weight:600;margin-top:0.25rem" id="pdPhp">-</div></div>
-                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Status</div><div style="margin-top:0.25rem"><span class="status-badge pending" id="pdStatus">-</span></div></div>
-                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Created</div><div style="font-weight:600;margin-top:0.25rem" id="pdCreated">-</div></div>
-                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Deployment URL</div><div style="font-weight:600;margin-top:0.25rem" id="pdUrl">-</div></div>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header"><div class="card-title">Quick Actions</div></div>
-              <div class="card-body">
-                <div style="display:flex;flex-wrap:wrap;gap:0.75rem">
-                  <button class="btn btn-primary btn-sm" onclick="openDeployModal()">Deploy Now</button>
-                  <button class="btn btn-secondary btn-sm" onclick="openEnvEditor()">Edit ENV</button>
-                  <button class="btn btn-secondary btn-sm" onclick="switchProjectTab('terminal')">Artisan CLI</button>
-                  <button class="btn btn-secondary btn-sm" onclick="switchProjectTab('files')">File Manager</button>
-                  <button class="btn btn-secondary btn-sm" onclick="restartProject()">Restart Instance</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Deployment Steps -->
-          <div class="card">
-            <div class="card-header"><div class="card-title">Deployment Pipeline</div></div>
-            <div class="card-body">
-              <div class="deployment-step" id="step1">
-                <div class="step-number">1</div>
-                <div class="step-content"><h4>Initialize Build</h4><p>Preparing build environment</p></div>
-              </div>
-              <div class="deployment-step" id="step2">
-                <div class="step-number">2</div>
-                <div class="step-content"><h4>Install Dependencies</h4><p>Running composer install & npm install</p></div>
-              </div>
-              <div class="deployment-step" id="step3">
-                <div class="step-number">3</div>
-                <div class="step-content"><h4>Compile Assets</h4><p>Building frontend assets</p></div>
-              </div>
-              <div class="deployment-step" id="step4">
-                <div class="step-number">4</div>
-                <div class="step-content"><h4>Run Migrations</h4><p>Executing database migrations</p></div>
-              </div>
-              <div class="deployment-step" id="step5">
-                <div class="step-number">5</div>
-                <div class="step-content"><h4>Deploy Application</h4><p>Starting production server</p></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- File Manager Tab -->
-        <div id="projectTab-files" class="project-tab-content">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">File Manager</div>
-              <div style="display:flex;gap:0.5rem">
-                <button class="btn btn-secondary btn-sm" onclick="uploadFile()">Upload</button>
-                <button class="btn btn-secondary btn-sm" onclick="createFile()">New File</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="file-tree" id="fileTree">
-                <div class="tree-item folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Loading...</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Artisan Terminal Tab -->
-        <div id="projectTab-terminal" class="project-tab-content">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Artisan Command Terminal</div>
-              <select class="form-select" style="width:auto;padding:0.4rem 2rem 0.4rem 0.75rem;font-size:0.8rem" id="quickCommands" onchange="runQuickCommand(this.value)">
-                <option value="">Quick Commands</option>
-                <option value="php artisan serve">php artisan serve</option>
-                <option value="php artisan migrate">php artisan migrate</option>
-                <option value="php artisan queue:work">php artisan queue:work</option>
-                <option value="php artisan optimize">php artisan optimize</option>
-                <option value="php artisan cache:clear">php artisan cache:clear</option>
-                <option value="php artisan config:cache">php artisan config:cache</option>
-                <option value="php artisan route:cache">php artisan route:cache</option>
-                <option value="php artisan view:cache">php artisan view:cache</option>
-                <option value="composer dump-autoload">composer dump-autoload</option>
-                <option value="php artisan storage:link">php artisan storage:link</option>
-                <option value="php artisan key:generate">php artisan key:generate</option>
-                <option value="npm run production">npm run production</option>
-              </select>
-            </div>
-            <div class="card-body" style="padding:0">
-              <div class="terminal">
-                <div class="terminal-header">
-                  <span class="terminal-dot red"></span>
-                  <span class="terminal-dot yellow"></span>
-                  <span class="terminal-dot green"></span>
-                  <span class="terminal-title">artisan — bash</span>
-                </div>
-                <div class="terminal-body" id="terminalBody">
-                  <div class="line system">NEXUS HOST Artisan Terminal v1.0.0</div>
-                  <div class="line system">Laravel Framework 11.x — PHP 8.3</div>
-                  <div class="line system">Type a command or select from Quick Commands</div>
-                  <div class="line" style="margin-top:0.5rem"><span class="prompt">nexus@host:~$</span> <span id="typedCommand"></span></div>
-                </div>
-                <div class="terminal-input-line">
-                  <span class="terminal-prompt">nexus@host:~$</span>
-                  <input class="terminal-input" id="terminalInput" placeholder="Type a command..." autofocus onkeydown="handleTerminalKey(event)">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Environment Editor Tab -->
-        <div id="projectTab-env" class="project-tab-content">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Environment Configuration</div>
-              <button class="btn btn-primary btn-sm" onclick="saveEnvVars()">Save Changes</button>
-            </div>
-            <div class="card-body">
-              <p style="color:var(--text-tertiary);font-size:0.85rem;margin-bottom:1.5rem">Manage environment variables for your Laravel application. These are encrypted at rest.</p>
-              <div id="envVarsList">
-                <div class="empty-state" style="padding:1rem"><p>Loading environment variables...</p></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Project Deployments Tab -->
-        <div id="projectTab-deployments" class="project-tab-content">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Deployment History</div>
-              <button class="btn btn-primary btn-sm" onclick="openDeployModal()">New Deployment</button>
-            </div>
-            <div class="card-body" style="padding:0">
-              <div class="table-container">
-                <table>
-                  <thead>
-                    <tr><th>Version</th><th>Status</th><th>Branch</th><th>Commit</th><th>Duration</th><th>Date</th><th></th></tr>
-                  </thead>
-                  <tbody id="deploymentHistoryBody">
-                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No deployments yet</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Logs Tab -->
-        <div id="projectTab-logs" class="project-tab-content">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Live Deployment Logs</div>
-              <div style="display:flex;gap:0.5rem">
-                <button class="btn btn-secondary btn-sm" onclick="toggleAutoScroll()" id="autoScrollBtn">Auto-scroll: ON</button>
-                <button class="btn btn-secondary btn-sm" onclick="clearLogs()">Clear</button>
-              </div>
-            </div>
-            <div class="card-body" style="padding:0">
-              <div class="terminal">
-                <div class="terminal-header">
-                  <span class="terminal-dot red"></span>
-                  <span class="terminal-dot yellow"></span>
-                  <span class="terminal-dot green"></span>
-                  <span class="terminal-title">logs — live stream</span>
-                </div>
-                <div class="terminal-body" id="logsTerminal" style="max-height:500px">
-                  <div class="line system">Waiting for deployment logs...</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== DEPLOYMENTS SECTION ==================== -->
-      <section id="section-deployments" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Deployments</h1>
-            <p>Monitor all active and historical deployments</p>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-body" style="padding:0">
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr><th>Project</th><th>Version</th><th>Status</th><th>Branch</th><th>Runtime</th><th>Duration</th><th>Deployed</th><th></th></tr>
-                </thead>
-                <tbody id="allDeploymentsBody">
-                  <tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-tertiary)">No deployments yet. Create a project and deploy to get started.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== DATABASE SECTION ==================== -->
-      <section id="section-database" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Database Manager</h1>
-            <p>Manage MySQL, PostgreSQL, and Redis connections</p>
-          </div>
-          <button class="btn btn-primary" onclick="openCreateDatabase()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New Database
-          </button>
-        </div>
-        <div class="stats-grid" style="margin-bottom:1.5rem">
-          <div class="glass-card stat-card info">
-            <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
-            <div class="stat-value" id="dbTotal">0</div>
-            <div class="stat-label">Total Databases</div>
-          </div>
-          <div class="glass-card stat-card success">
-            <div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div class="stat-value" id="dbConnected">0</div>
-            <div class="stat-label">Connected</div>
-          </div>
-          <div class="glass-card stat-card warning">
-            <div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-            <div class="stat-value" id="dbBackups">0</div>
-            <div class="stat-label">Backups</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Database Connections</div></div>
-          <div class="card-body" style="padding:0">
-            <div class="table-container">
-              <table>
-                <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Size</th><th>Connections</th><th>Actions</th></tr></thead>
-                <tbody id="databaseListBody">
-                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No databases configured</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== QUEUE SECTION ==================== -->
-      <section id="section-queue" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Queue & Scheduler</h1>
-            <p>Manage Laravel queue workers and scheduled tasks</p>
-          </div>
-          <button class="btn btn-primary" onclick="restartQueue()">Restart Workers</button>
-        </div>
-        <div class="grid-2" style="margin-bottom:1.5rem">
-          <div class="card">
-            <div class="card-header"><div class="card-title">Queue Workers</div></div>
-            <div class="card-body">
-              <div id="queueWorkersList">
-                <div class="resource-item">
-                  <div class="resource-header"><span class="resource-name">queue:work — default</span><span class="resource-value status-badge active">Running</span></div>
-                </div>
-                <div class="resource-item">
-                  <div class="resource-header"><span class="resource-name">queue:work — emails</span><span class="resource-value status-badge active">Running</span></div>
-                </div>
-                <div class="resource-item">
-                  <div class="resource-header"><span class="resource-name">queue:work — notifications</span><span class="resource-value status-badge pending">Idle</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">Failed Jobs</div></div>
-            <div class="card-body" style="padding:0">
-              <div class="table-container">
-                <table>
-                  <thead><tr><th>Job</th><th>Failed At</th><th>Actions</th></tr></thead>
-                  <tbody id="failedJobsBody">
-                    <tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No failed jobs</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Cron Schedule</div></div>
-          <div class="card-body">
-            <div class="table-container">
-              <table>
-                <thead><tr><th>Command</th><th>Schedule</th><th>Status</th><th>Last Run</th><th>Next Run</th></tr></thead>
-                <tbody>
-                  <tr><td><code style="font-family:var(--font-mono);font-size:0.82rem">schedule:run</code></td><td><code style="font-size:0.82rem">* * * * *</code></td><td><span class="status-badge active">Active</span></td><td>2 min ago</td><td>In 58s</td></tr>
-                  <tr><td><code style="font-family:var(--font-mono);font-size:0.82rem">laravel/horizon:snapshot</code></td><td><code style="font-size:0.82rem">*/5 * * * *</code></td><td><span class="status-badge active">Active</span></td><td>3 min ago</td><td>In 2m</td></tr>
-                  <tr><td><code style="font-family:var(--font-mono);font-size:0.82rem">backup:run</code></td><td><code style="font-size:0.82rem">0 3 * * *</code></td><td><span class="status-badge active">Active</span></td><td>8h ago</td><td>In 16h</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== DOMAINS SECTION ==================== -->
-      <section id="section-domains" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Custom Domains</h1>
-            <p>Connect your own domains to NEXUS HOST projects</p>
-          </div>
-          <button class="btn btn-primary" onclick="openAddDomain()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Domain
-          </button>
-        </div>
-        <div class="card">
-          <div class="card-body" style="padding:0">
-            <div class="table-container">
-              <table>
-                <thead><tr><th>Domain</th><th>Project</th><th>SSL</th><th>Status</th><th>Added</th><th>Actions</th></tr></thead>
-                <tbody id="domainsListBody">
-                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No custom domains connected</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== MONITORING SECTION ==================== -->
-      <section id="section-monitoring" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Server Monitoring</h1>
-            <p>Real-time infrastructure analytics and performance metrics</p>
-          </div>
-        </div>
-        <div class="stats-grid" style="margin-bottom:1.5rem">
-          <div class="glass-card stat-card primary">
-            <div class="stat-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
-            <div class="stat-value" id="monCpu">0%</div>
-            <div class="stat-label">CPU Usage</div>
-          </div>
-          <div class="glass-card stat-card success">
-            <div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-            <div class="stat-value" id="monMemory">0 MB</div>
-            <div class="stat-label">Memory Used</div>
-          </div>
-          <div class="glass-card stat-card warning">
-            <div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg></div>
-            <div class="stat-value" id="monUptime">99.9%</div>
-            <div class="stat-label">Uptime</div>
-          </div>
-          <div class="glass-card stat-card info">
-            <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
-            <div class="stat-value" id="monRequests">0</div>
-            <div class="stat-label">Requests/min</div>
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-header"><div class="card-title">CPU & Memory Timeline</div></div>
-            <div class="card-body">
-              <div class="chart-container" id="cpuChart">
-                <canvas id="monitorCanvas" width="600" height="250" style="width:100%;height:250px"></canvas>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">Request Analytics</div></div>
-            <div class="card-body">
-              <div class="resource-item">
-                <div class="resource-header"><span>HTTP 2xx</span><span class="resource-value" id="http2xx">0</span></div>
-                <div class="progress-bar"><div class="progress-fill" id="http2xxFill" style="width:0%;background:var(--success)"></div></div>
-              </div>
-              <div class="resource-item">
-                <div class="resource-header"><span>HTTP 4xx</span><span class="resource-value" id="http4xx">0</span></div>
-                <div class="progress-bar"><div class="progress-fill" id="http4xxFill" style="width:0%;background:var(--warning)"></div></div>
-              </div>
-              <div class="resource-item">
-                <div class="resource-header"><span>HTTP 5xx</span><span class="resource-value" id="http5xx">0</span></div>
-                <div class="progress-bar"><div class="progress-fill" id="http5xxFill" style="width:0%;background:var(--danger)"></div></div>
-              </div>
-              <div class="resource-item">
-                <div class="resource-header"><span>Avg Response Time</span><span class="resource-value" id="avgResponse">0ms</span></div>
-                <div class="progress-bar"><div class="progress-fill" id="responseFill" style="width:0%;background:var(--info)"></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== SETTINGS SECTION ==================== -->
-      <section id="section-settings" class="section">
-        <div class="page-header">
-          <div class="page-title">
-            <h1>Settings</h1>
-            <p>Manage your account and platform preferences</p>
-          </div>
-        </div>
-        <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-header"><div class="card-title">Profile</div></div>
-          <div class="card-body">
-            <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
-              <div class="user-avatar" id="settingsAvatar" style="width:64px;height:64px;font-size:1.5rem">N</div>
-              <div>
-                <h3 id="settingsName" style="font-weight:700">Name</h3>
-                <p id="settingsEmail" style="color:var(--text-tertiary);font-size:0.88rem">email</p>
-              </div>
-            </div>
-            <button class="btn btn-danger btn-sm" onclick="handleLogout()">Sign Out</button>
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-header"><div class="card-title">Deployment Tokens</div></div>
-            <div class="card-body">
-              <p style="color:var(--text-tertiary);font-size:0.85rem;margin-bottom:1rem">Generate secure tokens for CI/CD integration</p>
-              <button class="btn btn-secondary btn-sm" onclick="generateToken()">Generate Token</button>
-              <div id="tokensList" style="margin-top:1rem"></div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">Notifications</div></div>
-            <div class="card-body">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--glass-border)">
-                <span style="font-size:0.9rem">Deployment emails</span>
-                <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--glass-border)">
-                <span style="font-size:0.9rem">Build notifications</span>
-                <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0">
-                <span style="font-size:0.9rem">Weekly reports</span>
-                <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features" onclick="toggleMobile()">Features</a>
+    <a href="#pricing" onclick="toggleMobile()">Pricing</a>
+    <a href="#devtools" onclick="toggleMobile()">Developers</a>
+    <a href="dashboard.html" onclick="toggleMobile()">Dashboard</a>
+    <a href="login.html" onclick="toggleMobile()">Sign In</a>
+    <a href="login.html" onclick="toggleMobile()" style="margin-top:0.5rem;background:linear-gradient(135deg,#06E6F2,#B026FF);color:#fff;text-align:center;border-radius:10px;font-weight:700">Control Panel</a>
   </div>
 
-  <!-- Create Project Modal -->
-  <div class="modal-overlay" id="createProjectModal">
-    <div class="glass-panel modal">
-      <div class="modal-header">
-        <h2>Create New Project</h2>
-        <button class="modal-close" onclick="closeModal('createProjectModal')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>Launch Your Bots<br>at <span>Lightspeed</span></h1>
+      <p>Laravel-powered bot hosting with auto-scaling, real-time logs, and one-click deploy — starting at $4.99/mo.</p>
+      <div class="hero-actions">
+        <a href="login.html" class="btn-hero primary">Deploy a Bot →</a>
+        <a href="#features" class="btn-hero secondary">▸ Watch Demo</a>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Project Name</label>
-          <input class="form-input" id="newProjectName" placeholder="my-laravel-app" required>
+      <div class="hero-trust">
+        <div class="avatars">
+          <div>D</div><div>T</div><div>M</div><div>+</div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Runtime</label>
-          <select class="form-select" id="newProjectRuntime">
-            <option value="php">PHP / Laravel</option>
-            <option value="node">Node.js</option>
-            <option value="python">Python</option>
-            <option value="static">Static Website</option>
-          </select>
+        <span>Trusted by <strong style="color:#fff">2,500+</strong> bot developers</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="steps-section" id="how">
+    <div class="container">
+      <div class="section-title fade-up">
+        <h2>Deploy in <span class="gradient-text">3 Steps</span></h2>
+        <p>From code to cloud in under a minute. Zero configuration required.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card fade-up delay-1">
+          <div class="step-number">01</div>
+          <h3>Connect Git / Upload ZIP</h3>
+          <p>Link your GitHub repository or upload your bot's ZIP file directly to Nexus.</p>
         </div>
-        <div class="form-group">
-          <label class="form-label">PHP Version</label>
-          <select class="form-select" id="newProjectPhp">
-            <option value="8.3">PHP 8.3</option>
-            <option value="8.2">PHP 8.2</option>
-            <option value="8.1">PHP 8.1</option>
-          </select>
+        <div class="step-card fade-up delay-2">
+          <div class="step-number">02</div>
+          <h3>Choose Resources</h3>
+          <p>Select CPU, RAM, and region. Our auto-scaler handles the rest.</p>
         </div>
-        <div class="form-group">
-          <label class="form-label">Deployment Method</label>
-          <select class="form-select" id="newProjectMethod">
-            <option value="upload">ZIP Upload</option>
-            <option value="github">GitHub Repository</option>
-            <option value="termux">Termux Bridge</option>
-          </select>
+        <div class="step-card fade-up delay-3">
+          <div class="step-number">03</div>
+          <h3>Laravel Auto-Deploys</h3>
+          <p>Nexus detects your framework, installs dependencies, and deploys instantly.</p>
         </div>
-        <div class="form-group" id="githubUrlGroup" style="display:none">
-          <label class="form-label">GitHub Repository URL</label>
-          <input class="form-input" id="newProjectGithub" placeholder="https://github.com/user/repo">
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-title fade-up">
+        <h2>Everything You <span class="gradient-text">Need</span></h2>
+        <p>Built for bot developers who demand performance, reliability, and simplicity.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-up delay-1">
+          <div class="feature-icon">⚡</div>
+          <h3>Auto-Scaling</h3>
+          <p>Handles traffic spikes from 0 to 10k concurrent users without breaking a sweat.</p>
         </div>
-        <div class="form-group" id="fileUploadGroup">
-          <label class="form-label">Upload Project Files (ZIP)</label>
-          <div style="border:2px dashed var(--glass-border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:var(--transition)" onclick="document.getElementById('zipUpload').click()" id="uploadZone">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32" style="margin-bottom:0.5rem;opacity:0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p style="color:var(--text-tertiary);font-size:0.9rem">Drop your Laravel ZIP file here or click to browse</p>
-            <p style="color:var(--text-muted);font-size:0.8rem;margin-top:0.25rem">Max 500MB — ZIP format only</p>
-            <input type="file" id="zipUpload" accept=".zip" style="display:none" onchange="handleFileSelect(event)">
+        <div class="feature-card fade-up delay-2">
+          <div class="feature-icon">📦</div>
+          <h3>One-Click Bot Templates</h3>
+          <p>Pre-built for Discord.js, Telegraf, BotMan, and Laravel chatbots.</p>
+        </div>
+        <div class="feature-card fade-up delay-3">
+          <div class="feature-icon">🔐</div>
+          <h3>Encrypted Secrets</h3>
+          <p>.env variables encrypted with AES-256-GCM. Never exposed in logs.</p>
+        </div>
+        <div class="feature-card fade-up delay-1">
+          <div class="feature-icon">📊</div>
+          <h3>Real-Time Metrics</h3>
+          <p>CPU, RAM, network, and bot uptime — all streamed live to your dashboard.</p>
+        </div>
+        <div class="feature-card fade-up delay-2">
+          <div class="feature-icon">🔄</div>
+          <h3>Zero-Downtime Updates</h3>
+          <p>Webhook-based redeploys with zero downtime. Your bot never sleeps.</p>
+        </div>
+        <div class="feature-card fade-up delay-3">
+          <div class="feature-icon">🌍</div>
+          <h3>Global Edge Network</h3>
+          <p>200+ edge locations worldwide for the lowest latency to your users.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Dashboard Preview -->
+  <section class="preview-section">
+    <div class="container">
+      <div class="section-title fade-up">
+        <h2>Live at <span class="gradient-text">a Glance</span></h2>
+        <p>Real-time bot monitoring dashboard with live logs and performance metrics.</p>
+      </div>
+      <div class="preview-card fade-up">
+        <div class="preview-header">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="preview-actions">
+            <button class="btn-preview">Restart</button>
+            <button class="btn-preview-outline">View Logs</button>
+            <button class="btn-preview-outline">Scale Up</button>
           </div>
-          <div id="selectedFile" style="display:none;margin-top:0.75rem;padding:0.75rem;background:var(--surface);border-radius:8px;font-size:0.85rem">
-            <span id="selectedFileName"></span>
+        </div>
+        <div class="preview-body">
+          <div class="preview-bot" style="grid-column:1/-1">
+            <div class="preview-bot-avatar">M</div>
+            <div class="preview-bot-info">
+              <div class="name">ModBot#4721</div>
+              <div class="status">Online — 12 servers connected</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:1rem">
+              <div style="text-align:right"><div style="font-size:0.75rem;color:var(--text-muted)">CPU</div><div style="font-weight:700">12%</div></div>
+              <div style="text-align:right"><div style="font-size:0.75rem;color:var(--text-muted)">RAM</div><div style="font-weight:700">256MB</div></div>
+              <div style="text-align:right"><div style="font-size:0.75rem;color:var(--text-muted)">Req/s</div><div style="font-weight:700">47</div></div>
+            </div>
+          </div>
+          <div class="preview-log">
+            <div><span class="success">[INFO]</span> Bot connected to Discord gateway</div>
+            <div><span class="success">[INFO]</span> Guild joined: <span class="highlight">291 members</span></div>
+            <div><span class="highlight">[DEPLOY]</span> Zero-downtime update applied</div>
+            <div><span class="success">[OK]</span> Laravel queue worker active — 3 jobs processed</div>
+            <div>[STATUS] Uptime: 99.97% — Last restart: 12d ago</div>
+          </div>
+          <div class="preview-metrics" style="grid-column:1/-1">
+            <div class="preview-metric"><div class="val">99.97%</div><div class="lbl">Uptime</div></div>
+            <div class="preview-metric"><div class="val">1.2M</div><div class="lbl">Requests Today</div></div>
+            <div class="preview-metric"><div class="val">23ms</div><div class="lbl">Avg Latency</div></div>
           </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('createProjectModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="createProject()" id="createProjectBtn">Create Project</button>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing-section" id="pricing">
+    <div class="container">
+      <div class="section-title fade-up">
+        <h2>Simple <span class="gradient-text">Pricing</span></h2>
+        <p>Start small, scale big. All plans include 24/7 uptime and DDoS protection.</p>
+      </div>
+      <div class="pricing-toggle fade-up">
+        <span>Monthly</span>
+        <div class="toggle-track" id="pricingToggle" onclick="togglePricing()">
+          <div class="thumb"></div>
+        </div>
+        <span>Yearly <span class="badge-free">2 months free</span></span>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card fade-up delay-1">
+          <div class="plan-name">Bot Starter</div>
+          <div class="price" id="price1">$4.99<span>/mo</span></div>
+          <div class="desc">Perfect for small moderation bots and hobby projects</div>
+          <ul>
+            <li>512MB RAM</li>
+            <li>0.5 vCPU</li>
+            <li>10k messages/day</li>
+            <li>Backups every 6h</li>
+            <li>Community support</li>
+          </ul>
+          <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Get Started</button>
+        </div>
+        <div class="pricing-card featured fade-up delay-2">
+          <div class="plan-name">Bot Pro</div>
+          <div class="price" id="price2">$14.99<span>/mo</span></div>
+          <div class="desc">Ideal for economy bots, music bots, and growing communities</div>
+          <ul>
+            <li>2GB RAM</li>
+            <li>1 vCPU</li>
+            <li>100k messages/day</li>
+            <li>Backups every 4h</li>
+            <li>Priority support</li>
+            <li>Laravel Octane</li>
+          </ul>
+          <button class="btn-pricing primary" onclick="window.location.href='login.html'">Get Started</button>
+        </div>
+        <div class="pricing-card fade-up delay-3">
+          <div class="plan-name">Bot Elite</div>
+          <div class="price" id="price3">$49.99<span>/mo</span></div>
+          <div class="desc">For AI chatbots, large communities, and enterprise workloads</div>
+          <ul>
+            <li>8GB RAM</li>
+            <li>4 vCPU</li>
+            <li>1M messages/day</li>
+            <li>Real-time backups</li>
+            <li>Dedicated support</li>
+            <li>Custom domains</li>
+          </ul>
+          <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Get Started</button>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Deploy Modal -->
-  <div class="modal-overlay" id="deployModal">
-    <div class="glass-panel modal">
-      <div class="modal-header">
-        <div style="display:flex;align-items:center;gap:0.75rem">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="20" height="20" style="color:var(--laravel)"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
-          <h2>Deploy to Laravel Production</h2>
-        </div>
-        <button class="modal-close" onclick="closeModal('deployModal')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+  <!-- Dev Tools -->
+  <section class="devtools-section" id="devtools">
+    <div class="container">
+      <div class="section-title fade-up">
+        <h2>Built for <span class="gradient-text">Developers</span></h2>
+        <p>Native support for Laravel and all major bot frameworks.</p>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Branch/Tag</label>
-          <input class="form-input" id="deployBranch" placeholder="main" value="main">
+      <div class="devtools-content fade-up">
+        <div>
+          <h3 style="font-size:1.5rem;font-weight:800;font-family:var(--font-heading);margin-bottom:0.75rem">Laravel-Native Deployment</h3>
+          <p style="color:var(--text-muted);line-height:1.7">Nexus detects your Laravel version, installs Composer dependencies, compiles assets, runs migrations, and deploys your queue workers — automatically.</p>
+          <div class="devtools-icons">
+            <span>Laravel</span>
+            <span>Discord.js</span>
+            <span>Telegraf</span>
+            <span>BotMan</span>
+            <span>WhatsApp API</span>
+          </div>
+          <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:1.5rem;color:var(--brand-cyan);font-weight:600;font-size:0.9rem">Read API Docs →</a>
         </div>
-        <div class="form-group">
-          <label class="form-label">Deployment Notes</label>
-          <input class="form-input" id="deployNotes" placeholder="e.g. Production deployment v1.0.0">
+        <div class="devtools-code">
+          <div class="code-header">Terminal — nexus deploy</div>
+          <div class="code-body">
+            <div>$ <span class="cyan">nexus</span> deploy my-bot --laravel</div>
+            <div> </div>
+            <div><span class="cyan">[NEXUS]</span> Detected: Laravel 11.x</div>
+            <div><span class="green">[OK]</span> Composer dependencies installed</div>
+            <div><span class="green">[OK]</span> Queue worker configured</div>
+            <div><span class="purple">[DEPLOY]</span> Bot deployed to 3 regions</div>
+            <div> </div>
+            <div>$ <span class="cyan">nexus</span> logs my-bot --live</div>
+            <div><span class="green">[INFO]</span> Bot is online — 291 users</div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Environment</label>
-          <select class="form-select" id="deployEnv">
-            <option value="production">Production</option>
-            <option value="staging">Staging</option>
-            <option value="development">Development</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('deployModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="startDeployment()" id="deployBtn">Deploy Now</button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Add Domain Modal -->
-  <div class="modal-overlay" id="addDomainModal">
-    <div class="glass-panel modal">
-      <div class="modal-header">
-        <h2>Add Custom Domain</h2>
-        <button class="modal-close" onclick="closeModal('addDomainModal')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#06E6F2,#B026FF);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:900">N</div>
+            NEXUS HOSTING
+          </div>
+          <p>Laravel-powered bot hosting platform. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts at lightspeed.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Discord">D</a>
+            <a href="https://github.com/rafetnoob731-coder/nexus-host" aria-label="GitHub">G</a>
+            <a href="#" aria-label="X">X</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#pricing">Pricing</a>
+          <a href="#">Changelog</a>
+          <a href="#">Roadmap</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="#">Documentation</a>
+          <a href="#">Status Page</a>
+          <a href="#">Community</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Terms of Service</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">GDPR</a>
+        </div>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Domain</label>
-          <input class="form-input" id="newDomain" placeholder="app.yourdomain.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Project</label>
-          <select class="form-select" id="domainProject"></select>
-        </div>
-        <div style="background:var(--surface);padding:1rem;border-radius:8px;font-size:0.85rem">
-          <p style="color:var(--text-tertiary);margin-bottom:0.5rem">Add this DNS record:</p>
-          <code style="font-family:var(--font-mono);font-size:0.82rem;color:var(--primary-light))">CNAME @ nexus-host.nexus.app</code>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('addDomainModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="addDomain()">Add Domain</button>
+      <div class="footer-bottom">
+        <span>© 2026 NEXUS HOSTING. All rights reserved. ALL CREDIT NEXUS</span>
+        <select>
+          <option>US East</option>
+          <option>EU West</option>
+          <option>Asia Pacific</option>
+        </select>
       </div>
     </div>
-  </div>
+  </footer>
 
-  <!-- Create Database Modal -->
-  <div class="modal-overlay" id="createDatabaseModal">
-    <div class="glass-panel modal">
-      <div class="modal-header">
-        <h2>Create Database</h2>
-        <button class="modal-close" onclick="closeModal('createDatabaseModal')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Database Name</label>
-          <input class="form-input" id="newDbName" placeholder="laravel_app_db">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Type</label>
-          <select class="form-select" id="newDbType">
-            <option value="mysql">MySQL</option>
-            <option value="postgresql">PostgreSQL</option>
-            <option value="redis">Redis</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Project (optional)</label>
-          <select class="form-select" id="newDbProject"></select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('createDatabaseModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="createDatabase()">Create Database</button>
-      </div>
-    </div>
-  </div>
+  <script>
+    function toggleMobile() { document.getElementById('mobileMenu').classList.toggle('open'); }
 
-  <div style="text-align:center;padding:1rem 2rem;border-top:1px solid var(--glass-border);margin-top:2rem">
-    <span style="color:var(--text-muted);font-size:0.75rem;letter-spacing:0.08em">
-      POWERED BY <span style="color:var(--laravel-light);font-weight:700">NEXUS</span> HOST
-      <span style="margin:0 0.75rem;opacity:0.3">|</span>
-      <span style="color:var(--laravel);font-weight:600">LARAVEL</span> ENTERPRISE HOSTING
-      <span style="margin:0 0.75rem;opacity:0.3">|</span>
-      ALL CREDIT NEXUS
-    </span>
-  </div>
+    // Scroll animations
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el); });
 
-  <script src="config/firebase-config.js"></script>
-  <script src="js/deployment-engine.js"></script>
-  <script src="js/nexus.js"></script>
+    // Pricing toggle
+    var yearly = false;
+    var prices = { 1: [4.99, 49.99], 2: [14.99, 149.99], 3: [49.99, 499.99] };
+    function togglePricing() {
+      yearly = !yearly;
+      document.getElementById('pricingToggle').classList.toggle('active');
+      for (var i = 1; i <= 3; i++) {
+        var el = document.getElementById('price' + i);
+        var val = yearly ? prices[i][1] : prices[i][0];
+        el.innerHTML = '$' + val.toFixed(2) + '<span>/' + (yearly ? 'yr' : 'mo') + '</span>';
+      }
+    }
+  </script>
 </body>
 </html>

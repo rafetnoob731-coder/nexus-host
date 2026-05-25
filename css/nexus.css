@@ -1,26 +1,32 @@
 :root {
-  --laravel: #F9322C;
-  --laravel-dark: #cc2823;
-  --laravel-light: #ff5c56;
-  --laravel-glow: rgba(249, 50, 44, 0.35);
-  --primary: var(--laravel);
-  --primary-light: var(--laravel-light);
-  --primary-dark: var(--laravel-dark);
-  --accent: #ff8c00;
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #0f0f18;
-  --bg-tertiary: #1a1a2e;
+  --brand-cyan: #06E6F2;
+  --brand-cyan-dark: #05b8c2;
+  --brand-cyan-light: #5ef0f7;
+  --brand-cyan-glow: rgba(6, 230, 242, 0.3);
+  --brand-purple: #B026FF;
+  --brand-purple-dark: #8c1ecc;
+  --brand-purple-light: #c966ff;
+  --brand-purple-glow: rgba(176, 38, 255, 0.3);
+  --primary: var(--brand-cyan);
+  --primary-dark: var(--brand-cyan-dark);
+  --primary-light: var(--brand-cyan-light);
+  --accent: var(--brand-purple);
+  --accent-light: var(--brand-purple-light);
+  --bg-primary: #0B0F1E;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1a2236;
+  --bg-card: rgba(17, 24, 39, 0.8);
   --surface: rgba(255,255,255,0.03);
   --surface-hover: rgba(255,255,255,0.06);
-  --glass: rgba(249, 50, 44, 0.04);
-  --glass-border: rgba(249, 50, 44, 0.1);
+  --glass: rgba(6, 230, 242, 0.04);
+  --glass-border: rgba(6, 230, 242, 0.08);
   --glass-shadow: rgba(0,0,0,0.5);
-  --text-primary: #ffffff;
+  --text-primary: #FFFFFF;
   --text-secondary: rgba(255,255,255,0.75);
-  --text-tertiary: rgba(255,255,255,0.4);
-  --text-muted: rgba(255,255,255,0.2);
+  --text-tertiary: rgba(255,255,255,0.45);
+  --text-muted: #94A3B8;
   --danger: #ff4444;
-  --success: #00e676;
+  --success: #10B981;
   --warning: #ffab00;
   --info: #448aff;
   --radius-sm: 8px;
@@ -30,11 +36,12 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
   --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
   --shadow-lg: 0 16px 64px rgba(0,0,0,0.5);
-  --shadow-glow: 0 0 30px var(--laravel-glow);
-  --shadow-glow-lg: 0 0 60px var(--laravel-glow);
-  --shadow-glow-xl: 0 0 100px var(--laravel-glow);
+  --shadow-glow: 0 0 30px var(--brand-cyan-glow);
+  --shadow-glow-lg: 0 0 60px var(--brand-cyan-glow);
+  --shadow-glow-xl: 0 0 100px var(--brand-cyan-glow);
+  --font-heading: 'Poppins', sans-serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
   --sidebar-width: 280px;
   --header-height: 72px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -49,9 +56,9 @@ body {
   font-family: var(--font-sans);
   background: var(--bg-primary);
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(249,50,44,0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(255,140,0,0.02) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(249,50,44,0.02) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(6,230,242,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(176,38,255,0.02) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(6,230,242,0.02) 0%, transparent 50%);
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
@@ -64,9 +71,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    repeating-linear-gradient(0deg, transparent, transparent 100px, rgba(249,50,44,0.01) 100px, rgba(249,50,44,0.01) 101px),
-    repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(249,50,44,0.01) 100px, rgba(249,50,44,0.01) 101px);
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2306E6F2' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }
@@ -107,28 +112,28 @@ a:hover { color: var(--accent); }
   box-shadow: var(--shadow-glow);
 }
 
-/* Laravel Brand Glow */
-.laravel-glow {
-  box-shadow: 0 0 20px var(--laravel-glow), 0 0 40px var(--laravel-glow), inset 0 1px 0 rgba(255,255,255,0.08);
+/* Nexus Brand Glow */
+.nexus-glow {
+  box-shadow: 0 0 20px var(--brand-cyan-glow), 0 0 40px var(--brand-cyan-glow), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
-.laravel-glow-lg {
-  box-shadow: 0 0 40px var(--laravel-glow), 0 0 80px var(--laravel-glow), 0 0 120px var(--laravel-glow);
+.nexus-glow-lg {
+  box-shadow: 0 0 40px var(--brand-cyan-glow), 0 0 80px var(--brand-purple-glow), 0 0 120px var(--brand-cyan-glow);
 }
 
-.laravel-text {
-  background: linear-gradient(135deg, var(--laravel), #ff6a33, var(--accent));
+.nexus-text {
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
 }
 
-.laravel-text::after {
+.nexus-text::after {
   content: attr(data-text);
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--laravel), var(--accent));
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -137,64 +142,13 @@ a:hover { color: var(--accent); }
   z-index: -1;
 }
 
-/* Laravel Logo Mark */
-.laravel-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--laravel), #ff6a33);
-  color: #fff;
-  font-weight: 900;
-  font-size: 1.4rem;
-  letter-spacing: -0.05em;
-  font-family: 'Inter', sans-serif;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 20px var(--laravel-glow);
-}
-
-.laravel-mark::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
-  animation: laravelShine 3s ease-in-out infinite;
-}
-
-@keyframes laravelShine {
-  0% { transform: translateX(-100%); }
-  60% { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* Laravel Art-Deco Border Accent */
-.laravel-accents {
-  position: relative;
-}
-
-.laravel-accents::before,
-.laravel-accents::after {
-  content: '';
-  position: absolute;
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--laravel), transparent);
-  opacity: 0.5;
-}
-
-.laravel-accents::before { top: 0; left: 50%; transform: translateX(-50%); }
-.laravel-accents::after { bottom: 0; left: 50%; transform: translateX(-50%); }
-
 /* Neon Glow */
 .neon-glow {
-  box-shadow: 0 0 20px var(--laravel-glow), 0 0 40px var(--laravel-glow), inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 0 0 20px var(--brand-cyan-glow), 0 0 40px var(--brand-cyan-glow), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
 .neon-text {
-  background: linear-gradient(135deg, var(--laravel), var(--accent));
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -208,12 +162,12 @@ a:hover { color: var(--accent); }
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, var(--laravel), transparent, var(--accent));
+  background: linear-gradient(135deg, var(--brand-cyan), transparent, var(--brand-purple));
   z-index: -1;
   opacity: 0.5;
 }
 
-/* Laravel Cinematic Overlay */
+/* Nexus Cinematic Overlay */
 .cinematic-overlay {
   position: relative;
 }
@@ -223,10 +177,10 @@ a:hover { color: var(--accent); }
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg,
-    rgba(249,50,44,0.02) 0%,
+    rgba(6,230,242,0.02) 0%,
     transparent 20%,
     transparent 80%,
-    rgba(249,50,44,0.02) 100%
+    rgba(176,38,255,0.02) 100%
   );
   pointer-events: none;
   border-radius: inherit;
@@ -266,7 +220,7 @@ a:hover { color: var(--accent); }
   left: 10%;
   width: 80%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--laravel), transparent);
+  background: linear-gradient(90deg, transparent, var(--brand-cyan), transparent);
   opacity: 0.4;
 }
 
@@ -274,7 +228,7 @@ a:hover { color: var(--accent); }
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--laravel), #ff6a33);
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-purple));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,7 +237,7 @@ a:hover { color: var(--accent); }
   color: #fff;
   flex-shrink: 0;
   position: relative;
-  box-shadow: 0 4px 16px var(--laravel-glow);
+  box-shadow: 0 4px 16px var(--brand-cyan-glow);
 }
 
 .sidebar-logo::before {
@@ -292,7 +246,13 @@ a:hover { color: var(--accent); }
   inset: 0;
   border-radius: 12px;
   background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
-  animation: laravelShine 3s ease-in-out infinite;
+  animation: nexusShine 3s ease-in-out infinite;
+}
+
+@keyframes nexusShine {
+  0% { transform: translateX(-100%); }
+  60% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
 }
 
 .sidebar-brand {
@@ -301,7 +261,7 @@ a:hover { color: var(--accent); }
   letter-spacing: -0.02em;
 }
 
-.sidebar-brand span { color: var(--laravel); text-shadow: 0 0 20px var(--laravel-glow); }
+.sidebar-brand span { color: var(--brand-cyan); text-shadow: 0 0 20px var(--brand-cyan-glow); }
 
 .sidebar-nav {
   flex: 1;
@@ -343,9 +303,9 @@ a:hover { color: var(--accent); }
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(249,50,44,0.15), rgba(249,50,44,0.05));
-  color: var(--laravel-light);
-  box-shadow: inset 2px 0 0 var(--laravel);
+  background: linear-gradient(135deg, rgba(6,230,242,0.12), rgba(176,38,255,0.05));
+  color: var(--brand-cyan);
+  box-shadow: inset 2px 0 0 var(--brand-cyan);
 }
 
 .nav-item.active::before {
@@ -356,14 +316,14 @@ a:hover { color: var(--accent); }
   transform: translateY(-50%);
   width: 3px;
   height: 24px;
-  background: var(--laravel);
+  background: var(--brand-cyan);
   border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 12px var(--laravel-glow);
+  box-shadow: 0 0 12px var(--brand-cyan-glow);
 }
 
 .nav-item.active svg {
-  color: var(--laravel);
-  filter: drop-shadow(0 0 6px var(--laravel-glow));
+  color: var(--brand-cyan);
+  filter: drop-shadow(0 0 6px var(--brand-cyan-glow));
 }
 
 .nav-item svg {
@@ -377,13 +337,13 @@ a:hover { color: var(--accent); }
 
 .nav-badge {
   margin-left: auto;
-  background: rgba(249,50,44,0.15);
-  color: var(--laravel-light);
+  background: rgba(6,230,242,0.15);
+  color: var(--brand-cyan-light);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.15rem 0.5rem;
   border-radius: 100px;
-  box-shadow: inset 0 0 10px rgba(249,50,44,0.1);
+  box-shadow: inset 0 0 10px rgba(6,230,242,0.1);
 }
 
 .sidebar-footer {
@@ -407,7 +367,7 @@ a:hover { color: var(--accent); }
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--laravel), #ff6a33);
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-purple));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -416,7 +376,7 @@ a:hover { color: var(--accent); }
   color: #fff;
   flex-shrink: 0;
   overflow: hidden;
-  box-shadow: 0 0 16px var(--laravel-glow);
+  box-shadow: 0 0 16px var(--brand-cyan-glow);
 }
 
 .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -464,9 +424,9 @@ a:hover { color: var(--accent); }
 }
 
 .header-search:focus-within {
-  border-color: var(--laravel-glow);
+  border-color: var(--brand-cyan-glow);
   background: var(--surface-hover);
-  box-shadow: 0 0 25px var(--laravel-glow);
+  box-shadow: 0 0 25px var(--brand-cyan-glow);
 }
 
 .header-search svg { width: 16px; height: 16px; opacity: 0.4; }
@@ -498,10 +458,10 @@ a:hover { color: var(--accent); }
   right: 8px;
   width: 8px;
   height: 8px;
-  background: var(--laravel);
+  background: var(--brand-cyan);
   border-radius: 50%;
   border: 2px solid var(--bg-primary);
-  box-shadow: 0 0 8px var(--laravel-glow);
+  box-shadow: 0 0 8px var(--brand-cyan-glow);
   animation: pulse 2s infinite;
 }
 
@@ -547,9 +507,9 @@ a:hover { color: var(--accent); }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--laravel), #ff6a33);
+  background: linear-gradient(135deg, var(--brand-cyan), var(--brand-purple));
   color: #fff;
-  box-shadow: 0 4px 20px var(--laravel-glow);
+  box-shadow: 0 4px 20px var(--brand-cyan-glow);
   position: relative;
   overflow: hidden;
 }
@@ -558,9 +518,9 @@ a:hover { color: var(--accent); }
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
-  animation: laravelShine 3s ease-in-out infinite;
+  animation: nexusShine 3s ease-in-out infinite;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--laravel-glow); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px var(--brand-cyan-glow); }
 .btn-primary:active { transform: translateY(0); }
 
 .btn-secondary {
@@ -568,7 +528,7 @@ a:hover { color: var(--accent); }
   color: var(--text-primary);
   border: 1px solid var(--glass-border);
 }
-.btn-secondary:hover { background: var(--surface-hover); border-color: rgba(249,50,44,0.2); }
+.btn-secondary:hover { background: var(--surface-hover); border-color: rgba(6,230,242,0.2); }
 
 .btn-ghost {
   background: transparent;
@@ -614,7 +574,7 @@ a:hover { color: var(--accent); }
   transform: translate(30%, -30%);
 }
 
-.stat-card.primary::after { background: var(--laravel); }
+.stat-card.primary::after { background: var(--brand-cyan); }
 .stat-card.success::after { background: var(--success); }
 .stat-card.warning::after { background: var(--warning); }
 .stat-card.info::after { background: var(--info); }
@@ -629,7 +589,7 @@ a:hover { color: var(--accent); }
   margin-bottom: 1rem;
 }
 
-.stat-icon.primary { background: rgba(249,50,44,0.12); color: var(--laravel); box-shadow: 0 0 20px rgba(249,50,44,0.1); }
+.stat-icon.primary { background: rgba(6,230,242,0.12); color: var(--brand-cyan); box-shadow: 0 0 20px rgba(6,230,242,0.1); }
 .stat-icon.success { background: rgba(0,230,118,0.15); color: var(--success); }
 .stat-icon.warning { background: rgba(255,171,0,0.15); color: var(--warning); }
 .stat-icon.info { background: rgba(68,138,255,0.15); color: var(--info); }
@@ -669,8 +629,8 @@ a:hover { color: var(--accent); }
 
 .project-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(249,50,44,0.2);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 40px rgba(249,50,44,0.06);
+  border-color: rgba(6,230,242,0.2);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4), 0 0 40px rgba(6,230,242,0.06);
 }
 
 .project-card:hover > div:first-child {
@@ -696,8 +656,8 @@ a:hover { color: var(--accent); }
 }
 
 .card:hover {
-  border-color: rgba(249,50,44,0.15);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 30px rgba(249,50,44,0.04);
+  border-color: rgba(6,230,242,0.15);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 30px rgba(6,230,242,0.04);
 }
 
 .card-header {
@@ -815,7 +775,7 @@ tr:hover td { background: var(--surface); }
 .terminal-body .line.error { color: var(--danger); }
 .terminal-body .line.warning { color: var(--warning); }
 .terminal-body .line.system { color: var(--text-tertiary); }
-.terminal-body .line.prompt { color: var(--laravel-light); text-shadow: 0 0 8px var(--laravel-glow); }
+.terminal-body .line.prompt { color: var(--brand-cyan-light); text-shadow: 0 0 8px var(--brand-cyan-glow); }
 .terminal-body .line.highlight { color: #fff; font-weight: 600; }
 
 .terminal-input-line {
@@ -825,7 +785,7 @@ tr:hover td { background: var(--surface); }
   padding: 0.5rem 1rem 1rem;
 }
 
-.terminal-prompt { color: var(--laravel-light); font-size: 0.82rem; text-shadow: 0 0 8px var(--laravel-glow); }
+.terminal-prompt { color: var(--brand-cyan-light); font-size: 0.82rem; text-shadow: 0 0 8px var(--brand-cyan-glow); }
 
 .terminal-input {
   background: none;
@@ -930,8 +890,8 @@ tr:hover td { background: var(--surface); }
   height: 100%;
   border-radius: 100px;
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(90deg, var(--laravel), #ff6a33, var(--accent));
-  box-shadow: 0 0 12px rgba(249,50,44,0.3);
+  background: linear-gradient(90deg, var(--brand-cyan), var(--brand-purple), var(--accent));
+  box-shadow: 0 0 12px rgba(6,230,242,0.3);
 }
 
 /* Resource Meter */
@@ -992,7 +952,7 @@ tr:hover td { background: var(--surface); }
   border: 2px solid var(--glass-border);
 }
 
-.timeline-item.active::before { border-color: var(--laravel); background: var(--laravel); box-shadow: 0 0 20px var(--laravel-glow); }
+.timeline-item.active::before { border-color: var(--brand-cyan); background: var(--brand-cyan); box-shadow: 0 0 20px var(--brand-cyan-glow); }
 
 .timeline-item .time { font-size: 0.75rem; color: var(--text-muted); }
 .timeline-item .event { font-size: 0.88rem; color: var(--text-secondary); margin-top: 0.15rem; }
@@ -1202,8 +1162,8 @@ tr:hover td { background: var(--surface); }
   transition: var(--transition);
 }
 
-.toggle input:checked + .slider { background: rgba(249,50,44,0.25); border-color: var(--laravel); }
-.toggle input:checked + .slider::before { transform: translateX(20px); background: var(--laravel); box-shadow: 0 0 16px var(--laravel-glow); }
+.toggle input:checked + .slider { background: rgba(6,230,242,0.25); border-color: var(--brand-cyan); }
+.toggle input:checked + .slider::before { transform: translateX(20px); background: var(--brand-cyan); box-shadow: 0 0 16px var(--brand-cyan-glow); }
 
 /* Animations */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1213,7 +1173,7 @@ tr:hover td { background: var(--surface); }
 @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes glow { 0%, 100% { box-shadow: 0 0 20px var(--laravel-glow); } 50% { box-shadow: 0 0 60px var(--laravel-glow); } }
+@keyframes glow { 0%, 100% { box-shadow: 0 0 20px var(--brand-cyan-glow); } 50% { box-shadow: 0 0 60px var(--brand-cyan-glow); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes typing { from { width: 0; } to { width: 100%; } }
@@ -1353,7 +1313,7 @@ tr:hover td { background: var(--surface); }
   color: var(--text-tertiary);
 }
 
-.deployment-step.active .step-number { background: rgba(249,50,44,0.15); border-color: var(--laravel); color: var(--laravel); box-shadow: 0 0 30px var(--laravel-glow); }
+.deployment-step.active .step-number { background: rgba(6,230,242,0.15); border-color: var(--brand-cyan); color: var(--brand-cyan); box-shadow: 0 0 30px var(--brand-cyan-glow); }
 .deployment-step.completed .step-number { background: rgba(0,230,118,0.15); border-color: var(--success); color: var(--success); box-shadow: 0 0 20px rgba(0,230,118,0.2); }
 
 .deployment-step .step-content h4 { font-size: 0.9rem; font-weight: 600; }

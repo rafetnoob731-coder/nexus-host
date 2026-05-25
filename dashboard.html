@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS HOST — Enterprise Laravel Hosting Platform</title>
+  <meta name="description" content="NEXUS HOST - Premium enterprise Laravel hosting with advanced DevOps tools">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <link rel="stylesheet" href="css/nexus.css">
+</head>
+<body>
+  <!-- Background Watermark -->
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:50vw;font-weight:900;color:rgba(6,230,242,0.012);pointer-events:none;z-index:0;font-family:'Poppins',sans-serif;letter-spacing:-0.05em;user-select:none;white-space:nowrap">NEXUS</div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Mobile Overlay -->
+  <div class="modal-overlay" id="mobileOverlay" style="display:none;z-index:99" onclick="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+<div class="sidebar-logo">N</div>
+    <div class="sidebar-brand">NEXUS <span>HOSTING</span></div>
+    <div style="font-size:0.55rem;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-left:auto;position:absolute;bottom:0.85rem;right:1rem;background:rgba(6,230,242,0.08);padding:0.15rem 0.4rem;border-radius:4px;border:1px solid rgba(6,230,242,0.12)">BOT</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Main</div>
+        <div class="nav-item active" data-section="overview" onclick="switchSection('overview')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Overview
+        </div>
+        <div class="nav-item" data-section="projects" onclick="switchSection('projects')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Projects
+          <span class="nav-badge" id="projectCount">0</span>
+        </div>
+        <div class="nav-item" data-section="deployments" onclick="switchSection('deployments')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
+          Deployments
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <div class="nav-item" data-section="database" onclick="switchSection('database')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          Database
+        </div>
+        <div class="nav-item" data-section="queue" onclick="switchSection('queue')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Queue & Scheduler
+        </div>
+        <div class="nav-item" data-section="domains" onclick="switchSection('domains')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Domains
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">System</div>
+        <div class="nav-item" data-section="monitoring" onclick="switchSection('monitoring')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Monitoring
+        </div>
+        <div class="nav-item" data-section="settings" onclick="switchSection('settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="userAvatar">N</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Loading...</div>
+          <div class="user-email" id="userEmail">loading@nexus.host</div>
+        </div>
+      </div>
+      <div style="padding:0.5rem 0.85rem 0;text-align:center">
+        <span style="font-size:0.6rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:0.35rem">
+          <span style="width:16px;height:1px;background:linear-gradient(90deg,transparent,var(--brand-cyan))"></span>
+          BOT HOSTING
+          <span style="width:16px;height:1px;background:linear-gradient(90deg,var(--brand-cyan),transparent)"></span>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="header-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search projects, deployments..." id="globalSearch">
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="header-btn" data-tooltip="Notifications" onclick="showToast('info', 'No new notifications')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dot"></span>
+        </button>
+        <button class="header-btn" data-tooltip="Help & Support">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openCreateProject()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Project
+        </button>
+      </div>
+    </header>
+
+    <div class="page-content">
+      <!-- ==================== OVERVIEW SECTION ==================== -->
+      <section id="section-overview" class="section active">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Dashboard</h1>
+            <p id="greeting">Welcome back — manage your Laravel infrastructure</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <span style="font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;background:rgba(6,230,242,0.08);padding:0.3rem 0.75rem;border-radius:100px;border:1px solid rgba(6,230,242,0.12)">
+              <span style="color:var(--brand-cyan);font-weight:700">●</span> BOT HOSTING
+            </span>
+            <div class="tabs">
+              <button class="tab active" onclick="switchOverviewTab('overview')">Overview</button>
+              <button class="tab" onclick="switchOverviewTab('deployments')">Deployments</button>
+              <button class="tab" onclick="switchOverviewTab('analytics')">Analytics</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+          <div class="glass-card stat-card primary animate-in animate-in-1">
+            <div class="stat-icon primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="stat-value" id="statProjects">0</div>
+            <div class="stat-label">Total Projects</div>
+            <div class="stat-change up">↑ 0 this month</div>
+          </div>
+          <div class="glass-card stat-card success animate-in animate-in-2">
+            <div class="stat-icon success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
+            </div>
+            <div class="stat-value" id="statDeployments">0</div>
+            <div class="stat-label">Active Deployments</div>
+            <div class="stat-change up">↑ All running</div>
+          </div>
+          <div class="glass-card stat-card warning animate-in animate-in-3">
+            <div class="stat-icon warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <div class="stat-value" id="statDatabases">0</div>
+            <div class="stat-label">Databases</div>
+            <div class="stat-change up">↑ Connected</div>
+          </div>
+          <div class="glass-card stat-card info animate-in animate-in-4">
+            <div class="stat-icon info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="stat-value" id="statDomains">0</div>
+            <div class="stat-label">Connected Domains</div>
+            <div class="stat-change up">↑ SSL Active</div>
+          </div>
+        </div>
+
+        <!-- Resource Usage -->
+        <div class="grid-2" style="margin-bottom:1.5rem">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Resource Usage</div>
+            </div>
+            <div class="card-body">
+              <div class="resource-item">
+                <div class="resource-header">
+                  <span class="resource-name">CPU</span>
+                  <span class="resource-value" id="cpuUsage">0%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="cpuFill" style="width:0%"></div></div>
+              </div>
+              <div class="resource-item">
+                <div class="resource-header">
+                  <span class="resource-name">Memory</span>
+                  <span class="resource-value" id="memUsage">0%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="memFill" style="width:0%"></div></div>
+              </div>
+              <div class="resource-item">
+                <div class="resource-header">
+                  <span class="resource-name">Storage</span>
+                  <span class="resource-value" id="storageUsage">0%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="storageFill" style="width:0%"></div></div>
+              </div>
+              <div class="resource-item">
+                <div class="resource-header">
+                  <span class="resource-name">Bandwidth</span>
+                  <span class="resource-value" id="bandwidthUsage">0 MB</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="bandwidthFill" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Activity</div>
+            </div>
+            <div class="card-body" id="recentActivity">
+              <div class="empty-state" style="padding:2rem">
+                <p>No recent activity to display</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Projects -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Projects</div>
+            <button class="btn btn-ghost btn-sm" onclick="switchSection('projects')">View All</button>
+          </div>
+          <div class="card-body" id="recentProjectsList">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <h3>No projects yet</h3>
+              <p>Create your first Laravel project to get started with deployment</p>
+              <button class="btn btn-primary" onclick="openCreateProject()">Create Project</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== PROJECTS SECTION ==================== -->
+      <section id="section-projects" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Projects</h1>
+            <p>Manage your Laravel applications and deployments</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateProject()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Project
+          </button>
+        </div>
+
+        <div class="grid-4" id="projectsList">
+          <!-- Projects rendered by JS -->
+        </div>
+      </section>
+
+      <!-- ==================== PROJECT DETAIL SECTION ==================== -->
+      <section id="section-project-detail" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <button class="btn btn-ghost btn-sm" onclick="switchSection('projects')" style="margin-bottom:0.5rem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              Back to Projects
+            </button>
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem">
+          <h1 id="projectDetailName" style="font-size:1.75rem;font-weight:800">Project Name</h1>
+          <span style="display:inline-flex;align-items:center;gap:0.35rem;background:rgba(6,230,242,0.08);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.7rem;font-weight:600;color:var(--brand-cyan);border:1px solid rgba(6,230,242,0.15)">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            BOT
+          </span>
+        </div>
+        <p id="projectDetailMeta">Loading...</p>
+          </div>
+          <div style="display:flex;gap:0.75rem">
+            <button class="btn btn-secondary btn-sm" onclick="openDeployModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
+              Deploy
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="deleteCurrentProject()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Project Detail Tabs -->
+        <div class="tabs" style="margin-bottom:1.5rem">
+          <button class="tab active" onclick="switchProjectTab('overview')">Overview</button>
+          <button class="tab" onclick="switchProjectTab('files')">File Manager</button>
+          <button class="tab" onclick="switchProjectTab('terminal')">Bot Terminal</button>
+          <button class="tab" onclick="switchProjectTab('env')">Environment</button>
+          <button class="tab" onclick="switchProjectTab('deployments')">Deployments</button>
+          <button class="tab" onclick="switchProjectTab('logs')">Live Logs</button>
+        </div>
+
+        <!-- Project Overview Tab -->
+        <div id="projectTab-overview" class="project-tab-content active">
+          <div class="grid-2" style="margin-bottom:1.5rem">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Project Info</div></div>
+              <div class="card-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Runtime</div><div style="font-weight:600;margin-top:0.25rem" id="pdRuntime">-</div></div>
+                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Framework</div><div style="font-weight:600;margin-top:0.25rem" id="pdFramework">-</div></div>
+                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">PHP Version</div><div style="font-weight:600;margin-top:0.25rem" id="pdPhp">-</div></div>
+                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Status</div><div style="margin-top:0.25rem"><span class="status-badge pending" id="pdStatus">-</span></div></div>
+                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Created</div><div style="font-weight:600;margin-top:0.25rem" id="pdCreated">-</div></div>
+                  <div><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Deployment URL</div><div style="font-weight:600;margin-top:0.25rem" id="pdUrl">-</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Quick Actions</div></div>
+              <div class="card-body">
+                <div style="display:flex;flex-wrap:wrap;gap:0.75rem">
+                  <button class="btn btn-primary btn-sm" onclick="openDeployModal()">Deploy Now</button>
+                  <button class="btn btn-secondary btn-sm" onclick="openEnvEditor()">Edit ENV</button>
+                  <button class="btn btn-secondary btn-sm" onclick="switchProjectTab('terminal')">Artisan CLI</button>
+                  <button class="btn btn-secondary btn-sm" onclick="switchProjectTab('files')">File Manager</button>
+                  <button class="btn btn-secondary btn-sm" onclick="restartProject()">Restart Instance</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deployment Steps -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Deployment Pipeline</div></div>
+            <div class="card-body">
+              <div class="deployment-step" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-content"><h4>Initialize Build</h4><p>Preparing build environment</p></div>
+              </div>
+              <div class="deployment-step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-content"><h4>Install Dependencies</h4><p>Running composer install & npm install</p></div>
+              </div>
+              <div class="deployment-step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-content"><h4>Compile Assets</h4><p>Building frontend assets</p></div>
+              </div>
+              <div class="deployment-step" id="step4">
+                <div class="step-number">4</div>
+                <div class="step-content"><h4>Run Migrations</h4><p>Executing database migrations</p></div>
+              </div>
+              <div class="deployment-step" id="step5">
+                <div class="step-number">5</div>
+                <div class="step-content"><h4>Deploy Application</h4><p>Starting production server</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Manager Tab -->
+        <div id="projectTab-files" class="project-tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">File Manager</div>
+              <div style="display:flex;gap:0.5rem">
+                <button class="btn btn-secondary btn-sm" onclick="uploadFile()">Upload</button>
+                <button class="btn btn-secondary btn-sm" onclick="createFile()">New File</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="file-tree" id="fileTree">
+                <div class="tree-item folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Loading...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Artisan Terminal Tab -->
+        <div id="projectTab-terminal" class="project-tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Bot Command Terminal</div>
+              <select class="form-select" style="width:auto;padding:0.4rem 2rem 0.4rem 0.75rem;font-size:0.8rem" id="quickCommands" onchange="runQuickCommand(this.value)">
+                <option value="">Quick Commands</option>
+                <option value="php artisan serve">php artisan serve</option>
+                <option value="php artisan migrate">php artisan migrate</option>
+                <option value="php artisan queue:work">php artisan queue:work</option>
+                <option value="php artisan optimize">php artisan optimize</option>
+                <option value="php artisan cache:clear">php artisan cache:clear</option>
+                <option value="php artisan config:cache">php artisan config:cache</option>
+                <option value="nexus:status">nexus:status</option>
+                <option value="nexus:logs --live">nexus:logs --live</option>
+                <option value="nexus:restart">nexus:restart</option>
+                <option value="nexus:scale --cpu=2">nexus:scale --cpu=2</option>
+                <option value="composer install">composer install</option>
+                <option value="npm run production">npm run production</option>
+              </select>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="terminal">
+                <div class="terminal-header">
+                  <span class="terminal-dot red"></span>
+                  <span class="terminal-dot yellow"></span>
+                  <span class="terminal-dot green"></span>
+                  <span class="terminal-title">nexus — bash</span>
+                </div>
+                <div class="terminal-body" id="terminalBody">
+                  <div class="line system">NEXUS HOST Artisan Terminal v1.0.0</div>
+                  <div class="line system">Laravel Framework 11.x — PHP 8.3</div>
+                  <div class="line system">Type a command or select from Quick Commands</div>
+                  <div class="line" style="margin-top:0.5rem"><span class="prompt">nexus@host:~$</span> <span id="typedCommand"></span></div>
+                </div>
+                <div class="terminal-input-line">
+                  <span class="terminal-prompt">nexus@host:~$</span>
+                  <input class="terminal-input" id="terminalInput" placeholder="Type a command..." autofocus onkeydown="handleTerminalKey(event)">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Environment Editor Tab -->
+        <div id="projectTab-env" class="project-tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Environment Configuration</div>
+              <button class="btn btn-primary btn-sm" onclick="saveEnvVars()">Save Changes</button>
+            </div>
+            <div class="card-body">
+              <p style="color:var(--text-tertiary);font-size:0.85rem;margin-bottom:1.5rem">Manage environment variables for your Laravel application. These are encrypted at rest.</p>
+              <div id="envVarsList">
+                <div class="empty-state" style="padding:1rem"><p>Loading environment variables...</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Deployments Tab -->
+        <div id="projectTab-deployments" class="project-tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Deployment History</div>
+              <button class="btn btn-primary btn-sm" onclick="openDeployModal()">New Deployment</button>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr><th>Version</th><th>Status</th><th>Branch</th><th>Commit</th><th>Duration</th><th>Date</th><th></th></tr>
+                  </thead>
+                  <tbody id="deploymentHistoryBody">
+                    <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No deployments yet</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Logs Tab -->
+        <div id="projectTab-logs" class="project-tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Live Deployment Logs</div>
+              <div style="display:flex;gap:0.5rem">
+                <button class="btn btn-secondary btn-sm" onclick="toggleAutoScroll()" id="autoScrollBtn">Auto-scroll: ON</button>
+                <button class="btn btn-secondary btn-sm" onclick="clearLogs()">Clear</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div class="terminal">
+                <div class="terminal-header">
+                  <span class="terminal-dot red"></span>
+                  <span class="terminal-dot yellow"></span>
+                  <span class="terminal-dot green"></span>
+                  <span class="terminal-title">logs — live stream</span>
+                </div>
+                <div class="terminal-body" id="logsTerminal" style="max-height:500px">
+                  <div class="line system">Waiting for deployment logs...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== DEPLOYMENTS SECTION ==================== -->
+      <section id="section-deployments" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Deployments</h1>
+            <p>Monitor all active and historical deployments</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr><th>Project</th><th>Version</th><th>Status</th><th>Branch</th><th>Runtime</th><th>Duration</th><th>Deployed</th><th></th></tr>
+                </thead>
+                <tbody id="allDeploymentsBody">
+                  <tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--text-tertiary)">No deployments yet. Create a project and deploy to get started.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== DATABASE SECTION ==================== -->
+      <section id="section-database" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Database Manager</h1>
+            <p>Manage MySQL, PostgreSQL, and Redis connections</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateDatabase()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Database
+          </button>
+        </div>
+        <div class="stats-grid" style="margin-bottom:1.5rem">
+          <div class="glass-card stat-card info">
+            <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+            <div class="stat-value" id="dbTotal">0</div>
+            <div class="stat-label">Total Databases</div>
+          </div>
+          <div class="glass-card stat-card success">
+            <div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="stat-value" id="dbConnected">0</div>
+            <div class="stat-label">Connected</div>
+          </div>
+          <div class="glass-card stat-card warning">
+            <div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="stat-value" id="dbBackups">0</div>
+            <div class="stat-label">Backups</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Database Connections</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-container">
+              <table>
+                <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Size</th><th>Connections</th><th>Actions</th></tr></thead>
+                <tbody id="databaseListBody">
+                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No databases configured</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== QUEUE SECTION ==================== -->
+      <section id="section-queue" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Queue & Scheduler</h1>
+            <p>Manage Laravel queue workers and scheduled tasks</p>
+          </div>
+          <button class="btn btn-primary" onclick="restartQueue()">Restart Workers</button>
+        </div>
+        <div class="grid-2" style="margin-bottom:1.5rem">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Queue Workers</div></div>
+            <div class="card-body">
+              <div id="queueWorkersList">
+                <div class="resource-item">
+                  <div class="resource-header"><span class="resource-name">queue:work — default</span><span class="resource-value status-badge active">Running</span></div>
+                </div>
+                <div class="resource-item">
+                  <div class="resource-header"><span class="resource-name">queue:work — emails</span><span class="resource-value status-badge active">Running</span></div>
+                </div>
+                <div class="resource-item">
+                  <div class="resource-header"><span class="resource-name">queue:work — notifications</span><span class="resource-value status-badge pending">Idle</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Failed Jobs</div></div>
+            <div class="card-body" style="padding:0">
+              <div class="table-container">
+                <table>
+                  <thead><tr><th>Job</th><th>Failed At</th><th>Actions</th></tr></thead>
+                  <tbody id="failedJobsBody">
+                    <tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No failed jobs</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Cron Schedule</div></div>
+          <div class="card-body">
+            <div class="table-container">
+              <table>
+                <thead><tr><th>Command</th><th>Schedule</th><th>Status</th><th>Last Run</th><th>Next Run</th></tr></thead>
+                <tbody>
+                  <tr><td><code style="font-family:var(--font-mono);font-size:0.82rem">schedule:run</code></td><td><code style="font-size:0.82rem">* * * * *</code></td><td><span class="status-badge active">Active</span></td><td>2 min ago</td><td>In 58s</td></tr>
+                  <tr><td><code style="font-family:var(--font-mono);font-size:0.82rem">laravel/horizon:snapshot</code></td><td><code style="font-size:0.82rem">*/5 * * * *</code></td><td><span class="status-badge active">Active</span></td><td>3 min ago</td><td>In 2m</td></tr>
+                  <tr><td><code style="font-family:var(--font-mono);font-size:0.82rem">backup:run</code></td><td><code style="font-size:0.82rem">0 3 * * *</code></td><td><span class="status-badge active">Active</span></td><td>8h ago</td><td>In 16h</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== DOMAINS SECTION ==================== -->
+      <section id="section-domains" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Custom Domains</h1>
+            <p>Connect your own domains to NEXUS HOST projects</p>
+          </div>
+          <button class="btn btn-primary" onclick="openAddDomain()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Domain
+          </button>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-container">
+              <table>
+                <thead><tr><th>Domain</th><th>Project</th><th>SSL</th><th>Status</th><th>Added</th><th>Actions</th></tr></thead>
+                <tbody id="domainsListBody">
+                  <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-tertiary)">No custom domains connected</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== MONITORING SECTION ==================== -->
+      <section id="section-monitoring" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Server Monitoring</h1>
+            <p>Real-time infrastructure analytics and performance metrics</p>
+          </div>
+        </div>
+        <div class="stats-grid" style="margin-bottom:1.5rem">
+          <div class="glass-card stat-card primary">
+            <div class="stat-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+            <div class="stat-value" id="monCpu">0%</div>
+            <div class="stat-label">CPU Usage</div>
+          </div>
+          <div class="glass-card stat-card success">
+            <div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="stat-value" id="monMemory">0 MB</div>
+            <div class="stat-label">Memory Used</div>
+          </div>
+          <div class="glass-card stat-card warning">
+            <div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg></div>
+            <div class="stat-value" id="monUptime">99.9%</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+          <div class="glass-card stat-card info">
+            <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+            <div class="stat-value" id="monRequests">0</div>
+            <div class="stat-label">Requests/min</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">CPU & Memory Timeline</div></div>
+            <div class="card-body">
+              <div class="chart-container" id="cpuChart">
+                <canvas id="monitorCanvas" width="600" height="250" style="width:100%;height:250px"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Request Analytics</div></div>
+            <div class="card-body">
+              <div class="resource-item">
+                <div class="resource-header"><span>HTTP 2xx</span><span class="resource-value" id="http2xx">0</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="http2xxFill" style="width:0%;background:var(--success)"></div></div>
+              </div>
+              <div class="resource-item">
+                <div class="resource-header"><span>HTTP 4xx</span><span class="resource-value" id="http4xx">0</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="http4xxFill" style="width:0%;background:var(--warning)"></div></div>
+              </div>
+              <div class="resource-item">
+                <div class="resource-header"><span>HTTP 5xx</span><span class="resource-value" id="http5xx">0</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="http5xxFill" style="width:0%;background:var(--danger)"></div></div>
+              </div>
+              <div class="resource-item">
+                <div class="resource-header"><span>Avg Response Time</span><span class="resource-value" id="avgResponse">0ms</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="responseFill" style="width:0%;background:var(--info)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SETTINGS SECTION ==================== -->
+      <section id="section-settings" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Settings</h1>
+            <p>Manage your account and platform preferences</p>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <div class="card-header"><div class="card-title">Profile</div></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+              <div class="user-avatar" id="settingsAvatar" style="width:64px;height:64px;font-size:1.5rem">N</div>
+              <div>
+                <h3 id="settingsName" style="font-weight:700">Name</h3>
+                <p id="settingsEmail" style="color:var(--text-tertiary);font-size:0.88rem">email</p>
+              </div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="handleLogout()">Sign Out</button>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Deployment Tokens</div></div>
+            <div class="card-body">
+              <p style="color:var(--text-tertiary);font-size:0.85rem;margin-bottom:1rem">Generate secure tokens for CI/CD integration</p>
+              <button class="btn btn-secondary btn-sm" onclick="generateToken()">Generate Token</button>
+              <div id="tokensList" style="margin-top:1rem"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Notifications</div></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--glass-border)">
+                <span style="font-size:0.9rem">Deployment emails</span>
+                <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--glass-border)">
+                <span style="font-size:0.9rem">Build notifications</span>
+                <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0">
+                <span style="font-size:0.9rem">Weekly reports</span>
+                <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Create Project Modal -->
+  <div class="modal-overlay" id="createProjectModal">
+    <div class="glass-panel modal">
+      <div class="modal-header">
+        <h2>Create New Project</h2>
+        <button class="modal-close" onclick="closeModal('createProjectModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Project Name</label>
+          <input class="form-input" id="newProjectName" placeholder="my-laravel-app" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Runtime</label>
+          <select class="form-select" id="newProjectRuntime">
+            <option value="php">PHP / Laravel</option>
+            <option value="node">Node.js</option>
+            <option value="python">Python</option>
+            <option value="static">Static Website</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">PHP Version</label>
+          <select class="form-select" id="newProjectPhp">
+            <option value="8.3">PHP 8.3</option>
+            <option value="8.2">PHP 8.2</option>
+            <option value="8.1">PHP 8.1</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deployment Method</label>
+          <select class="form-select" id="newProjectMethod">
+            <option value="upload">ZIP Upload</option>
+            <option value="github">GitHub Repository</option>
+            <option value="termux">Termux Bridge</option>
+          </select>
+        </div>
+        <div class="form-group" id="githubUrlGroup" style="display:none">
+          <label class="form-label">GitHub Repository URL</label>
+          <input class="form-input" id="newProjectGithub" placeholder="https://github.com/user/repo">
+        </div>
+        <div class="form-group" id="fileUploadGroup">
+          <label class="form-label">Upload Project Files (ZIP)</label>
+          <div style="border:2px dashed var(--glass-border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:var(--transition)" onclick="document.getElementById('zipUpload').click()" id="uploadZone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32" style="margin-bottom:0.5rem;opacity:0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p style="color:var(--text-tertiary);font-size:0.9rem">Drop your Laravel ZIP file here or click to browse</p>
+            <p style="color:var(--text-muted);font-size:0.8rem;margin-top:0.25rem">Max 500MB — ZIP format only</p>
+            <input type="file" id="zipUpload" accept=".zip" style="display:none" onchange="handleFileSelect(event)">
+          </div>
+          <div id="selectedFile" style="display:none;margin-top:0.75rem;padding:0.75rem;background:var(--surface);border-radius:8px;font-size:0.85rem">
+            <span id="selectedFileName"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('createProjectModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="createProject()" id="createProjectBtn">Create Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deploy Modal -->
+  <div class="modal-overlay" id="deployModal">
+    <div class="glass-panel modal">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="20" height="20" style="color:var(--brand-cyan)"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
+          <h2>Deploy Bot to Production</h2>
+        </div>
+        <button class="modal-close" onclick="closeModal('deployModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Branch/Tag</label>
+          <input class="form-input" id="deployBranch" placeholder="main" value="main">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deployment Notes</label>
+          <input class="form-input" id="deployNotes" placeholder="e.g. Production deployment v1.0.0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Environment</label>
+          <select class="form-select" id="deployEnv">
+            <option value="production">Production</option>
+            <option value="staging">Staging</option>
+            <option value="development">Development</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('deployModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="startDeployment()" id="deployBtn">Deploy Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Domain Modal -->
+  <div class="modal-overlay" id="addDomainModal">
+    <div class="glass-panel modal">
+      <div class="modal-header">
+        <h2>Add Custom Domain</h2>
+        <button class="modal-close" onclick="closeModal('addDomainModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Domain</label>
+          <input class="form-input" id="newDomain" placeholder="app.yourdomain.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Project</label>
+          <select class="form-select" id="domainProject"></select>
+        </div>
+        <div style="background:var(--surface);padding:1rem;border-radius:8px;font-size:0.85rem">
+          <p style="color:var(--text-tertiary);margin-bottom:0.5rem">Add this DNS record:</p>
+          <code style="font-family:var(--font-mono);font-size:0.82rem;color:var(--primary-light))">CNAME @ nexus-host.nexus.app</code>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('addDomainModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addDomain()">Add Domain</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Database Modal -->
+  <div class="modal-overlay" id="createDatabaseModal">
+    <div class="glass-panel modal">
+      <div class="modal-header">
+        <h2>Create Database</h2>
+        <button class="modal-close" onclick="closeModal('createDatabaseModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Database Name</label>
+          <input class="form-input" id="newDbName" placeholder="laravel_app_db">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="newDbType">
+            <option value="mysql">MySQL</option>
+            <option value="postgresql">PostgreSQL</option>
+            <option value="redis">Redis</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Project (optional)</label>
+          <select class="form-select" id="newDbProject"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('createDatabaseModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="createDatabase()">Create Database</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:1rem 2rem;border-top:1px solid var(--glass-border);margin-top:2rem">
+    <span style="color:var(--text-muted);font-size:0.75rem;letter-spacing:0.08em">
+      POWERED BY <span style="color:var(--brand-cyan);font-weight:700">NEXUS</span> HOSTING
+      <span style="margin:0 0.75rem;opacity:0.3">|</span>
+      <span style="color:var(--brand-purple);font-weight:600">BOT</span> HOSTING PLATFORM
+      <span style="margin:0 0.75rem;opacity:0.3">|</span>
+      ALL CREDIT NEXUS
+    </span>
+  </div>
+
+  <script src="config/firebase-config.js"></script>
+  <script src="js/deployment-engine.js"></script>
+  <script src="js/nexus.js"></script>
+</body>
+</html>

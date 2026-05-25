@@ -59,14 +59,14 @@
       <source src="assets/background.mp4" type="video/mp4">
     </video>
     <div class="auth-overlay"></div>
-    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40vw;font-weight:900;color:rgba(249,50,44,0.02);pointer-events:none;z-index:1;font-family:'Inter',sans-serif;letter-spacing:-0.05em;user-select:none">LARAVEL</div>
+    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40vw;font-weight:900;color:rgba(6,230,242,0.015);pointer-events:none;z-index:1;font-family:'Poppins',sans-serif;letter-spacing:-0.05em;user-select:none">NEXUS</div>
     <canvas class="particles-canvas" id="particlesCanvas"></canvas>
 
     <div class="glass-panel auth-card" style="animation: fadeInUp 0.8s ease;">
       <div class="logo-section">
         <img src="assets/logo.png" alt="NEXUS HOST" onerror="this.style.display='none'">
-        <h1 style="background:linear-gradient(135deg, #F9322C, #ff6a33, #ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent">NEXUS HOST</h1>
-        <p><span style="color:#F9322C;font-weight:700">LARAVEL</span> ENTERPRISE HOSTING PLATFORM</p>
+        <h1 style="background:linear-gradient(135deg, #06E6F2, #B026FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Poppins',sans-serif">NEXUS HOSTING</h1>
+        <p><span style="color:#06E6F2;font-weight:700">BOT</span> HOSTING PLATFORM</p>
       </div>
 
       <div class="auth-tabs">
@@ -126,9 +126,9 @@
       </div>
       <div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05)">
         <span style="color:rgba(255,255,255,0.2);font-size:0.75rem;letter-spacing:0.05em">
-          POWERED BY <span style="color:#F9322C;font-weight:700">NEXUS</span> HOST
+          POWERED BY <span style="color:#06E6F2;font-weight:700">NEXUS</span> HOSTING
           <span style="margin:0 0.5rem;opacity:0.3">|</span>
-          <span style="color:#F9322C;font-weight:600">LARAVEL</span> EDITION
+          <span style="color:#B026FF;font-weight:600">BOT</span> HOSTING
           <span style="margin:0 0.5rem;opacity:0.3">|</span>
           ALL CREDIT NEXUS
         </span>
@@ -251,7 +251,7 @@
         if (p.y > canvas.height) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,69,0,${p.a})`;
+        ctx.fillStyle = `rgba(6,230,242,${p.a})`;
         ctx.fill();
       });
       requestAnimationFrame(drawParticles);
