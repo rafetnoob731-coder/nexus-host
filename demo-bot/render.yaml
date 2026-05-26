@@ -1,0 +1,18 @@
+services:
+  - type: worker
+    name: nexus-demo-bot
+    runtime: python
+    repo: https://github.com/YOUR_USER/YOUR_REPO
+    branch: main
+    rootDir: demo-bot
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    env:
+      - key: BOT_TOKEN
+        sync: false
+      - key: DEPLOY_MODE
+        value: polling
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /
+    autoDeploy: true
