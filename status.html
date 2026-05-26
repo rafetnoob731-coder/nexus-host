@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>NEXUS HOSTING — System Status</title>
+  <meta name="description" content="NEXUS HOSTING platform status and incident history.">
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/nexus.css">
+</head>
+<body>
+  <nav class="landing-nav" style="position:relative;background:var(--void-black)">
+    <div class="nav-logo"><div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--signal-white);box-shadow:0 0 20px var(--nexus-cyan-glow)">N</div><div>NEXUS <span style="color:var(--nexus-cyan)">HOSTING</span></div></div>
+    <div class="nav-links"><a href="/">Home</a><a href="/login">Dashboard</a></div>
+  </nav>
+  <div class="container" style="padding:4rem 1.5rem;max-width:800px">
+    <div class="section-label">> STATUS</div>
+    <h1 class="section-heading" style="color:var(--signal-white);text-align:left">System Status</h1>
+    <p style="color:var(--titanium);margin:1rem 0 3rem">Real-time status of all NEXUS HOSTING services across runtimes.</p>
+    <div class="glass-card" style="padding:2rem;margin-bottom:2rem;border:1px solid rgba(16,185,129,0.3)">
+      <div style="display:flex;align-items:center;gap:1rem">
+        <span class="status-badge active" style="font-size:1rem;padding:0.5rem 1.25rem">All Systems Operational</span>
+        <span style="color:var(--titanium);font-size:0.85rem">Last checked: just now</span>
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-bottom:2rem">
+      <div class="glass-card stat-card success"><div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div><div class="stat-value">99.9%</div><div class="stat-label">Uptime (30d)</div></div>
+      <div class="glass-card stat-card primary"><div class="stat-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg></div><div class="stat-value" id="totalDeployStatus">1,247</div><div class="stat-label">Deployments (24h)</div></div>
+      <div class="glass-card stat-card info"><div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="stat-value">0</div><div class="stat-label">Active Incidents</div></div>
+    </div>
+    <div class="card" style="margin-bottom:2rem">
+      <div class="card-header"><div class="card-title">Service Status</div></div>
+      <div class="card-body" style="padding:0">
+        <div style="padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-glass)"><span style="display:flex;align-items:center;gap:0.75rem"><span class="runtime-badge laravel">Laravel</span> Deployments</span><span class="status-badge active">Operational</span></div>
+        <div style="padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-glass)"><span style="display:flex;align-items:center;gap:0.75rem"><span class="runtime-badge python">Python</span> Deployments</span><span class="status-badge active">Operational</span></div>
+        <div style="padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-glass)"><span style="display:flex;align-items:center;gap:0.75rem"><span class="runtime-badge js">JavaScript</span> Deployments</span><span class="status-badge active">Operational</span></div>
+        <div style="padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-glass)"><span style="display:flex;align-items:center;gap:0.75rem"><span class="runtime-badge zip">ZIP Upload</span> &amp; Extract</span><span class="status-badge active">Operational</span></div>
+        <div style="padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-glass)"><span style="display:flex;align-items:center;gap:0.75rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Database Services</span><span class="status-badge active">Operational</span></div>
+        <div style="padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:0.75rem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> CDN &amp; Edge Network</span><span class="status-badge active">Operational</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Incident History</div></div>
+      <div class="card-body"><p style="color:var(--titanium);text-align:center;padding:1rem">No incidents reported in the last 90 days.</p></div>
+    </div>
+  </div>
+  <script>document.getElementById('totalDeployStatus').textContent = Math.floor(Math.random() * 500 + 1000);</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>NEXUS HOSTING — Runtime Documentation</title>
+  <meta name="description" content="Multi-runtime documentation for Laravel, Python, JavaScript, and ZIP archive deployment on NEXUS HOSTING.">
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/nexus.css">
+</head>
+<body>
+  <nav class="landing-nav" style="position:relative;background:var(--void-black)">
+    <div class="nav-logo"><div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--signal-white);box-shadow:0 0 20px var(--nexus-cyan-glow)">N</div><div>NEXUS <span style="color:var(--nexus-cyan)">HOSTING</span></div></div>
+    <div class="nav-links"><a href="/">Home</a><a href="/login">Dashboard</a></div>
+  </nav>
+  <div class="container" style="padding:4rem 1.5rem">
+    <div class="section-label">> DOCS</div>
+    <h1 class="section-heading" style="color:var(--signal-white);text-align:left">Runtime Documentation</h1>
+    <p class="section-subhead" style="text-align:left;margin:1rem 0 3rem">Everything you need to deploy bots across any runtime.</p>
+    <div class="docs-layout">
+      <aside class="docs-sidebar">
+        <div class="docs-nav-section">
+          <div class="docs-nav-title" style="color:var(--nexus-cyan)">Laravel</div>
+          <div class="docs-nav-item active">Quickstart</div>
+          <div class="docs-nav-item">Horizon Setup</div>
+          <div class="docs-nav-item">Queue Configuration</div>
+          <div class="docs-nav-item">Octane</div>
+          <div class="docs-nav-item">Environment</div>
+        </div>
+        <div class="docs-nav-section">
+          <div class="docs-nav-title" style="color:var(--python-gold)">Python</div>
+          <div class="docs-nav-item">Quickstart</div>
+          <div class="docs-nav-item">Virtual Environments</div>
+          <div class="docs-nav-item">Requirements.txt</div>
+          <div class="docs-nav-item">Popular Libraries</div>
+          <div class="docs-nav-item">Entry Points</div>
+        </div>
+        <div class="docs-nav-section">
+          <div class="docs-nav-title" style="color:var(--js-yellow)">JavaScript</div>
+          <div class="docs-nav-item">Quickstart</div>
+          <div class="docs-nav-item">Package.json</div>
+          <div class="docs-nav-item">npm/yarn/pnpm</div>
+          <div class="docs-nav-item">Popular Libraries</div>
+          <div class="docs-nav-item">Entry Points</div>
+        </div>
+        <div class="docs-nav-section">
+          <div class="docs-nav-title" style="color:var(--plasma-purple)">ZIP Deploy</div>
+          <div class="docs-nav-item">Archive Structure</div>
+          <div class="docs-nav-item">Runtime Detection</div>
+          <div class="docs-nav-item">Manual Override</div>
+          <div class="docs-nav-item">Size Limits</div>
+          <div class="docs-nav-item">Security Scanning</div>
+        </div>
+      </aside>
+      <div class="docs-content">
+        <h2 style="color:var(--signal-white)">Python Quickstart</h2>
+        <p>Deploy your Python bot in minutes. NEXUS HOSTING supports Discord.py, python-telegram-bot, FastAPI, and any Python framework.</p>
+        <div style="display:flex;gap:0.25rem;margin-bottom:1.5rem;background:var(--surface-glass);border-radius:8px;padding:0.25rem;border:1px solid var(--border-glass);width:fit-content">
+          <button class="tab active" onclick="showRuntimeDoc('python')" style="padding:0.5rem 1.25rem">Python</button>
+          <button class="tab" onclick="showRuntimeDoc('laravel')" style="padding:0.5rem 1.25rem">Laravel</button>
+          <button class="tab" onclick="showRuntimeDoc('js')" style="padding:0.5rem 1.25rem">JavaScript</button>
+          <button class="tab" onclick="showRuntimeDoc('zip')" style="padding:0.5rem 1.25rem">ZIP</button>
+        </div>
+        <div id="docContentPython">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">1. Create your bot</h3>
+          <pre><code style="color:var(--python-gold)"># main.py
+import discord
+from discord.ext import commands
+
+bot = commands.Bot(command_prefix='!')
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user}')
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send('Pong!')
+
+bot.run('YOUR_TOKEN')</code></pre>
+
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">2. Add requirements.txt</h3>
+          <pre><code>discord.py==2.4.0
+python-dotenv==1.0.1</code></pre>
+
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">3. Deploy to NEXUS</h3>
+          <p>Create a project with runtime set to <strong>Python</strong>, upload your ZIP containing <code>main.py</code> and <code>requirements.txt</code>, and deploy. NEXUS will:</p>
+          <ul style="list-style:none;padding:0">
+            <li style="padding:0.5rem 0;display:flex;align-items:center;gap:0.75rem">✓ Create a virtual environment</li>
+            <li style="padding:0.5rem 0;display:flex;align-items:center;gap:0.75rem">✓ Install all pip dependencies</li>
+            <li style="padding:0.5rem 0;display:flex;align-items:center;gap:0.75rem">✓ Set up your entry point</li>
+            <li style="padding:0.5rem 0;display:flex;align-items:center;gap:0.75rem">✓ Deploy to global edge nodes</li>
+          </ul>
+
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">Expected ZIP Structure</h3>
+          <pre><code>my-bot.zip
+├── main.py              # Entry point
+├── requirements.txt     # Dependencies
+├── .env.example         # Env template
+└── src/
+    └── handlers.py</code></pre>
+        </div>
+        <div id="docContentLaravel" style="display:none">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">Laravel Quickstart</h3>
+          <p>Deploy your Laravel bot with Horizon, Queue, Scheduler, and Octane support out of the box.</p>
+          <pre><code style="color:var(--nexus-cyan)"># composer.json
+{
+    "require": {
+        "laravel/framework": "^11.0",
+        "laravel/horizon": "^5.0"
+    }
+}</code></pre>
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">Expected ZIP Structure</h3>
+          <pre><code>my-bot.zip
+├── artisan
+├── composer.json
+├── routes/
+│   └── bot.php
+└── app/
+    └── Bots/</code></pre>
+        </div>
+        <div id="docContentJs" style="display:none">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">JavaScript Quickstart</h3>
+          <p>Deploy Discord.js, node-telegram-bot-api, or any Express-based bot.</p>
+          <pre><code style="color:var(--js-yellow)">// index.js
+const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.on('ready', () => console.log('Ready!'));
+client.on('interactionCreate', async interaction => {
+    if (interaction.isChatInputCommand() && interaction.commandName === 'ping') {
+        await interaction.reply('Pong!');
+    }
+});
+
+client.login(process.env.TOKEN);</code></pre>
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">Expected ZIP Structure</h3>
+          <pre><code>my-bot.zip
+├── index.js             # Entry point
+├── package.json         # Dependencies
+├── .env.example
+└── src/
+    └── commands/</code></pre>
+        </div>
+        <div id="docContentZip" style="display:none">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;color:var(--signal-white)">ZIP Deploy Documentation</h3>
+          <p>Upload any bot as a ZIP or tar.gz archive. NEXUS auto-detects the runtime and configures everything.</p>
+          <h4 style="font-weight:600;margin:1.5rem 0 0.5rem">Auto-Detection Logic</h4>
+          <ol style="padding-left:1.25rem;color:var(--titanium);line-height:2">
+            <li>Check for <code>composer.json</code> → Laravel</li>
+            <li>Check for <code>requirements.txt</code> or <code>setup.py</code> → Python</li>
+            <li>Check for <code>package.json</code> → JavaScript</li>
+            <li>If none detected → prompts manual selection</li>
+          </ol>
+          <h4 style="font-weight:600;margin:1.5rem 0 0.5rem">Limits</h4>
+          <ul style="padding-left:1.25rem;color:var(--titanium);line-height:2">
+            <li>Max file size: <strong>100MB</strong> (500MB for Enterprise)</li>
+            <li>Max build time: <strong>15 minutes</strong> (60min for Enterprise)</li>
+            <li>Supported formats: <code>.zip</code>, <code>.tar.gz</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function showRuntimeDoc(runtime) {
+      document.querySelectorAll('.docs-content .tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('[id^="docContent"]').forEach(d => d.style.display = 'none');
+      const tabs = document.querySelectorAll('.docs-content .tab');
+      const map = { python: 0, laravel: 1, js: 2, zip: 3 };
+      if (tabs[map[runtime]]) tabs[map[runtime]].classList.add('active');
+      const el = document.getElementById('docContent' + runtime.charAt(0).toUpperCase() + runtime.slice(1));
+      if (el) el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

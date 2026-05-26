@@ -1,4 +1,12 @@
 /           /login.html   301
 /login      /login.html   200
+/register   /login.html   200
 /dashboard  /dashboard.html   200
-/*          /index.html   200
+/projects   /dashboard.html   200
+/hosting    /dashboard.html   200
+/deploy/zip /deploy-zip.html   200
+/docs/runtimes  /docs.html   200
+/status     /status.html   200
+/docs       /docs.html   200
+/pricing    /index.html   200
+/*          /dashboard.html   200

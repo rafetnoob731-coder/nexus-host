@@ -11,7 +11,15 @@
   "routes": [
     { "src": "/", "dest": "/index.html" },
     { "src": "/login", "dest": "/login.html" },
+    { "src": "/register", "dest": "/login.html" },
     { "src": "/dashboard", "dest": "/dashboard.html" },
+    { "src": "/projects", "dest": "/dashboard.html" },
+    { "src": "/hosting", "dest": "/dashboard.html" },
+    { "src": "/deploy/zip", "dest": "/deploy-zip.html" },
+    { "src": "/docs/runtimes", "dest": "/docs.html" },
+    { "src": "/pricing", "dest": "/index.html" },
+    { "src": "/status", "dest": "/status.html" },
+    { "src": "/docs", "dest": "/docs.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "headers": [

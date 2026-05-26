@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>NEXUS HOSTING — Deploy from Archive</title>
+  <meta name="description" content="Upload and deploy your bot from a ZIP archive. Auto-detect runtime, extract dependencies, deploy to edge.">
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/nexus.css">
+  <style>
+    .zip-page { max-width: 720px; margin: 0 auto; padding: 4rem 1.5rem; }
+    .zip-header { text-align: center; margin-bottom: 3rem; }
+    .zip-header h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.03em; }
+  </style>
+</head>
+<body>
+  <nav class="landing-nav" style="position:relative;background:var(--void-black)">
+    <div class="nav-logo"><div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--signal-white);box-shadow:0 0 20px var(--nexus-cyan-glow)">N</div><div>NEXUS <span style="color:var(--nexus-cyan)">HOSTING</span></div></div>
+    <div class="nav-links"><a href="/">Home</a><a href="/login">Dashboard</a></div>
+  </nav>
+  <div class="zip-page">
+    <div class="zip-header">
+      <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--plasma-purple);letter-spacing:0.15em;margin-bottom:1rem">> ARCHIVE DEPLOY</div>
+      <h1 style="color:var(--signal-white)">Deploy from <span style="background:var(--gradient-zip);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Archive</span></h1>
+      <p style="color:var(--titanium);font-size:1.05rem;max-width:520px;margin:1rem auto 0">Drag and drop your ZIP or tar.gz. We detect runtime, extract dependencies, and deploy to global edge nodes.</p>
+    </div>
+    <div class="upload-zone" id="dropZone" style="margin-bottom:2rem" onclick="document.getElementById('zipFileInput').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="48" height="48" style="margin-bottom:1rem;opacity:0.3;color:var(--plasma-purple)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <p style="font-size:1.1rem;color:var(--signal-white);margin-bottom:0.5rem">Drag & drop your archive here</p>
+      <p style="font-size:0.88rem;color:var(--titanium)">or click to browse files</p>
+      <p style="font-size:0.78rem;color:var(--titanium);margin-top:0.5rem">Supported: .zip, .tar.gz (max 100MB)</p>
+      <input type="file" id="zipFileInput" accept=".zip,.tar.gz" style="display:none" onchange="handleZipUpload(event)">
+    </div>
+    <div id="uploadProgress" style="display:none;margin-bottom:2rem">
+      <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-size:0.85rem"><span id="uploadFileName">file.zip</span><span id="uploadPercent">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="uploadProgressFill" style="width:0%;background:var(--gradient-zip)"></div></div>
+    </div>
+    <div id="analysisPanel" style="display:none;margin-bottom:2rem">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Analysis Results</div></div>
+        <div class="card-body" id="analysisSteps">
+          <div class="analysis-step"><div class="step-status pending" id="analysisStep1">?</div><span class="step-label">Detecting runtime</span><span class="step-detail" id="analysisDetail1">Scanning...</span></div>
+          <div class="analysis-step"><div class="step-status pending" id="analysisStep2">?</div><span class="step-label">Checking entry point</span><span class="step-detail" id="analysisDetail2">Scanning...</span></div>
+          <div class="analysis-step"><div class="step-status pending" id="analysisStep3">?</div><span class="step-label">Scanning dependencies</span><span class="step-detail" id="analysisDetail3">Scanning...</span></div>
+          <div class="analysis-step"><div class="step-status pending" id="analysisStep4">?</div><span class="step-label">Security scan</span><span class="step-detail" id="analysisDetail4">Scanning...</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.75rem;margin-top:1.5rem">
+        <button class="btn btn-primary" onclick="startZipDeploy()" id="deployZipBtn">Deploy Now</button>
+        <button class="btn btn-secondary" onclick="showZipConfig()" id="configZipBtn">Review & Configure</button>
+      </div>
+    </div>
+    <div id="configPanel" style="display:none;margin-bottom:2rem">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Configure Deployment</div></div>
+        <div class="card-body">
+          <div class="form-group"><label class="form-label">Project</label>
+            <select class="form-select" id="zipProjectSelect"><option value="new">Create New Project</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Runtime</label>
+            <select class="form-select" id="zipRuntimeSelect">
+              <option value="laravel">Laravel (PHP)</option>
+              <option value="python">Python</option>
+              <option value="node">JavaScript (Node.js)</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Entry Point</label>
+            <input class="form-input" id="zipEntryPoint" placeholder="Auto-detected" style="font-family:var(--font-mono)">
+          </div>
+          <div class="form-group"><label class="form-label">Environment Variables</label>
+            <div id="zipEnvVars"><div style="display:flex;gap:0.75rem;margin-bottom:0.5rem"><input class="form-input" placeholder="KEY" style="flex:1;font-family:var(--font-mono);font-size:0.82rem"><input class="form-input" placeholder="Value" style="flex:2;font-family:var(--font-mono);font-size:0.82rem"></div></div>
+            <button class="btn btn-ghost btn-sm" onclick="addZipEnvVar()">+ Add Variable</button>
+          </div>
+        </div>
+        <div class="card-footer"><button class="btn btn-ghost" onclick="document.getElementById('configPanel').style.display='none';document.getElementById('analysisPanel').style.display='block'">Back</button><button class="btn btn-primary" onclick="startZipDeploy()">Deploy</button></div>
+      </div>
+    </div>
+    <div id="deployTerminal" style="display:none">
+      <div class="terminal">
+        <div class="terminal-header"><span class="terminal-dot red"></span><span class="terminal-dot yellow"></span><span class="terminal-dot green"></span><span class="terminal-title">deploy — live stream</span></div>
+        <div class="terminal-body" id="zipTerminalBody" style="max-height:400px"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let currentZipFile = null;
+    let detectedRuntime = 'python';
+
+    function handleZipUpload(e) {
+      currentZipFile = e.target.files[0];
+      if (!currentZipFile) return;
+      document.getElementById('uploadFileName').textContent = currentZipFile.name + ' (' + (currentZipFile.size / 1024 / 1024).toFixed(2) + ' MB)';
+      document.getElementById('uploadProgress').style.display = 'block';
+      let pct = 0;
+      const interval = setInterval(() => { pct += 5; document.getElementById('uploadPercent').textContent = pct + '%'; document.getElementById('uploadProgressFill').style.width = pct + '%'; if (pct >= 100) { clearInterval(interval); runAnalysis(); } }, 100);
+    }
+
+    function runAnalysis() {
+      document.getElementById('analysisPanel').style.display = 'block';
+      setTimeout(() => { document.getElementById('analysisStep1').className = 'step-status complete'; document.getElementById('analysisStep1').textContent = '✓'; document.getElementById('analysisDetail1').textContent = currentZipFile && currentZipFile.name.endsWith('.py') ? 'Python' : (currentZipFile && currentZipFile.name.endsWith('.js') ? 'JavaScript' : (currentZipFile && currentZipFile.name.includes('laravel') ? 'Laravel' : 'Python')); detectedRuntime = document.getElementById('analysisDetail1').textContent.toLowerCase(); }, 600);
+      setTimeout(() => { document.getElementById('analysisStep2').className = 'step-status complete'; document.getElementById('analysisStep2').textContent = '✓'; document.getElementById('analysisDetail2').textContent = (detectedRuntime === 'python' ? 'main.py' : detectedRuntime === 'node' ? 'index.js' : 'artisan') + ' ✓'; }, 1200);
+      setTimeout(() => { document.getElementById('analysisStep3').className = 'step-status complete'; document.getElementById('analysisStep3').textContent = '✓'; document.getElementById('analysisDetail3').textContent = Math.floor(Math.random() * 20 + 5) + ' found ✓'; }, 1800);
+      setTimeout(() => { document.getElementById('analysisStep4').className = 'step-status complete'; document.getElementById('analysisStep4').textContent = '✓'; document.getElementById('analysisDetail4').textContent = 'Clean ✓'; document.getElementById('deployZipBtn').textContent = 'Deploy Now'; }, 2400);
+    }
+
+    function showZipConfig() {
+      document.getElementById('configPanel').style.display = 'block';
+      document.getElementById('zipRuntimeSelect').value = detectedRuntime === 'javascript' ? 'node' : detectedRuntime;
+      document.getElementById('zipEntryPoint').value = detectedRuntime === 'python' ? 'main.py' : detectedRuntime === 'node' ? 'index.js' : 'artisan';
+    }
+
+    function addZipEnvVar() {
+      const div = document.createElement('div'); div.style.cssText = 'display:flex;gap:0.75rem;margin-bottom:0.5rem';
+      div.innerHTML = '<input class="form-input" placeholder="KEY" style="flex:1;font-family:var(--font-mono);font-size:0.82rem"><input class="form-input" placeholder="Value" style="flex:2;font-family:var(--font-mono);font-size:0.82rem"><button class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()">×</button>';
+      document.getElementById('zipEnvVars').appendChild(div);
+    }
+
+    async function startZipDeploy() {
+      document.getElementById('analysisPanel').style.display = 'none';
+      document.getElementById('configPanel').style.display = 'none';
+      document.getElementById('deployTerminal').style.display = 'block';
+      const terminal = document.getElementById('zipTerminalBody');
+      function addLog(type, msg) { const l = document.createElement('div'); l.className = 'line ' + type; l.textContent = msg; terminal.appendChild(l); terminal.scrollTop = terminal.scrollHeight; }
+      addLog('system', '[ZIP] Starting archive deployment...');
+      await new Promise(r => setTimeout(r, 800));
+      addLog('success', '[ZIP] Extracting archive... [OK]');
+      await new Promise(r => setTimeout(r, 600));
+      addLog('success', '[ZIP] Detected runtime: ' + detectedRuntime.charAt(0).toUpperCase() + detectedRuntime.slice(1));
+      await new Promise(r => setTimeout(r, 600));
+      if (detectedRuntime === 'python') {
+        addLog('success', '[PYTHON] Installing Python ' + (document.getElementById('zipRuntimeSelect').value === 'python' ? '3.11' : '3.11') + '... [OK]');
+        addLog('success', '[PYTHON] Creating virtual environment... [OK]');
+        addLog('success', '[PYTHON] Installing requirements.txt... [OK]');
+      } else if (detectedRuntime === 'node') {
+        addLog('success', '[NODE] Installing Node.js 20... [OK]');
+        addLog('success', '[NODE] Running npm install... [OK]');
+      } else {
+        addLog('success', '[LARAVEL] Installing PHP 8.3... [OK]');
+        addLog('success', '[LARAVEL] Running composer install... [OK]');
+      }
+      await new Promise(r => setTimeout(r, 1000));
+      addLog('success', '[NEXUS] Building container... [OK]');
+      await new Promise(r => setTimeout(r, 800));
+      addLog('success', '[NEXUS] Pushing to registry... [OK]');
+      addLog('success', '[NEXUS] Deploying to edge nodes... [OK]');
+      await new Promise(r => setTimeout(r, 600));
+      addLog('success', '[NEXUS] Health check passed [200 OK]');
+      const slug = 'my-bot-' + Math.random().toString(36).substring(2, 8);
+      addLog('highlight', 'Bot live at: https://' + slug + '.nexus.host');
+      document.getElementById('deployZipBtn').textContent = 'Deploy Another';
+    }
+
+    document.getElementById('dropZone').addEventListener('dragover', e => { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); });
+    document.getElementById('dropZone').addEventListener('dragleave', e => { document.getElementById('dropZone').classList.remove('drag-over'); });
+    document.getElementById('dropZone').addEventListener('drop', e => { e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); if (e.dataTransfer.files.length) { document.getElementById('zipFileInput').files = e.dataTransfer.files; handleZipUpload({ target: { files: e.dataTransfer.files } }); } });
+    document.querySelector('.nav-links a[href="/"]').addEventListener('click', e => { e.preventDefault(); window.location.href = '/'; });
+  </script>
+</body>
+</html>

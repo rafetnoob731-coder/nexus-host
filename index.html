@@ -4,711 +4,253 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEXUS HOSTING — Deploy. Scale. Dominate.</title>
-  <meta name="description" content="Laravel-based bot hosting platform. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts on elastic infrastructure.">
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="description" content="The unified platform for bot hosting. Laravel, Python, JavaScript — deploy any runtime, manage everything from one command center.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/nexus.css">
   <style>
-    .landing-body { font-family: var(--font-sans); background: var(--void-black); color: var(--titanium); }
-    .landing-body::before { display: none; }
-
-    /* Ambient glow background */
-    .landing-body {
-      background: #050507;
-      background-image:
-        radial-gradient(ellipse 600px 400px at 20% 30%, rgba(0,240,255,0.04) 0%, transparent 70%),
-        radial-gradient(ellipse 500px 500px at 80% 70%, rgba(123,97,255,0.03) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 400px at 50% 10%, rgba(0,240,255,0.02) 0%, transparent 70%);
-    }
-
-    .section-title { text-align: center; margin-bottom: 4rem; }
-    .section-title h2 { font-size: 2.5rem; font-weight: 700; font-family: var(--font-display); color: var(--signal-white); letter-spacing: -0.02em; }
-    .section-title p { font-size: 1.125rem; color: var(--titanium); margin-top: 0.75rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-
-    .gradient-text { background: var(--gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    /* ===== NAV ===== */
-    .navbar {
-      position: fixed; top: 16px; left: 16px; right: 16px;
-      height: 72px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem;
-      background: rgba(5,5,7,0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border-glass);
-      border-radius: 16px;
-      z-index: 100;
-      transition: all 0.3s ease;
-      max-width: 1280px; margin: 0 auto;
-      left: 50%; transform: translateX(-50%);
-      width: calc(100% - 32px);
-    }
-    .navbar.scrolled { background: rgba(5,5,7,0.95); box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
-    .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.15rem; font-family: var(--font-display); color: var(--signal-white); text-decoration: none; }
-    .nav-logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--nexus-cyan); box-shadow: 0 0 12px var(--nexus-cyan-glow); animation: pulse 2s infinite; }
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
-    .nav-links a { padding: 0.5rem 1rem; border-radius: 8px; color: var(--titanium); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: var(--transition); position: relative; }
-    .nav-links a:hover { color: var(--signal-white); background: var(--surface-glass-hover); }
-    .nav-links .nav-status { display: flex; align-items: center; gap: 0.35rem; padding: 0.5rem 1rem; border-radius: 8px; color: var(--success); font-size: 0.8rem; font-weight: 600; }
-    .nav-links .nav-status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
-    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
-    .nav-actions .btn-ghost-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: transparent; border: 1px solid var(--border-glass); color: var(--signal-white); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; }
-    .nav-actions .btn-ghost-nav:hover { border-color: rgba(255,255,255,0.2); background: var(--surface-glass-hover); }
-    .nav-actions .btn-solid-nav { padding: 0.5rem 1.25rem; border-radius: 8px; background: var(--gradient-brand); color: var(--signal-white); border: none; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; box-shadow: 0 4px 20px var(--nexus-cyan-glow); position: relative; overflow: hidden; }
-    .nav-actions .btn-solid-nav:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--nexus-cyan-glow); }
-    .mobile-toggle-nav { display: none; width: 40px; height: 40px; border-radius: 8px; background: var(--surface-glass); border: 1px solid var(--border-glass); color: var(--signal-white); cursor: pointer; align-items: center; justify-content: center; }
-    .mobile-menu { display: none; position: fixed; top: 88px; left: 16px; right: 16px; background: rgba(5,5,7,0.98); backdrop-filter: blur(24px); border: 1px solid var(--border-glass); border-radius: 16px; z-index: 99; padding: 1rem; flex-direction: column; gap: 0.25rem; }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a { padding: 0.75rem 1rem; border-radius: 8px; color: var(--titanium); text-decoration: none; font-size: 0.95rem; }
-    .mobile-menu a:hover { background: var(--surface-glass-hover); color: var(--signal-white); }
-
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .nav-actions .btn-ghost-nav { display: none; }
-      .mobile-toggle-nav { display: flex; }
-      .navbar { padding: 0 1rem; height: 64px; top: 12px; width: calc(100% - 24px); }
-    }
-
-    /* ===== HERO ===== */
-    .hero { padding: 10rem 0 6rem; position: relative; overflow: hidden; min-height: 100vh; display: flex; align-items: center; }
-    .hero-inner { display: grid; grid-template-columns: 55% 45%; gap: 3rem; align-items: center; }
-    .hero-eyebrow { font-family: var(--font-mono); font-size: 0.85rem; color: var(--nexus-cyan); font-weight: 500; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
-    .hero-eyebrow::before { content: '>'; opacity: 0.6; }
-    .hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5.5rem); font-weight: 700; color: var(--signal-white); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
-    .hero p { font-size: 1.125rem; color: var(--titanium); max-width: 520px; line-height: 1.7; margin-bottom: 2rem; }
-    .hero-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
-    .hero-actions .btn-hero { padding: 0.85rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
-    .hero-actions .btn-hero.primary { background: var(--gradient-brand); color: var(--signal-white); border: none; box-shadow: 0 4px 30px var(--nexus-cyan-glow); }
-    .hero-actions .btn-hero.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 50px var(--nexus-cyan-glow); }
-    .hero-actions .btn-hero.secondary { background: transparent; color: var(--signal-white); border: 1px solid var(--border-glass); }
-    .hero-actions .btn-hero.secondary:hover { background: var(--surface-glass-hover); border-color: rgba(255,255,255,0.2); }
-    .hero-actions .btn-hero.secondary .arrow { transition: transform 0.3s ease; display: inline-block; }
-    .hero-actions .btn-hero.secondary:hover .arrow { transform: translateX(4px); }
-    .hero-trust { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
-    .hero-trust .logos { display: flex; align-items: center; gap: 1.5rem; opacity: 0.4; }
-    .hero-trust .logos span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--titanium); font-family: var(--font-display); }
-    .hero-trust .logos span::after { content: ' •'; color: var(--nexus-cyan); }
-    .hero-trust .logos span:last-child::after { display: none; }
-
-    /* Nexus Core Visual */
-    .hero-visual { display: flex; align-items: center; justify-content: center; position: relative; height: 500px; }
-    .nexus-core { position: relative; width: 280px; height: 280px; }
-    .nexus-core .center-node { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 72px; height: 72px; border-radius: 50%; background: var(--gradient-brand); box-shadow: 0 0 60px var(--nexus-cyan-glow), 0 0 120px rgba(123,97,255,0.15); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; color: var(--signal-white); z-index: 2; }
-    .nexus-core .center-node::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; background: var(--gradient-brand); opacity: 0.2; filter: blur(12px); animation: pulse 2s infinite; }
-    .nexus-core .orbit-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid rgba(0,240,255,0.08); }
-    .nexus-core .orbit-ring.r1 { width: 160px; height: 160px; }
-    .nexus-core .orbit-ring.r2 { width: 240px; height: 240px; }
-    .nexus-core .orbit-ring.r3 { width: 320px; height: 320px; }
-    .nexus-core .satellite { position: absolute; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; z-index: 3; }
-    .nexus-core .satellite.s1 { top: 50%; left: -14px; transform: translateY(-50%); background: rgba(0,240,255,0.15); border: 1px solid rgba(0,240,255,0.3); color: var(--nexus-cyan); }
-    .nexus-core .satellite.s2 { top: 50%; right: -14px; transform: translateY(-50%); background: rgba(123,97,255,0.15); border: 1px solid rgba(123,97,255,0.3); color: var(--plasma-purple); }
-    .nexus-core .satellite.s3 { top: -14px; left: 50%; transform: translateX(-50%); background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.2); color: var(--nexus-cyan); }
-    .nexus-core .satellite.s4 { bottom: -14px; left: 50%; transform: translateX(-50%); background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.2); color: var(--plasma-purple); }
-    .nexus-core .satellite.s5 { top: 15%; right: -8px; background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.15); color: var(--nexus-cyan); }
-    .nexus-core .satellite.s6 { bottom: 15%; left: -8px; background: rgba(123,97,255,0.1); border: 1px solid rgba(123,97,255,0.15); color: var(--plasma-purple); }
-    .nexus-core .data-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--nexus-cyan); box-shadow: 0 0 8px var(--nexus-cyan); animation: orbitData 3s linear infinite; }
-    .nexus-core .data-particle.p2 { width: 3px; height: 3px; background: var(--plasma-purple); box-shadow: 0 0 6px var(--plasma-purple); animation-duration: 4s; animation-delay: -1.5s; }
-    @keyframes orbitData {
-      0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
-      100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
-    }
-    .nexus-core .data-particle.p2 { animation-name: orbitData2; }
-    @keyframes orbitData2 {
-      0% { transform: rotate(180deg) translateX(160px) rotate(-180deg); }
-      100% { transform: rotate(540deg) translateX(160px) rotate(-540deg); }
-    }
-
-    .data-ticker { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 0; font-family: var(--font-mono); font-size: 0.7rem; color: rgba(255,255,255,0.2); display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
-    .data-ticker span { display: flex; align-items: center; gap: 0.3rem; }
-    .data-ticker .val { color: var(--nexus-cyan); }
-
-    @media (max-width: 768px) {
-      .hero { padding: 8rem 0 3rem; min-height: auto; }
-      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
-      .hero-visual { height: 350px; }
-      .hero h1 { font-size: 2.5rem; }
-      .hero p { font-size: 1rem; }
-      .hero-trust .logos { flex-wrap: wrap; gap: 0.75rem; }
-    }
-
-    /* ===== FEATURES ===== */
-    .features-section { padding: 6rem 0; }
-    .features-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
-    .feature-card { padding: 2.5rem 2rem; border-radius: var(--radius-lg); background: var(--steel-grey); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; overflow: hidden; }
-    .feature-card:hover { transform: translateY(-8px); border-color: rgba(0,240,255,0.3); }
-    .feature-card:hover .feature-icon { box-shadow: 0 0 30px var(--nexus-cyan-glow); }
-    .feature-card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity 0.3s ease; background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.06), transparent 70%); }
-    .feature-card:hover::after { opacity: 1; }
-    .feature-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.25rem; transition: box-shadow 0.3s ease; }
-    .feature-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--signal-white); margin-bottom: 0.5rem; }
-    .feature-card p { color: var(--titanium); font-size: 0.88rem; line-height: 1.7; }
-
-    @media (max-width: 1024px) { .features-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
-
-    /* ===== INFRASTRUCTURE ===== */
-    .infra-section { padding: 6rem 0; background: var(--void-black); position: relative; }
-    .infra-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(0,240,255,0.02), transparent 70%); pointer-events: none; }
-    .infra-diagram { display: flex; align-items: center; justify-content: center; gap: 0; padding: 3rem 0; position: relative; }
-    .infra-step { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative; z-index: 2; }
-    .infra-step .icon { width: 64px; height: 64px; border-radius: 16px; background: var(--steel-grey); border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: all 0.3s ease; }
-    .infra-step.active .icon { border-color: var(--nexus-cyan); box-shadow: 0 0 30px var(--nexus-cyan-glow); }
-    .infra-step .label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--titanium); }
-    .infra-connector { width: 80px; height: 2px; background: linear-gradient(90deg, var(--nexus-cyan), transparent); opacity: 0.3; position: relative; }
-    .infra-connector.active { background: var(--gradient-brand); opacity: 0.8; }
-    .infra-connector .particle { position: absolute; top: -2px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--nexus-cyan); box-shadow: 0 0 10px var(--nexus-cyan); animation: flowParticle 2s linear infinite; }
-    @keyframes flowParticle {
-      0% { left: 0; opacity: 1; }
-      100% { left: 100%; opacity: 0; }
-    }
-    .infra-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; flex-wrap: wrap; }
-    .infra-stat { padding: 1rem 2rem; background: rgba(26,26,31,0.8); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 100px; display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--titanium); }
-    .infra-stat .num { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--signal-white); }
-
-    @media (max-width: 768px) {
-      .infra-diagram { flex-direction: column; gap: 1rem; }
-      .infra-connector { width: 2px; height: 40px; }
-      .infra-connector .particle { top: 0; left: -2px; width: 6px; height: 6px; animation: flowParticleVert 2s linear infinite; }
-      @keyframes flowParticleVert { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
-      .infra-stat { border-radius: 16px; width: 100%; justify-content: center; }
-    }
-
-    /* ===== PRICING ===== */
-    .pricing-section { padding: 6rem 0; }
-    .pricing-toggle { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 3rem; }
-    .pricing-toggle span { font-size: 0.9rem; color: var(--titanium); }
-    .pricing-toggle .toggle-track { width: 48px; height: 26px; border-radius: 100px; background: rgba(255,255,255,0.08); cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.06); }
-    .pricing-toggle .toggle-track .thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--nexus-cyan); position: absolute; top: 2px; left: 2px; transition: var(--transition); box-shadow: 0 0 12px var(--nexus-cyan-glow); }
-    .pricing-toggle .toggle-track.active .thumb { transform: translateX(22px); }
-    .pricing-toggle .badge-free { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 100px; background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.15); }
-    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start; }
-    .pricing-card { padding: 2.5rem 2rem; border-radius: var(--radius-xl); background: var(--steel-grey); border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); position: relative; }
-    .pricing-card.featured { border: 1px solid rgba(0,240,255,0.15); box-shadow: 0 0 60px rgba(0,240,255,0.06); }
-    .pricing-card.featured::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 0.25rem 1rem; border-radius: 100px; background: var(--gradient-brand); font-size: 0.7rem; font-weight: 700; color: var(--signal-white); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-    .pricing-card.featured .pc-top-border { position: absolute; top: -1px; left: -1px; right: -1px; height: 2px; background: var(--gradient-brand); border-radius: 24px 24px 0 0; }
-    .pricing-card:hover { transform: translateY(-4px); border-color: rgba(123,97,255,0.2); }
-    .pricing-card .plan-name { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--nexus-cyan); margin-bottom: 0.5rem; }
-    .pricing-card .price { font-size: 3rem; font-weight: 700; font-family: var(--font-display); color: var(--signal-white); letter-spacing: -0.03em; }
-    .pricing-card .price span { font-size: 1rem; font-weight: 500; color: var(--titanium); }
-    .pricing-card .desc { color: var(--titanium); font-size: 0.88rem; margin: 0.75rem 0 1.5rem; }
-    .pricing-card ul { list-style: none; padding: 0; margin: 0 0 1.5rem; }
-    .pricing-card ul li { padding: 0.5rem 0; font-size: 0.88rem; color: var(--titanium); display: flex; align-items: center; gap: 0.6rem; }
-    .pricing-card ul li::before { content: '✓'; color: var(--nexus-cyan); font-weight: 700; }
-    .pricing-card .btn-pricing { width: 100%; padding: 0.85rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: inherit; transition: var(--transition); }
-    .pricing-card .btn-pricing.primary { background: var(--gradient-brand); color: var(--signal-white); border: none; box-shadow: 0 4px 20px var(--nexus-cyan-glow); }
-    .pricing-card .btn-pricing.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 30px var(--nexus-cyan-glow); }
-    .pricing-card .btn-pricing.secondary { background: transparent; color: var(--signal-white); border: 1px solid var(--border-glass); }
-    .pricing-card .btn-pricing.secondary:hover { background: var(--surface-glass-hover); border-color: rgba(255,255,255,0.2); }
-
-    @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
-
-    /* ===== TERMINAL DEMO ===== */
-    .terminal-section { padding: 6rem 0; }
-    .terminal-demo { max-width: 820px; margin: 0 auto; background: #0d0d12; border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
-    .terminal-demo .term-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.25rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .terminal-demo .term-header .dots { display: flex; gap: 8px; }
-    .terminal-demo .term-header .dots span { width: 12px; height: 12px; border-radius: 50%; }
-    .terminal-demo .term-header .dots span:nth-child(1) { background: #ff5f56; }
-    .terminal-demo .term-header .dots span:nth-child(2) { background: #ffbd2e; }
-    .terminal-demo .term-header .dots span:nth-child(3) { background: #27c93f; }
-    .terminal-demo .term-header .title { margin-left: auto; font-size: 0.8rem; color: var(--titanium); font-family: var(--font-mono); }
-    .terminal-demo .term-body { padding: 1.5rem; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.9; min-height: 280px; }
-    .terminal-demo .term-body .line { opacity: 0; animation: typeIn 0.4s ease forwards; }
-    .terminal-demo .term-body .line.d0 { animation-delay: 0.2s; }
-    .terminal-demo .term-body .line.d1 { animation-delay: 0.6s; }
-    .terminal-demo .term-body .line.d2 { animation-delay: 1.0s; }
-    .terminal-demo .term-body .line.d3 { animation-delay: 1.4s; }
-    .terminal-demo .term-body .line.d4 { animation-delay: 1.8s; }
-    .terminal-demo .term-body .line.d5 { animation-delay: 2.2s; }
-    .terminal-demo .term-body .line.d6 { animation-delay: 2.6s; }
-    .terminal-demo .term-body .line.d7 { animation-delay: 3.0s; }
-    .terminal-demo .term-body .prompt { color: var(--nexus-cyan); }
-    .terminal-demo .term-body .output { color: var(--titanium); }
-    .terminal-demo .term-body .ok { color: var(--success); }
-    .terminal-demo .term-body .highlight { color: var(--signal-white); font-weight: 500; }
-    .terminal-demo .term-body .url { color: var(--nexus-cyan); }
-    .terminal-demo .term-body .cursor { display: inline-block; width: 8px; height: 1.1em; background: var(--signal-white); margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
-
-    @keyframes typeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 768px) { .terminal-demo .term-body { font-size: 0.75rem; padding: 1rem; } }
-
-    /* ===== TESTIMONIALS ===== */
-    .testimonials-section { padding: 6rem 0; overflow: hidden; }
-    .testimonial-marquee { display: flex; gap: 1.5rem; animation: scrollMarquee 30s linear infinite; width: max-content; }
-    .testimonial-marquee:hover { animation-play-state: paused; }
-    .testimonial-card { min-width: 320px; padding: 1.5rem; background: rgba(26,26,31,0.6); backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: var(--radius-lg); }
-    .testimonial-card .t-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
-    .testimonial-card .t-avatar { width: 40px; height: 40px; border-radius: 10px; background: var(--gradient-brand); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--signal-white); }
-    .testimonial-card .t-name { font-weight: 600; font-size: 0.9rem; color: var(--signal-white); }
-    .testimonial-card .t-handle { font-size: 0.75rem; color: var(--titanium); }
-    .testimonial-card .t-stars { display: flex; gap: 2px; margin-bottom: 0.75rem; }
-    .testimonial-card .t-stars span { color: var(--nexus-cyan); font-size: 0.85rem; }
-    .testimonial-card .t-text { font-size: 0.85rem; color: var(--titanium); line-height: 1.7; font-style: italic; }
-    @keyframes scrollMarquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    /* ===== FOOTER ===== */
-    .footer { padding: 5rem 0 2rem; border-top: 1px solid var(--border-glass); }
-    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
-    .footer-brand .logo { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem; font-family: var(--font-display); color: var(--signal-white); margin-bottom: 1rem; }
-    .footer-brand p { color: var(--titanium); font-size: 0.88rem; max-width: 320px; line-height: 1.7; }
-    .footer-newsletter { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
-    .footer-newsletter input { flex: 1; padding: 0.65rem 1rem; background: var(--surface-glass); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--signal-white); font-size: 0.85rem; font-family: var(--font-mono); outline: none; transition: var(--transition); }
-    .footer-newsletter input:focus { border-color: var(--nexus-cyan); box-shadow: 0 0 20px rgba(0,240,255,0.05); }
-    .footer-newsletter input::placeholder { color: var(--titanium); }
-    .footer-newsletter button { padding: 0.65rem 1.25rem; border-radius: 8px; background: var(--gradient-brand); color: var(--signal-white); border: none; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: var(--transition); }
-    .footer-newsletter button:hover { box-shadow: 0 0 30px var(--nexus-cyan-glow); }
-    .footer-social { display: flex; gap: 0.75rem; margin-top: 1rem; }
-    .footer-social a { width: 36px; height: 36px; border-radius: 8px; background: var(--surface-glass); border: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: center; color: var(--titanium); text-decoration: none; transition: var(--transition); font-size: 0.85rem; font-weight: 600; }
-    .footer-social a:hover { background: rgba(0,240,255,0.08); border-color: rgba(0,240,255,0.2); color: var(--signal-white); }
-    .footer-col h4 { font-size: 0.85rem; font-weight: 600; color: var(--signal-white); margin-bottom: 1.25rem; font-family: var(--font-display); }
-    .footer-col a { display: block; color: var(--titanium); font-size: 0.85rem; padding: 0.35rem 0; text-decoration: none; transition: var(--transition); }
-    .footer-col a:hover { color: var(--signal-white); }
-    .footer-bottom { padding-top: 1.5rem; border-top: 1px solid var(--border-glass); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-    .footer-bottom span { color: var(--titanium); font-size: 0.8rem; }
-    .footer-bottom a { color: var(--titanium); font-size: 0.8rem; transition: var(--transition); }
-    .footer-bottom a:hover { color: var(--signal-white); }
-
-    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } .footer-brand { grid-column: 1 / -1; } }
-    @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
-
-    section { scroll-margin-top: 100px; }
-
-    /* Scroll animation */
-    .fade-up { opacity: 0; transform: translateY(20px); transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-    .fade-up.visible { opacity: 1; transform: translateY(0); }
-    .delay-1 { transition-delay: 0.1s; }
-    .delay-2 { transition-delay: 0.2s; }
-    .delay-3 { transition-delay: 0.3s; }
-    .delay-4 { transition-delay: 0.4s; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .fade-up { opacity: 1; transform: none; }
-      .nexus-core .data-particle { animation: none; }
-      .testimonial-marquee { animation: none; }
-      .terminal-demo .term-body .line { opacity: 1; animation: none; }
-    }
+    .landing-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(5,5,7,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); }
+    .landing-nav .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.2rem; font-family: var(--font-display); }
+    .landing-nav .nav-logo span { color: var(--nexus-cyan); text-shadow: 0 0 20px var(--nexus-cyan-glow); }
+    .landing-nav .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .landing-nav .nav-links a { color: var(--titanium); font-size: 0.88rem; font-weight: 500; transition: var(--transition); }
+    .landing-nav .nav-links a:hover { color: var(--signal-white); }
+    .landing-footer { padding: 4rem 2rem; border-top: 1px solid var(--border-glass); text-align: center; }
+    .landing-footer p { color: var(--titanium); font-size: 0.85rem; }
+    .how-it-works { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin: 4rem 0; }
+    .hiw-step { text-align: center; padding: 2rem 1.5rem; }
+    .hiw-step .hiw-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; background: var(--surface-glass); border: 1px solid var(--border-glass); font-size: 1.5rem; }
+    .hiw-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .hiw-step p { font-size: 0.85rem; color: var(--titanium); line-height: 1.6; }
+    .ticker-bar { display: flex; align-items: center; gap: 1.5rem; padding: 0.75rem 1.5rem; border-radius: 100px; background: var(--surface-glass); border: 1px solid var(--border-glass); }
+    .ticker-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 600; }
+    .ticker-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .section-label { text-align: center; font-family: var(--font-mono); font-size: 0.8rem; color: var(--nexus-cyan); letter-spacing: 0.15em; margin-bottom: 1rem; }
+    .section-heading { text-align: center; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1rem; }
+    .section-subhead { text-align: center; font-size: 1.05rem; color: var(--titanium); max-width: 600px; margin: 0 auto 3rem; }
+    @media (max-width: 768px) { .how-it-works { grid-template-columns: 1fr 1fr; } .landing-nav .nav-links { display: none; } .hero-section { padding-top: 5rem; } }
+    @media (max-width: 480px) { .how-it-works { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body class="landing-body">
-  <!-- NAV -->
-  <nav class="navbar" id="navbar">
-    <a href="/" class="nav-logo">
-      <span class="dot"></span>
-      NEXUS HOSTING
-    </a>
-    <div class="nav-links">
-      <a href="#features">Bots</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#terminal">API</a>
-      <a href="#docs">Docs</a>
-      <span class="nav-status"><span class="dot"></span> Status</span>
+<body>
+  <nav class="landing-nav">
+    <div class="nav-logo">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:var(--signal-white);box-shadow:0 0 20px var(--nexus-cyan-glow)">N</div>
+      <div>NEXUS <span>HOSTING</span></div>
     </div>
-    <div class="nav-actions">
-      <a href="login.html" class="btn-ghost-nav">Client Login</a>
-      <a href="login.html" class="btn-solid-nav">Deploy Bot →</a>
-      <button class="mobile-toggle-nav" onclick="toggleMobile()" aria-label="Menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-      </button>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/docs/runtimes">Docs</a>
+      <a href="/status">Status</a>
+      <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
+      <a href="/login" class="btn btn-primary btn-sm">Get Started</a>
     </div>
   </nav>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#features" onclick="toggleMobile()">Bots</a>
-    <a href="#pricing" onclick="toggleMobile()">Pricing</a>
-    <a href="#terminal" onclick="toggleMobile()">API</a>
-    <a href="#docs" onclick="toggleMobile()">Docs</a>
-    <a href="login.html" onclick="toggleMobile()">Client Login</a>
-    <a href="login.html" onclick="toggleMobile()" style="margin-top:0.5rem;background:var(--gradient-brand);color:var(--signal-white);text-align:center;border-radius:10px;font-weight:700">Deploy Bot →</a>
-  </div>
 
-  <!-- HERO -->
-  <section class="hero" id="docs">
-    <div class="container hero-inner">
-      <div>
-        <div class="hero-eyebrow"> LARAVEL BOT INFRASTRUCTURE</div>
-        <h1>HOSTING THAT<br>NEVER SLEEPS</h1>
-        <p>Deploy Laravel-based automation bots on elastic infrastructure. Zero-downtime scaling, global edge routing, and real-time telemetry.</p>
-        <div class="hero-actions">
-          <a href="login.html" class="btn-hero primary">Start Free Trial →</a>
-          <a href="#features" class="btn-hero secondary">View Documentation <span class="arrow">→</span></a>
-        </div>
-        <div class="hero-trust">
-          <div class="logos">
-            <span>Discord</span>
-            <span>Telegram</span>
-            <span>Slack</span>
-            <span>Webhook</span>
-          </div>
-        </div>
+  <section class="hero-section container" style="padding-top:2rem">
+    <div class="hero-content">
+      <div class="hero-eyebrow">> MULTI-RUNTIME BOT INFRASTRUCTURE</div>
+      <h1 class="hero-title" style="color:var(--signal-white)">DEPLOY BOTS IN<br>ANY LANGUAGE.<br><span style="background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MANAGE FROM ONE NEXUS.</span></h1>
+      <p class="hero-subhead">Laravel, Python, JavaScript — or upload a ZIP. We handle containerization, dependency resolution, and global edge distribution automatically.</p>
+      <div class="runtime-pills">
+        <span class="runtime-pill laravel"><span>●</span> Laravel</span>
+        <span class="runtime-pill python"><span>●</span> Python</span>
+        <span class="runtime-pill js"><span>●</span> JavaScript</span>
+        <span class="runtime-pill zip"><span>●</span> ZIP Upload</span>
       </div>
-      <div class="hero-visual">
-        <div class="nexus-core">
-          <div class="orbit-ring r3"></div>
-          <div class="orbit-ring r2"></div>
-          <div class="orbit-ring r1"></div>
-          <div class="data-particle" style="top:50%;left:50%;margin-top:-2px;margin-left:-2px;"></div>
-          <div class="data-particle p2" style="top:50%;left:50%;margin-top:-1.5px;margin-left:-1.5px;"></div>
-          <div class="center-node">N</div>
-          <div class="satellite s1">D</div>
-          <div class="satellite s2">T</div>
-          <div class="satellite s3">M</div>
-          <div class="satellite s4">A</div>
-          <div class="satellite s5">S</div>
-          <div class="satellite s6">W</div>
-        </div>
-        <div class="data-ticker">
-          <span>Uptime: <span class="val">99.99%</span></span>
-          <span>Nodes: <span class="val">142 Active</span></span>
-          <span>Latency: <span class="val">12ms</span></span>
-          <span>Region: <span class="val">Global</span></span>
-        </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <a href="/login" class="btn btn-primary btn-lg">Create Project</a>
+        <a href="/deploy/zip" class="btn btn-secondary btn-lg">Upload ZIP</a>
+      </div>
+      <div class="ticker-bar" style="margin-top:2.5rem">
+        <span style="font-size:0.7rem;color:var(--titanium);letter-spacing:0.1em">LIVE</span>
+        <div class="ticker-item"><span class="ticker-dot" style="background:var(--nexus-cyan);box-shadow:0 0 8px var(--nexus-cyan-glow)"></span><span>Laravel: 1,240</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:var(--python-gold);box-shadow:0 0 8px var(--python-gold-glow)"></span><span>Python: 892</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:var(--js-yellow);box-shadow:0 0 8px var(--js-yellow-glow)"></span><span>JavaScript: 1,567</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:var(--plasma-purple);box-shadow:0 0 8px var(--plasma-purple-glow)"></span><span>ZIP Deploys: 342</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="nexus-core">
+        <div class="orbit orbit-inner"><div class="orbit-satellite"></div></div>
+        <div class="orbit orbit-mid"><div class="orbit-satellite"></div></div>
+        <div class="orbit orbit-outer"><div class="orbit-satellite"></div></div>
+        <div class="core-center">N</div>
       </div>
     </div>
   </section>
 
-  <!-- FEATURES -->
-  <section class="features-section" id="features">
-    <div class="container">
-      <div class="section-title fade-up">
-        <h2>Everything You <span class="gradient-text">Need</span></h2>
-        <p>Six core capabilities engineered for production bot hosting.</p>
+  <section class="container" id="features" style="padding:6rem 0">
+    <div class="section-label">> WORKFLOW</div>
+    <h2 class="section-heading" style="color:var(--signal-white)">How It Works</h2>
+    <p class="section-subhead">From code to live in under 30 seconds. Choose your runtime, deploy, and monitor from one dashboard.</p>
+    <div class="how-it-works">
+      <div class="hiw-step glass-card">
+        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>Choose Runtime</h3>
+        <p>Laravel, Python, JavaScript, or upload a ZIP archive. We auto-detect your stack.</p>
       </div>
-      <div class="features-grid">
-        <div class="feature-card fade-up delay-1">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          </div>
-          <h3>Elastic Scaling</h3>
-          <p>Auto-scale from 1 to 10,000 bot instances in seconds. Pay only for what you use.</p>
-        </div>
-        <div class="feature-card fade-up delay-2">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          </div>
-          <h3>Laravel Native</h3>
-          <p>First-class support for Laravel Queue, Scheduler, Horizon, and Octane.</p>
-        </div>
-        <div class="feature-card fade-up delay-3">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <h3>Global Edge</h3>
-          <p>Deploy to 35+ regions with intelligent latency routing to your user base.</p>
-        </div>
-        <div class="feature-card fade-up delay-1">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          </div>
-          <h3>Zero-Downtime</h3>
-          <p>Rolling deployments with health checks, instant rollback, and canary releases.</p>
-        </div>
-        <div class="feature-card fade-up delay-2">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          <h3>Observability</h3>
-          <p>Real-time logs, metrics, and alerting baked into every bot instance.</p>
-        </div>
-        <div class="feature-card fade-up delay-3">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="20" height="20"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          </div>
-          <h3>Bot Marketplace</h3>
-          <p>One-click templates for moderation, analytics, automation, and AI chatbots.</p>
-        </div>
+      <div class="hiw-step glass-card">
+        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>Create Project</h3>
+        <p>Organize bots by client, function, or environment with granular access control.</p>
+      </div>
+      <div class="hiw-step glass-card">
+        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg></div>
+        <h3>Deploy</h3>
+        <p>Git push, CLI, or drag-and-drop ZIP. Live in 30 seconds with auto-scaling enabled.</p>
+      </div>
+      <div class="hiw-step glass-card">
+        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <h3>Monitor</h3>
+        <p>Unified telemetry across all runtimes. CPU, memory, requests, and error tracking.</p>
       </div>
     </div>
   </section>
 
-  <!-- INFRASTRUCTURE -->
-  <section class="infra-section">
-    <div class="container" style="text-align:center">
-      <div class="section-title fade-up">
-        <h2>The <span class="gradient-text">Nexus</span> Backbone</h2>
-        <p>From code to global edge delivery in milliseconds.</p>
+  <section class="container" style="padding:4rem 0">
+    <div class="section-label">> RUN TIMES</div>
+    <h2 class="section-heading" style="color:var(--signal-white)">Multi-Runtime Showcase</h2>
+    <p class="section-subhead">Four deployment modes, one unified platform. Pick your stack, we handle the rest.</p>
+    <div class="showcase-grid">
+      <div class="showcase-card laravel">
+        <div class="showcase-icon">L</div>
+        <h3>Native Laravel</h3>
+        <p>Horizon, Queue, Scheduler, Octane. Zero-config deployment with full Artisan CLI support.</p>
       </div>
-      <div class="infra-diagram fade-up">
-        <div class="infra-step active">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="22" height="22"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg>
-          </div>
-          <span class="label">User Code</span>
-        </div>
-        <div class="infra-connector active"><span class="particle"></span></div>
-        <div class="infra-step">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7B61FF" stroke-width="1.5" width="22" height="22"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          </div>
-          <span class="label">Build Pipeline</span>
-        </div>
-        <div class="infra-connector"><span class="particle"></span></div>
-        <div class="infra-step">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M16.5 7.5L12 12l4.5 4.5"/><path d="M7.5 7.5L12 12l-4.5 4.5"/></svg>
-          </div>
-          <span class="label">Container Registry</span>
-        </div>
-        <div class="infra-connector"><span class="particle"></span></div>
-        <div class="infra-step">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7B61FF" stroke-width="1.5" width="22" height="22"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          </div>
-          <span class="label">Orchestrator</span>
-        </div>
-        <div class="infra-connector"><span class="particle"></span></div>
-        <div class="infra-step">
-          <div class="icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#00F0FF" stroke-width="1.5" width="22" height="22"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <span class="label">Edge Nodes</span>
-        </div>
+      <div class="showcase-card python">
+        <div class="showcase-icon">Py</div>
+        <h3>Python Bots</h3>
+        <p>Discord.py, python-telegram-bot, FastAPI. Auto pip install with virtual environment isolation.</p>
       </div>
-      <div class="infra-stats fade-up delay-2">
-        <div class="infra-stat"><span class="num">&lt; 30s</span> Build Times</div>
-        <div class="infra-stat"><span class="num">99.99%</span> Uptime SLA</div>
-        <div class="infra-stat"><span class="num">24/7</span> Human Support</div>
+      <div class="showcase-card js">
+        <div class="showcase-icon">JS</div>
+        <h3>JavaScript Bots</h3>
+        <p>Discord.js, node-telegram-bot-api, Express. Auto npm install with package manager detection.</p>
+      </div>
+      <div class="showcase-card zip">
+        <div class="showcase-icon">Z</div>
+        <h3>Archive Deploy</h3>
+        <p>Drag-and-drop ZIP. We detect runtime, extract dependencies, and deploy to edge nodes.</p>
       </div>
     </div>
   </section>
 
-  <!-- PRICING -->
-  <section class="pricing-section" id="pricing">
-    <div class="container">
-      <div class="section-title fade-up">
-        <h2>Simple <span class="gradient-text">Pricing</span></h2>
-        <p>Start small, scale infinitely. All plans include DDoS protection and 99.99% uptime.</p>
+  <section class="container" style="padding:4rem 0">
+    <div class="section-label">> TERMINAL</div>
+    <h2 class="section-heading" style="color:var(--signal-white)">Multi-Runtime CLI</h2>
+    <p class="section-subhead">Create and deploy projects across any runtime from the command line.</p>
+    <div class="terminal" style="max-width:720px;margin:0 auto">
+      <div class="terminal-header">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">nexus — multi-runtime CLI</span>
       </div>
-      <div class="pricing-toggle fade-up">
-        <span>Monthly</span>
-        <div class="toggle-track" id="pricingToggle" onclick="togglePricing()">
-          <div class="thumb"></div>
-        </div>
-        <span>Yearly <span class="badge-free">2 months free</span></span>
-      </div>
-      <div class="pricing-grid">
-        <div class="pricing-card fade-up delay-1">
-          <div class="plan-name">Starter</div>
-          <div class="price" id="price1">$9<span>/mo</span></div>
-          <div class="desc">Perfect for small bots and hobby projects</div>
-          <ul>
-            <li>1 bot instance</li>
-            <li>512MB RAM</li>
-            <li>Shared CPU</li>
-            <li>Community support</li>
-            <li>Basic monitoring</li>
-          </ul>
-          <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Get Started</button>
-        </div>
-        <div class="pricing-card featured fade-up delay-2">
-          <div class="pc-top-border"></div>
-          <div class="plan-name">Pro</div>
-          <div class="price" id="price2">$29<span>/mo</span></div>
-          <div class="desc">Ideal for growing communities and multi-bot setups</div>
-          <ul>
-            <li>5 bot instances</li>
-            <li>2GB RAM</li>
-            <li>Dedicated vCPU</li>
-            <li>Priority support</li>
-            <li>Custom domains</li>
-            <li>Team access</li>
-          </ul>
-          <button class="btn-pricing primary" onclick="window.location.href='login.html'">Get Started</button>
-        </div>
-        <div class="pricing-card fade-up delay-3">
-          <div class="plan-name">Enterprise</div>
-          <div class="price">Custom</div>
-          <div class="desc">For large-scale deployments with dedicated infrastructure</div>
-          <ul>
-            <li>Unlimited bots</li>
-            <li>Dedicated cluster</li>
-            <li>SLA guarantee</li>
-            <li>SSO &amp; audit logs</li>
-            <li>Custom integrations</li>
-            <li>24/7 phone support</li>
-          </ul>
-          <button class="btn-pricing secondary" onclick="window.location.href='login.html'">Contact Sales</button>
-        </div>
+      <div class="terminal-body" style="max-height:none;font-size:0.85rem">
+        <div class="line system">$ nexus project create --name="multi-bot" --runtime=python</div>
+        <div class="line success">> Detected runtime: Python 3.11</div>
+        <div class="line success">> Creating virtual environment... [OK]</div>
+        <div class="line success">> Installing dependencies from requirements.txt... [OK]</div>
+        <div class="line highlight">> Project 'multi-bot' ready.</div>
+        <div class="line" style="margin-top:0.75rem"></div>
+        <div class="line system">$ nexus bot deploy --project=multi-bot --source=./discord-bot.zip</div>
+        <div class="line success">> Detected archive: ZIP format</div>
+        <div class="line success">> Extracting... [OK]</div>
+        <div class="line success">> Runtime auto-detected: Python</div>
+        <div class="line success">> Building container... [OK]</div>
+        <div class="line success">> Deploying to edge nodes... [OK]</div>
+        <div class="line highlight">> Bot live at: https://discord-bot.nexus.host</div>
       </div>
     </div>
   </section>
 
-  <!-- TERMINAL DEMO -->
-  <section class="terminal-section" id="terminal">
-    <div class="container">
-      <div class="section-title fade-up">
-        <h2>Developer <span class="gradient-text">Experience</span></h2>
-        <p>One CLI command to deploy — zero friction from local to production.</p>
+  <section class="container" id="pricing" style="padding:6rem 0">
+    <div class="section-label">> PRICING</div>
+    <h2 class="section-heading" style="color:var(--signal-white)">Plans for Every Scale</h2>
+    <p class="section-subhead">All runtimes included. No extra fees for Python, JavaScript, or Laravel. ZIP uploads count toward your plan limits.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card glass-card">
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Starter</h3>
+        <p style="color:var(--titanium);font-size:0.88rem">For small bots and testing</p>
+        <div class="pricing-price">$9<span>/mo</span></div>
+        <span style="display:inline-block;margin-top:0.25rem;font-size:0.82rem;color:var(--titanium)">or $99/yr</span>
+        <ul>
+          <li>1 Project</li>
+          <li>2 Bots</li>
+          <li>All Runtimes</li>
+          <li>5 ZIP Uploads / mo</li>
+          <li>50MB Max ZIP</li>
+          <li>5 min Build Time</li>
+        </ul>
+        <a href="/login" class="btn btn-primary" style="width:100%;justify-content:center">Get Started</a>
       </div>
-      <div class="terminal-demo fade-up">
-        <div class="term-header">
-          <div class="dots"><span></span><span></span><span></span></div>
-          <span class="title">nexus-cli</span>
-        </div>
-        <div class="term-body" id="termBody">
-          <div class="line d0"><span class="prompt">$ </span>nexus deploy --bot=moderator --region=eu-west</div>
-          <div class="line d1"><span class="output">> Building Laravel container...</span><span class="ok"> [OK]</span></div>
-          <div class="line d2"><span class="output">> Pushing to registry...</span><span class="ok"> [OK]</span></div>
-          <div class="line d3"><span class="output">> Provisioning 3 nodes...</span><span class="ok"> [OK]</span></div>
-          <div class="line d4"><span class="output">> Bot live at:</span> <span class="url">https://mod-bot.nexus.host</span></div>
-          <div class="line d5">&nbsp;</div>
-          <div class="line d6"><span class="prompt">$ </span>nexus logs moderator --live</div>
-          <div class="line d7"><span class="ok">[INFO]</span> <span class="output">Bot online — 291 users — 0 errors</span><span class="cursor"></span></div>
-        </div>
+      <div class="pricing-card glass-card featured">
+        <div style="position:absolute;top:1rem;right:1rem;font-size:0.7rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:100px;background:rgba(0,240,255,0.15);color:var(--nexus-cyan);border:1px solid rgba(0,240,255,0.2)">POPULAR</div>
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Pro</h3>
+        <p style="color:var(--titanium);font-size:0.88rem">For production bots</p>
+        <div class="pricing-price">$29<span>/mo</span></div>
+        <span style="display:inline-block;margin-top:0.25rem;font-size:0.82rem;color:var(--titanium)">or $299/yr</span>
+        <ul>
+          <li>5 Projects</li>
+          <li>10 Bots</li>
+          <li>All Runtimes</li>
+          <li>Unlimited ZIP Uploads</li>
+          <li>100MB Max ZIP</li>
+          <li>15 min Build Time</li>
+          <li>Custom Domains</li>
+          <li>Priority Support</li>
+        </ul>
+        <a href="/login" class="btn btn-primary" style="width:100%;justify-content:center">Get Started</a>
       </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS -->
-  <section class="testimonials-section">
-    <div class="section-title fade-up" style="padding:0 1.5rem">
-      <h2>Trusted by <span class="gradient-text">Developers</span></h2>
-      <p>From indie bot makers to enterprise teams.</p>
-    </div>
-    <div class="testimonial-marquee">
-      <div class="testimonial-card">
-        <div class="t-header">
-          <div class="t-avatar">J</div>
-          <div><div class="t-name">James Chen</div><div class="t-handle">@jamesbotdev</div></div>
-        </div>
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="t-text">"Deployed my Discord moderation bot in under 3 minutes. The Laravel integration is flawless."</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="t-header">
-          <div class="t-avatar">S</div>
-          <div><div class="t-name">Sarah K.</div><div class="t-handle">@sarahk</div></div>
-        </div>
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="t-text">"We migrated 12 Telegram bots to Nexus. Zero downtime and 40% lower latency across the board."</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="t-header">
-          <div class="t-avatar">M</div>
-          <div><div class="t-name">Marcus Rivera</div><div class="t-handle">@marcusdev</div></div>
-        </div>
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="t-text">"The auto-scaling is incredible. One of our bots went viral and Nexus handled 50k concurrent users."</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="t-header">
-          <div class="t-avatar">A</div>
-          <div><div class="t-name">Anika Patel</div><div class="t-handle">@anika_ai</div></div>
-        </div>
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="t-text">"Hosting our AI chatbot on Nexus was the best decision. The queue worker integration is perfect."</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="t-header">
-          <div class="t-avatar">T</div>
-          <div><div class="t-name">Tom Wagner</div><div class="t-handle">@tomw</div></div>
-        </div>
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="t-text">"Custom webhook support saved us weeks of integration work. Enterprise-grade infrastructure."</div>
-      </div>
-      <div class="testimonial-card">
-        <div class="t-header">
-          <div class="t-avatar">L</div>
-          <div><div class="t-name">Lisa Park</div><div class="t-handle">@lisapark</div></div>
-        </div>
-        <div class="t-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-        <div class="t-text">"The real-time monitoring dashboard is beautiful. I can see every metric for all my bots at a glance."</div>
+      <div class="pricing-card glass-card">
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Enterprise</h3>
+        <p style="color:var(--titanium);font-size:0.88rem">For large-scale operations</p>
+        <div class="pricing-price">Custom</div>
+        <span style="display:inline-block;margin-top:0.25rem;font-size:0.82rem;color:var(--titanium)">Contact sales</span>
+        <ul>
+          <li>Unlimited Projects</li>
+          <li>Unlimited Bots</li>
+          <li>All Runtimes</li>
+          <li>Unlimited ZIP Uploads</li>
+          <li>500MB Max ZIP</li>
+          <li>60 min Build Time</li>
+          <li>Custom Domains</li>
+          <li>Priority Support</li>
+          <li>SLA Guarantee</li>
+        </ul>
+        <a href="/login" class="btn btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="logo">
-            <div style="width:32px;height:32px;border-radius:8px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:900;color:var(--signal-white)">N</div>
-            NEXUS HOSTING
-          </div>
-          <p>Laravel-based bot hosting platform. Deploy Discord bots, Telegram bots, AI chatbots, and automation scripts on elastic global infrastructure.</p>
-          <div class="footer-newsletter">
-            <input type="email" placeholder="your@email.com" aria-label="Subscribe">
-            <button>Subscribe</button>
-          </div>
-          <div class="footer-social">
-            <a href="#" aria-label="Discord">D</a>
-            <a href="https://github.com/rafetnoob731-coder/nexus-host" aria-label="GitHub">G</a>
-            <a href="#" aria-label="X">X</a>
-          </div>
-        </div>
-        <div class="footer-col">
-          <h4>Product</h4>
-          <a href="#features">Bots</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#">Marketplace</a>
-          <a href="#">Changelog</a>
-        </div>
-        <div class="footer-col">
-          <h4>Resources</h4>
-          <a href="#">Documentation</a>
-          <a href="#">API Reference</a>
-          <a href="#">Laravel Guide</a>
-          <a href="#">Status</a>
-        </div>
-        <div class="footer-col">
-          <h4>Company</h4>
-          <a href="#">About</a>
-          <a href="#">Security</a>
-          <a href="#">Privacy</a>
-          <a href="#">Contact</a>
-        </div>
+  <footer class="landing-footer">
+    <div style="max-width:1280px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:1.5rem">
+        <div style="width:32px;height:32px;border-radius:8px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;color:var(--signal-white)">N</div>
+        <span style="font-weight:800;font-size:1.1rem;font-family:var(--font-display)">NEXUS <span style="color:var(--nexus-cyan)">HOSTING</span></span>
       </div>
-      <div class="footer-bottom">
-        <span>© 2026 NEXUS HOSTING. All rights reserved. ALL CREDIT NEXUS</span>
-        <div style="display:flex;gap:1.5rem">
-          <a href="#">Terms</a>
-          <a href="#">Privacy</a>
-        </div>
+      <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:2rem">
+        <a href="/docs/runtimes" style="color:var(--titanium);font-size:0.85rem">Documentation</a>
+        <a href="/pricing" style="color:var(--titanium);font-size:0.85rem">Pricing</a>
+        <a href="/status" style="color:var(--titanium);font-size:0.85rem">Status</a>
+        <a href="/login" style="color:var(--titanium);font-size:0.85rem">Dashboard</a>
       </div>
+      <p>Deploy. Scale. Dominate. — NEXUS HOSTING Multi-Runtime Platform</p>
+      <p style="margin-top:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.2)">NEXUS HOST — All Credit Nexus</p>
     </div>
   </footer>
 
   <script>
-    function toggleMobile() { document.getElementById('mobileMenu').classList.toggle('open'); }
-
-    // Nav scroll effect
-    var navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', function() {
-      if (window.scrollY > 50) navbar.classList.add('scrolled');
-      else navbar.classList.remove('scrolled');
-    });
-
-    // Scroll animations
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
       });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el); });
-
-    // Pricing toggle
-    var yearly = false;
-    var prices = { 1: [9, 99], 2: [29, 299], 3: [0, 0] };
-    function togglePricing() {
-      yearly = !yearly;
-      document.getElementById('pricingToggle').classList.toggle('active');
-      for (var i = 1; i <= 2; i++) {
-        var el = document.getElementById('price' + i);
-        if (yearly) {
-          el.innerHTML = '$' + prices[i][1] + '<span>/yr</span>';
-        } else {
-          el.innerHTML = '$' + prices[i][0] + '<span>/mo</span>';
-        }
-      }
-    }
+    });
   </script>
 </body>
 </html>
