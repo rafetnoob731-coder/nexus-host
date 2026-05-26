@@ -51,9 +51,28 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           Queue & Scheduler
         </div>
+        <div class="nav-item" onclick="window.location.href='/files'" style="color:var(--plasma-purple)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          Files
+        </div>
         <div class="nav-item" data-section="domains" onclick="switchSection('domains')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Domains
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Workspace</div>
+        <div class="nav-item" data-section="billing" onclick="switchSection('billing')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+          Billing
+        </div>
+        <div class="nav-item" data-section="tickets" onclick="switchSection('tickets')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Tickets
+        </div>
+        <div class="nav-item" data-section="account" onclick="switchSection('account')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Account
         </div>
       </div>
       <div class="nav-section">
@@ -681,6 +700,238 @@
           </div>
         </div>
       </section>
+
+      <!-- BILLING -->
+      <section id="section-billing" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Billing</h1>
+            <p>Manage your subscription, invoices, and payment methods</p>
+          </div>
+          <button class="btn btn-primary" onclick="showToast('info','Opening billing portal...')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+            Manage Billing
+          </button>
+        </div>
+        <div class="stats-grid" style="margin-bottom:1.5rem">
+          <div class="glass-card stat-card primary">
+            <div class="stat-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10c0-1.1 1.2-2 4-2s4 .9 4 2"/><path d="M8 14c0 1.1 1.2 2 4 2s4-.9 4-2"/></svg></div>
+            <div class="stat-value" id="billingPlan">Starter</div>
+            <div class="stat-label">Current Plan</div>
+          </div>
+          <div class="glass-card stat-card success">
+            <div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="stat-value" id="billingAmount">$0.00</div>
+            <div class="stat-label">Monthly Spend</div>
+          </div>
+          <div class="glass-card stat-card warning">
+            <div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+            <div class="stat-value" id="billingInvoices">0</div>
+            <div class="stat-label">Invoices</div>
+          </div>
+          <div class="glass-card stat-card info">
+            <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="stat-value" id="billingStatus">Active</div>
+            <div class="stat-label">Account Status</div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:1.5rem">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Current Plan</div></div>
+            <div class="card-body">
+              <div style="text-align:center;padding:1rem 0">
+                <div style="font-size:3rem;font-weight:900;color:var(--nexus-cyan)">$9</div>
+                <div style="color:var(--titanium);font-size:0.9rem;margin-bottom:1.5rem">per month — billed monthly</div>
+                <div style="display:flex;flex-direction:column;gap:0.75rem;text-align:left;max-width:300px;margin:0 auto">
+                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg> Up to 5 projects</div>
+                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg> 1 GB storage per bot</div>
+                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg> 5 ZIP uploads / month</div>
+                  <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.88rem"><svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg> Basic support</div>
+                </div>
+                <button class="btn btn-secondary" style="margin-top:1.5rem;width:100%" onclick="showToast('info','Opening upgrade options...')">Upgrade Plan</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Payment Method</div></div>
+            <div class="card-body">
+              <div id="paymentMethodDisplay" style="padding:1rem 0">
+                <div style="display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--surface-glass);border-radius:8px">
+                  <div style="width:48px;height:32px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;border:1px solid rgba(255,255,255,0.06)">VISA</div>
+                  <div>
+                    <div style="font-weight:600">Visa ending in 4242</div>
+                    <div style="font-size:0.8rem;color:var(--titanium)">Expires 12/27</div>
+                  </div>
+                  <div style="margin-left:auto;color:var(--success-green);font-size:0.8rem">Default</div>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm" style="width:100%;margin-top:0.75rem" onclick="showToast('info','Opening payment settings...')">Update Payment Method</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Invoices</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="table-container">
+              <table>
+                <thead><tr><th>Invoice</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+                <tbody id="invoicesBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--titanium)">No invoices yet</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TICKETS -->
+      <section id="section-tickets" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Support Tickets</h1>
+            <p>Get help from the NEXUS support team</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCreateTicket()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Ticket
+          </button>
+        </div>
+        <div class="stats-grid" style="margin-bottom:1.5rem">
+          <div class="glass-card stat-card primary">
+            <div class="stat-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="stat-value" id="ticketTotal">0</div>
+            <div class="stat-label">Total Tickets</div>
+          </div>
+          <div class="glass-card stat-card success">
+            <div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stat-value" id="ticketResolved">0</div>
+            <div class="stat-label">Resolved</div>
+          </div>
+          <div class="glass-card stat-card warning">
+            <div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
+            <div class="stat-value" id="ticketOpen">0</div>
+            <div class="stat-label">Open</div>
+          </div>
+          <div class="glass-card stat-card info">
+            <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="stat-value" id="ticketHighPrio">0</div>
+            <div class="stat-label">High Priority</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">All Tickets</div>
+            <div style="display:flex;gap:0.5rem">
+              <select class="form-select" style="width:auto;padding:0.4rem 2rem 0.4rem 0.75rem;font-size:0.8rem" id="ticketFilter" onchange="renderTickets()">
+                <option value="all">All Tickets</option>
+                <option value="open">Open</option>
+                <option value="in-progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-container">
+              <table>
+                <thead><tr><th>ID</th><th>Subject</th><th>Status</th><th>Priority</th><th>Updated</th><th>Actions</th></tr></thead>
+                <tbody id="ticketsBody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--titanium)">No tickets yet</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ACCOUNT -->
+      <section id="section-account" class="section">
+        <div class="page-header">
+          <div class="page-title">
+            <h1>Account</h1>
+            <p>Manage your profile, security, and API access</p>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:1.5rem">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Profile</div></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem">
+                <div class="user-avatar" id="accountAvatar" style="width:64px;height:64px;font-size:1.5rem">N</div>
+                <div style="flex:1">
+                  <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input class="form-input" id="accountName" placeholder="Your name" style="font-size:0.9rem">
+                  </div>
+                  <div class="form-group" style="margin-top:0.75rem">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" id="accountEmail" placeholder="email@example.com" style="font-size:0.9rem" disabled>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="updateAccountProfile()">Save Changes</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Change Password</div></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <input class="form-input" id="currentPassword" type="password" placeholder="••••••••" style="font-size:0.9rem">
+              </div>
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input class="form-input" id="newPassword" type="password" placeholder="••••••••" style="font-size:0.9rem">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input class="form-input" id="confirmPassword" type="password" placeholder="••••••••" style="font-size:0.9rem">
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="updatePassword()">Update Password</button>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-bottom:1.5rem">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Two-Factor Authentication</div></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+                <div>
+                  <div style="font-weight:600">Authenticator App</div>
+                  <div style="font-size:0.82rem;color:var(--titanium)">Add an extra layer of security</div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="twoFactorToggle" onchange="toggleTwoFactor(this.checked)"><span class="slider"></span></label>
+              </div>
+              <div id="twoFactorSetup" style="display:none;padding:1rem;background:var(--surface-glass);border-radius:8px;font-size:0.85rem">
+                <p style="color:var(--titanium);margin-bottom:0.75rem">Scan this QR code with your authenticator app:</p>
+                <div style="width:160px;height:160px;background:rgba(255,255,255,0.03);border-radius:8px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.06)">
+                  <span style="color:var(--titanium);font-size:0.75rem">QR Code</span>
+                </div>
+                <button class="btn btn-primary btn-sm" style="width:100%" onclick="showToast('success','2FA enabled successfully')">Verify & Enable</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">API Tokens</div></div>
+            <div class="card-body">
+              <p style="color:var(--titanium);font-size:0.85rem;margin-bottom:1rem">Generate tokens for API and CLI access</p>
+              <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+                <input class="form-input" id="apiTokenLabel" placeholder="Token label (e.g. CI/CD)" style="font-size:0.85rem;flex:1">
+                <button class="btn btn-secondary btn-sm" onclick="generateApiToken()">Generate</button>
+              </div>
+              <div id="apiTokensList"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" style="color:var(--alert-red)">Danger Zone</div></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-weight:600">Delete Account</div>
+                <div style="font-size:0.82rem;color:var(--titanium)">Permanently delete your account and all associated data</div>
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="confirmDeleteAccount()">Delete Account</button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -839,6 +1090,52 @@
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeModal('createDatabaseModal')">Cancel</button>
         <button class="btn btn-primary" onclick="createDatabase()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Ticket Modal -->
+  <div class="modal-overlay" id="createTicketModal">
+    <div class="glass-panel modal">
+      <div class="modal-header">
+        <h2>Create Support Ticket</h2>
+        <button class="modal-close" onclick="closeModal('createTicketModal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input class="form-input" id="ticketSubject" placeholder="Brief description of your issue" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="ticketCategory">
+            <option value="technical">Technical Issue</option>
+            <option value="billing">Billing</option>
+            <option value="deployment">Deployment</option>
+            <option value="account">Account</option>
+            <option value="feature">Feature Request</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select" id="ticketPriority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" id="ticketMessage" rows="6" placeholder="Describe your issue in detail..." style="resize:vertical;min-height:120px;font-family:inherit"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('createTicketModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="createTicket()" id="createTicketBtn">Submit Ticket</button>
       </div>
     </div>
   </div>

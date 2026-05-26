@@ -4,9 +4,23 @@ let currentProjects = {};
 let allDeployments = {};
 let allDatabases = {};
 let allDomains = {};
+let allTickets = {};
+let apiTokens = [];
 let autoScroll = true;
 let monitorData = { cpu: [], memory: [], labels: [] };
 let monitorInterval = null;
+
+const BILLING_MOCK = {
+  plan: 'Starter',
+  price: 9,
+  status: 'Active',
+  monthlySpend: 9.00,
+  invoices: [
+    { id: 'INV-001', date: '2026-04-01', amount: 9.00, status: 'paid' },
+    { id: 'INV-002', date: '2026-03-01', amount: 9.00, status: 'paid' },
+    { id: 'INV-003', date: '2026-02-01', amount: 9.00, status: 'paid' },
+  ]
+};
 
 const RUNTIME_CONFIG = {
   laravel: { color: '#00F0FF', glow: 'rgba(0,240,255,0.3)', label: 'Laravel', icon: 'L', versionLabel: 'PHP Version', versions: ['8.3','8.2','8.1'], depFile: 'composer.json', detectFile: 'artisan' },
@@ -44,6 +58,9 @@ async function initApp() {
   await loadDeployments();
   await loadDatabases();
   await loadDomains();
+  loadBilling();
+  loadTickets();
+  loadAccount();
   updateStats();
   updateRuntimeComposition();
   startResourceMonitor();
@@ -608,6 +625,201 @@ async function addDomain() {
 }
 
 async function restartQueue() { showToast('info', 'Restarting queue workers...'); await deploymentEngine.sleep(2000); showToast('success', 'All queue workers restarted'); }
+
+function loadBilling() {
+  document.getElementById('billingPlan').textContent = BILLING_MOCK.plan;
+  document.getElementById('billingAmount').textContent = '$' + BILLING_MOCK.monthlySpend.toFixed(2);
+  document.getElementById('billingInvoices').textContent = BILLING_MOCK.invoices.length;
+  document.getElementById('billingStatus').textContent = BILLING_MOCK.status;
+  const body = document.getElementById('invoicesBody');
+  if (!body) return;
+  if (BILLING_MOCK.invoices.length === 0) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--titanium)">No invoices yet</td></tr>'; return; }
+  body.innerHTML = BILLING_MOCK.invoices.map(inv => {
+    const statusClass = inv.status === 'paid' ? 'active' : inv.status === 'pending' ? 'pending' : 'error';
+    return '<tr><td style="font-weight:600">' + inv.id + '</td><td>' + inv.date + '</td><td>$' + inv.amount.toFixed(2) + '</td><td><span class="status-badge ' + statusClass + '">' + inv.status + '</span></td>' +
+      '<td><button class="btn btn-ghost btn-sm" onclick="showToast(\'info\',\'Downloading ' + inv.id + '\')">Download</button></td></tr>';
+  }).join('');
+}
+
+function loadTickets() {
+  const vals = Object.values(allTickets);
+  document.getElementById('ticketTotal').textContent = vals.length;
+  document.getElementById('ticketResolved').textContent = vals.filter(t => t.status === 'resolved' || t.status === 'closed').length;
+  document.getElementById('ticketOpen').textContent = vals.filter(t => t.status === 'open' || t.status === 'in-progress').length;
+  document.getElementById('ticketHighPrio').textContent = vals.filter(t => t.priority === 'high' || t.priority === 'critical').length;
+  renderTickets();
+}
+
+function renderTickets() {
+  const body = document.getElementById('ticketsBody');
+  if (!body) return;
+  const filter = document.getElementById('ticketFilter')?.value || 'all';
+  let vals = Object.values(allTickets).sort((a, b) => b.updatedAt - a.updatedAt);
+  if (filter !== 'all') vals = vals.filter(t => t.status === filter);
+  if (vals.length === 0) { body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--titanium)">No tickets found</td></tr>'; return; }
+  body.innerHTML = vals.map(t => {
+    const statusClass = t.status === 'open' ? 'deploying' : t.status === 'in-progress' ? 'pending' : t.status === 'resolved' ? 'active' : 'error';
+    const prioColor = t.priority === 'critical' ? 'var(--alert-red)' : t.priority === 'high' ? 'var(--warning-amber)' : t.priority === 'medium' ? 'var(--js-yellow)' : 'var(--titanium)';
+    return '<tr><td style="font-weight:600;font-family:var(--font-mono);font-size:0.8rem">#' + (t.id || t._id || '').substring(0, 8) + '</td>' +
+      '<td style="font-weight:600">' + t.subject + '</td>' +
+      '<td><span class="status-badge ' + statusClass + '">' + t.status + '</span></td>' +
+      '<td><span style="color:' + prioColor + ';font-weight:600;font-size:0.78rem;text-transform:uppercase">' + t.priority + '</span></td>' +
+      '<td>' + new Date(t.updatedAt).toLocaleDateString() + '</td>' +
+      '<td><button class="btn btn-ghost btn-sm" onclick="showToast(\'info\',\'Opening ticket...\')">View</button></td></tr>';
+  }).join('');
+}
+
+function openCreateTicket() {
+  document.getElementById('ticketSubject').value = '';
+  document.getElementById('ticketCategory').value = 'technical';
+  document.getElementById('ticketPriority').value = 'medium';
+  document.getElementById('ticketMessage').value = '';
+  document.getElementById('createTicketBtn').textContent = 'Submit Ticket';
+  document.getElementById('createTicketBtn').disabled = false;
+  openModal('createTicketModal');
+}
+
+async function createTicket() {
+  const subject = document.getElementById('ticketSubject').value.trim();
+  const category = document.getElementById('ticketCategory').value;
+  const priority = document.getElementById('ticketPriority').value;
+  const message = document.getElementById('ticketMessage').value.trim();
+  if (!subject) { showToast('error', 'Please enter a subject'); return; }
+  if (!message) { showToast('error', 'Please describe your issue'); return; }
+  const btn = document.getElementById('createTicketBtn');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+  try {
+    const id = 'ticket_' + Date.now();
+    const ticketData = {
+      id, subject, category, priority, message,
+      status: 'open',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      owner: currentUser?.uid || 'anon'
+    };
+    if (window.db) {
+      const ref = window.db.ref('tickets').push();
+      await ref.set(ticketData);
+      ticketData._id = ref.key;
+    }
+    allTickets[id] = ticketData;
+    showToast('success', 'Ticket #' + id.substring(0, 8) + ' created');
+    closeModal('createTicketModal');
+    loadTickets();
+  } catch (err) {
+    showToast('error', 'Failed to create ticket: ' + (err.message || 'Unknown'));
+  } finally {
+    btn.textContent = 'Submit Ticket';
+    btn.disabled = false;
+  }
+}
+
+function loadAccount() {
+  if (!currentUser) return;
+  const nameInput = document.getElementById('accountName');
+  const emailInput = document.getElementById('accountEmail');
+  const avatar = document.getElementById('accountAvatar');
+  if (nameInput) nameInput.value = currentUser.displayName || '';
+  if (emailInput) emailInput.value = currentUser.email || '';
+  if (avatar) {
+    const initial = (currentUser.displayName || currentUser.email || 'N').charAt(0).toUpperCase();
+    avatar.textContent = initial;
+    avatar.innerHTML = currentUser.photoURL ? `<img src="${currentUser.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">` : initial;
+  }
+  renderApiTokens();
+}
+
+function renderApiTokens() {
+  const container = document.getElementById('apiTokensList');
+  if (!container) return;
+  if (apiTokens.length === 0) {
+    container.innerHTML = '<div style="padding:0.5rem 0;color:var(--titanium);font-size:0.85rem">No API tokens generated yet</div>';
+    return;
+  }
+  container.innerHTML = apiTokens.map(t => {
+    const lastChars = t.token.slice(-8);
+    return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:var(--surface-glass);border-radius:8px;margin-bottom:0.5rem">' +
+      '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:0.85rem">' + t.label + '</div>' +
+      '<code style="font-size:0.75rem;color:var(--titanium)">••••••••' + lastChars + '</code></div>' +
+      '<button class="btn btn-ghost btn-sm" onclick="revokeApiToken(\'' + t.id + '\')" style="color:var(--alert-red)">Revoke</button></div>';
+  }).join('');
+}
+
+function generateApiToken() {
+  const label = document.getElementById('apiTokenLabel').value.trim();
+  if (!label) { showToast('error', 'Please enter a token label'); return; }
+  const token = 'nexus_' + Array.from({ length: 40 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('');
+  apiTokens.push({ id: 'tok_' + Date.now(), label, token, createdAt: Date.now() });
+  document.getElementById('apiTokenLabel').value = '';
+  renderApiTokens();
+  showToast('success', 'Token "' + label + '" generated. Copy it now — you won\'t see it again.');
+  navigator.clipboard.writeText(token).catch(() => {});
+}
+
+function revokeApiToken(id) {
+  apiTokens = apiTokens.filter(t => t.id !== id);
+  renderApiTokens();
+  showToast('success', 'Token revoked');
+}
+
+function updateAccountProfile() {
+  const name = document.getElementById('accountName')?.value.trim();
+  if (!name) { showToast('error', 'Please enter a display name'); return; }
+  if (currentUser) {
+    currentUser.updateProfile({ displayName: name }).then(() => {
+      displayUserInfo();
+      loadAccount();
+      showToast('success', 'Profile updated');
+    }).catch(err => {
+      showToast('error', 'Update failed: ' + err.message);
+    });
+  }
+}
+
+function updatePassword() {
+  const current = document.getElementById('currentPassword')?.value;
+  const newPw = document.getElementById('newPassword')?.value;
+  const confirm = document.getElementById('confirmPassword')?.value;
+  if (!current || !newPw || !confirm) { showToast('error', 'Please fill in all password fields'); return; }
+  if (newPw.length < 6) { showToast('error', 'New password must be at least 6 characters'); return; }
+  if (newPw !== confirm) { showToast('error', 'Passwords do not match'); return; }
+  const user = window.auth?.currentUser || currentUser;
+  if (!user) { showToast('error', 'Not authenticated'); return; }
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email, current);
+  user.reauthenticateWithCredential(credential).then(() => {
+    user.updatePassword(newPw).then(() => {
+      showToast('success', 'Password updated successfully');
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    }).catch(err => showToast('error', 'Password update failed: ' + err.message));
+  }).catch(err => showToast('error', 'Current password is incorrect'));
+}
+
+function toggleTwoFactor(enabled) {
+  const setup = document.getElementById('twoFactorSetup');
+  if (!setup) return;
+  setup.style.display = enabled ? 'block' : 'none';
+  if (enabled) showToast('info', 'Follow the setup instructions to enable 2FA');
+}
+
+function confirmDeleteAccount() {
+  if (confirm('Are you sure you want to delete your account? This action is irreversible.')) {
+    const typed = prompt('Type "DELETE" to confirm account deletion:');
+    if (typed === 'DELETE') {
+      const user = window.auth?.currentUser || currentUser;
+      if (user) {
+        user.delete().then(() => {
+          showToast('success', 'Account deleted');
+          window.location.href = 'login.html';
+        }).catch(err => showToast('error', 'Delete failed: ' + err.message));
+      }
+    } else {
+      showToast('error', 'Account deletion cancelled');
+    }
+  }
+}
 
 function handleFileSelect(e) {
   const file = e.target.files[0];
