@@ -20,6 +20,8 @@
     { "src": "/pricing", "dest": "/index.html" },
     { "src": "/status", "dest": "/status.html" },
     { "src": "/docs", "dest": "/docs.html" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/admin/(.*)", "dest": "/admin.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "headers": [

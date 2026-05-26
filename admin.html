@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS HOSTING — Admin Panel</title>
+  <meta name="description" content="NEXUS HOSTING Admin Panel — Platform operations center">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="config/firebase-config.js"></script>
+  <link rel="stylesheet" href="css/nexus.css">
+</head>
+<body>
+  <div class="toast-container" id="adminToastContainer"></div>
+  <div class="modal-overlay" id="adminOverlay" onclick="closeMobileAdmin()"></div>
+
+  <!-- TOP NAV -->
+  <nav class="admin-topnav">
+    <button class="btn btn-ghost btn-sm" onclick="toggleAdminSidebar()" style="padding:0.3rem;color:var(--titanium)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="brand" onclick="switchAdminSection('dashboard')">NEXUS <span>HOSTING</span> <span class="admin-badge">ADMIN</span></div>
+    <div class="admin-nav-links" id="adminTopNav">
+      <button class="admin-nav-link active" data-topnav="dashboard" onclick="switchAdminSection('dashboard')">Dashboard</button>
+      <button class="admin-nav-link" data-topnav="users" onclick="switchAdminSection('users')">Users</button>
+      <button class="admin-nav-link" data-topnav="projects" onclick="switchAdminSection('projects')">Projects</button>
+      <button class="admin-nav-link" data-topnav="bots" onclick="switchAdminSection('bots')">Bots</button>
+      <button class="admin-nav-link" data-topnav="infra" onclick="switchAdminSection('infra')">Infrastructure</button>
+      <button class="admin-nav-link" data-topnav="billing" onclick="switchAdminSection('billing')">Billing</button>
+    </div>
+    <div class="admin-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search anything..." id="adminGlobalSearch" onkeydown="if(event.key==='Enter')adminGlobalSearch()">
+    </div>
+    <div class="admin-user" onclick="toggleAdminUserMenu()">
+      <div class="admin-avatar" id="adminAvatar">A</div>
+      <span style="font-size:0.82rem;color:var(--signal-white);font-weight:500" id="adminName">Admin</span>
+      <span class="admin-role" id="adminRole">Admin</span>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="nav-section">
+      <div class="nav-section-title">Operations</div>
+      <div class="nav-item active" data-adsection="dashboard" onclick="switchAdminSection('dashboard')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Dashboard</span></div>
+      <div class="nav-item" data-adsection="users" onclick="switchAdminSection('users')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Users</span></div>
+      <div class="nav-item" data-adsection="projects" onclick="switchAdminSection('projects')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Projects</span></div>
+      <div class="nav-item" data-adsection="bots" onclick="switchAdminSection('bots')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg><span>Bots</span></div>
+      <div class="nav-item" data-adsection="deployments" onclick="switchAdminSection('deployments')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg><span>Deployments</span></div>
+      <div class="nav-item" data-adsection="zipqueue" onclick="switchAdminSection('zipqueue')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>ZIP Queue</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Infrastructure</div>
+      <div class="nav-item" data-adsection="infra" onclick="switchAdminSection('infra')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>Nodes & Regions</span></div>
+      <div class="nav-item" data-adsection="capacity" onclick="switchAdminSection('capacity')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg><span>Capacity & Scaling</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Finance</div>
+      <div class="nav-item" data-adsection="billing" onclick="switchAdminSection('billing')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Billing & Invoices</span></div>
+      <div class="nav-item" data-adsection="plans" onclick="switchAdminSection('plans')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span>Plans & Pricing</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Support</div>
+      <div class="nav-item" data-adsection="tickets" onclick="switchAdminSection('tickets')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Tickets</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Security</div>
+      <div class="nav-item" data-adsection="audit" onclick="switchAdminSection('audit')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Audit Log</span></div>
+      <div class="nav-item" data-adsection="security" onclick="switchAdminSection('security')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg><span>Security Center</span></div>
+      <div class="nav-item" data-adsection="ipblocks" onclick="switchAdminSection('ipblocks')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg><span>IP Blocks</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">System</div>
+      <div class="nav-item" data-adsection="settings" onclick="switchAdminSection('settings')"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="admin-main" id="adminMain">
+    <div class="admin-content">
+
+      <!-- ====== DASHBOARD ====== -->
+      <section id="admin-section-dashboard" class="admin-section active">
+        <!-- Alert Banners (conditional) -->
+        <div id="adminAlertBanner"></div>
+
+        <div class="admin-kpi-grid">
+          <div class="admin-kpi"><div class="kpi-value" id="kpiUsers">—</div><div class="kpi-label">Total Users</div><div class="kpi-trend up" id="kpiUsersTrend">↑ 0 today</div></div>
+          <div class="admin-kpi"><div class="kpi-value" id="kpiBots">—</div><div class="kpi-label">Active Bots</div><div class="kpi-trend up" id="kpiBotsTrend">↑ 0 today</div></div>
+          <div class="admin-kpi"><div class="kpi-value" id="kpiDeployments">—</div><div class="kpi-label">Deployments (24h)</div><div class="kpi-trend" id="kpiDeploymentsTrend">0 failed</div></div>
+          <div class="admin-kpi"><div class="kpi-value" id="kpiRevenue">$—</div><div class="kpi-label">Revenue (MTD)</div><div class="kpi-trend up" id="kpiRevenueTrend">↑ vs last month</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+          <!-- Live Activity -->
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Live Activity</div><span class="status-badge active" style="font-size:0.65rem">Live</span></div>
+            <div class="admin-card-body"><div class="activity-stream" id="liveActivity"></div></div>
+          </div>
+          <!-- Deployment Queue -->
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg> Deployment Queue</div><button class="btn btn-ghost btn-sm" onclick="switchAdminSection('deployments')">View All</button></div>
+            <div class="admin-card-body" id="adminDeployQueue" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem"></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+          <!-- Infrastructure Health -->
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Infrastructure Health</div><button class="btn btn-ghost btn-sm" onclick="switchAdminSection('infra')">View All Regions</button></div>
+            <div class="admin-card-body" id="infraHealthTable"></div>
+          </div>
+          <!-- Support Tickets -->
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Support Tickets</div><button class="btn btn-ghost btn-sm" onclick="switchAdminSection('tickets')">View Queue</button></div>
+            <div class="admin-card-body" id="adminTicketPreview"></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title">Revenue (7-day)</div></div>
+            <div class="admin-card-body"><canvas id="revenueChart" height="220" style="width:100%"></canvas></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title">Top Projects by Resource</div></div>
+            <div class="admin-card-body"><canvas id="topProjectsChart" height="220" style="width:100%"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== USERS ====== -->
+      <section id="admin-section-users" class="admin-section">
+        <div class="admin-toolbar">
+          <div class="toolbar-title">Users</div>
+          <div class="toolbar-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search by email, name, ID..." id="usersSearch" oninput="renderAdminUsers()"></div>
+          <select class="form-select" style="width:auto;padding:0.35rem 2rem 0.35rem 0.6rem;font-size:0.78rem" id="usersStatusFilter" onchange="renderAdminUsers()"><option value="">Status: All</option><option value="active">Active</option><option value="suspended">Suspended</option><option value="unverified">Unverified</option><option value="banned">Banned</option></select>
+          <button class="btn btn-secondary btn-sm" onclick="showAdminToast('info','Export started')">Export CSV</button>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th style="width:30px"><input type="checkbox" onchange="toggleAllAdminChecks(this)"></th><th>ID</th><th>User</th><th>Email</th><th>Plan</th><th>Projects</th><th>Bots</th><th>Runtime Mix</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== PROJECTS ====== -->
+      <section id="admin-section-projects" class="admin-section">
+        <div class="admin-toolbar">
+          <div class="toolbar-title">Projects</div>
+          <div class="toolbar-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search projects..." id="projectsSearch" oninput="renderAdminProjects()"></div>
+          <select class="form-select" style="width:auto;padding:0.35rem 2rem 0.35rem 0.6rem;font-size:0.78rem" onchange="renderAdminProjects()" id="projectsRuntimeFilter"><option value="">Runtime: All</option><option value="laravel">Laravel</option><option value="python">Python</option><option value="node">JavaScript</option><option value="zip">ZIP</option></select>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th>Project</th><th>Owner</th><th>Runtime</th><th>Bots</th><th>Region</th><th>CPU</th><th>Mem</th><th>Last Deploy</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="adminProjectsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== BOTS ====== -->
+      <section id="admin-section-bots" class="admin-section">
+        <div class="admin-stats-bar" id="botsStatsBar"></div>
+        <div class="admin-toolbar">
+          <div class="toolbar-title">Bot Registry</div>
+          <div class="toolbar-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search bots..." id="botsSearch" oninput="renderAdminBots()"></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th style="width:30px"><input type="checkbox" onchange="toggleAllBotChecks(this)"></th><th>ID</th><th>Name</th><th>Project</th><th>Owner</th><th>Runtime</th><th>Region</th><th>Status</th><th>Uptime</th><th>Last Seen</th><th>Actions</th></tr></thead>
+              <tbody id="botsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== DEPLOYMENTS ====== -->
+      <section id="admin-section-deployments" class="admin-section">
+        <div class="admin-toolbar">
+          <div class="toolbar-title">Deployments</div>
+          <button class="btn btn-secondary btn-sm" onclick="showAdminToast('info','Queue cleared')">Clear Queue</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title">Build Queue</div></div>
+            <div class="admin-card-body" id="adminBuildQueue" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem"></div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-header"><div class="card-title">Build Detail</div><button class="btn btn-ghost btn-sm" onclick="showAdminToast('info','Build retriggered')">Retry</button></div>
+            <div class="admin-card-body" id="adminBuildDetail" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem"><div style="color:var(--titanium);text-align:center;padding:2rem">Select a build to view details</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== ZIP QUEUE ====== -->
+      <section id="admin-section-zipqueue" class="admin-section">
+        <div class="admin-toolbar">
+          <div class="toolbar-title">ZIP Upload Queue</div>
+          <select class="form-select" style="width:auto;padding:0.35rem 2rem 0.35rem 0.6rem;font-size:0.78rem" onchange="renderAdminZipQueue()" id="zipSecurityFilter"><option value="">Security: All</option><option value="clean">Clean</option><option value="warning">Warning</option><option value="threat">Threat</option></select>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th>Filename</th><th>Size</th><th>Owner</th><th>Runtime</th><th>Security</th><th>Status</th><th>Uploaded</th><th>Actions</th></tr></thead>
+              <tbody id="zipQueueBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== INFRASTRUCTURE ====== -->
+      <section id="admin-section-infra" class="admin-section">
+        <div class="admin-toolbar">
+          <div class="toolbar-title">Infrastructure</div>
+          <button class="btn btn-primary btn-sm" onclick="showAdminToast('info','Scaling initiated')">Scale Up</button>
+        </div>
+        <div id="infraRegionGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem"></div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="card-title">Global Map</div></div>
+          <div class="admin-card-body" style="height:240px;display:flex;align-items:center;justify-content:center"><canvas id="globalMapCanvas" style="width:100%;height:100%"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ====== CAPACITY ====== -->
+      <section id="admin-section-capacity" class="admin-section">
+        <div class="admin-toolbar"><div class="toolbar-title">Capacity & Scaling</div></div>
+        <div class="admin-stats-bar" id="capacityStatsBar"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="admin-card"><div class="admin-card-header"><div class="card-title">CPU Pool</div></div><div class="admin-card-body"><canvas id="cpuPoolChart" height="200" style="width:100%"></canvas></div></div>
+          <div class="admin-card"><div class="admin-card-header"><div class="card-title">Memory Pool</div></div><div class="admin-card-body"><canvas id="memPoolChart" height="200" style="width:100%"></canvas></div></div>
+        </div>
+      </section>
+
+      <!-- ====== BILLING ====== -->
+      <section id="admin-section-billing" class="admin-section">
+        <div class="admin-kpi-grid" style="margin-bottom:1rem">
+          <div class="admin-kpi"><div class="kpi-value" id="billingMRR">$—</div><div class="kpi-label">MRR</div></div>
+          <div class="admin-kpi"><div class="kpi-value" id="billingChurn">—%</div><div class="kpi-label">Churn Rate</div></div>
+          <div class="admin-kpi"><div class="kpi-value" id="billingARPU">$—</div><div class="kpi-label">ARPU</div></div>
+          <div class="admin-kpi"><div class="kpi-value" id="billingFailed">—</div><div class="kpi-label">Failed Payments (7d)</div></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th>User</th><th>Plan</th><th>Amount</th><th>Status</th><th>Method</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="billingTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== PLANS ====== -->
+      <section id="admin-section-plans" class="admin-section">
+        <div class="admin-toolbar"><div class="toolbar-title">Plans & Pricing</div><button class="btn btn-primary btn-sm" onclick="showAdminToast('info','Plan saved')">Save Changes</button></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem" id="plansGrid"></div>
+      </section>
+
+      <!-- ====== TICKETS ====== -->
+      <section id="admin-section-tickets" class="admin-section">
+        <div class="admin-toolbar"><div class="toolbar-title">Support Tickets</div><div><select class="form-select" style="width:auto;padding:0.35rem 2rem 0.35rem 0.6rem;font-size:0.78rem"><option>All Columns</option></select></div></div>
+        <div class="kanban-board" id="ticketKanban"></div>
+      </section>
+
+      <!-- ====== AUDIT ====== -->
+      <section id="admin-section-audit" class="admin-section">
+        <div class="admin-toolbar">
+          <div class="toolbar-title">Audit Log</div>
+          <div class="toolbar-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search audit..." id="auditSearch" oninput="renderAdminAudit()"></div>
+          <button class="btn btn-secondary btn-sm" onclick="showAdminToast('success','Exported')">Export</button>
+        </div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Timestamp</th><th>Admin</th><th>Action</th><th>Resource ID</th><th>Reason</th></tr></thead>
+              <tbody id="auditTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== SECURITY ====== -->
+      <section id="admin-section-security" class="admin-section">
+        <div class="admin-toolbar"><div class="toolbar-title">Security Center</div><button class="btn btn-primary btn-sm" onclick="showAdminToast('success','Scan initiated')">Run Scan</button><button class="btn btn-secondary btn-sm" onclick="showAdminToast('info','Rules updated')">Update Rules</button></div>
+        <div class="admin-card" style="margin-bottom:1rem">
+          <div class="admin-card-header"><div class="card-title">Active Threats</div></div>
+          <div class="admin-card-body" id="activeThreats">
+            <div class="admin-alert-banner critical" style="margin-bottom:0.5rem">
+              <span>🔴 Critical: Malicious ZIP upload detected (z_293) — <span style="opacity:0.7">unknown@temp.com | IP: 192.168.1.100 | Auto-quarantined</span></span>
+              <div style="margin-left:auto;display:flex;gap:0.35rem">
+                <button class="btn btn-danger btn-sm" onclick="showAdminToast('error','IP blocked')">Ban IP</button>
+                <button class="btn btn-secondary btn-sm" onclick="showAdminToast('success','Marked false positive')">False Positive</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="card-title">Security Rules</div></div>
+          <div class="admin-card-body" id="securityRules"></div>
+        </div>
+      </section>
+
+      <!-- ====== IP BLOCKS ====== -->
+      <section id="admin-section-ipblocks" class="admin-section">
+        <div class="admin-toolbar"><div class="toolbar-title">IP Block List</div><button class="btn btn-danger btn-sm" onclick="showAdminToast('info','Add IP block')">Add Block</button></div>
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>IP Address</th><th>Reason</th><th>Blocked By</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="ipBlocksBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== SETTINGS ====== -->
+      <section id="admin-section-settings" class="admin-section">
+        <div class="admin-toolbar"><div class="toolbar-title">System Settings</div><button class="btn btn-primary btn-sm" onclick="showAdminToast('success','Settings saved')">Save All</button></div>
+        <div class="admin-card" style="margin-bottom:1rem">
+          <div class="admin-card-header"><div class="card-title">General</div></div>
+          <div class="admin-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group"><label class="form-label">Platform Name</label><input class="form-input" value="NEXUS HOSTING" style="font-size:0.82rem"></div>
+              <div class="form-group"><label class="form-label">Support Email</label><input class="form-input" value="support@nexus.host" style="font-size:0.82rem"></div>
+              <div class="form-group"><label class="form-label">Default PHP Version</label><select class="form-select" style="font-size:0.82rem"><option>8.3</option><option>8.2</option><option>8.1</option></select></div>
+              <div class="form-group"><label class="form-label">Default Node.js Version</label><select class="form-select" style="font-size:0.82rem"><option>22</option><option>20</option><option>18</option></select></div>
+              <div class="form-group"><label class="form-label">Default Python Version</label><select class="form-select" style="font-size:0.82rem"><option>3.12</option><option selected>3.11</option><option>3.10</option></select></div>
+              <div class="form-group"><label class="form-label">Maintenance Mode</label><label class="toggle"><input type="checkbox"><span class="slider"></span></label></div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card" style="margin-bottom:1rem">
+          <div class="admin-card-header"><div class="card-title">Integrations</div></div>
+          <div class="admin-card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-group"><label class="form-label">Stripe Key</label><input class="form-input" value="sk_live_••••••••••••••••" style="font-size:0.82rem;font-family:'JetBrains Mono',monospace"></div>
+              <div class="form-group"><label class="form-label">Email Provider</label><select class="form-select" style="font-size:0.82rem"><option>SendGrid</option><option>AWS SES</option><option>Mailgun</option></select></div>
+              <div class="form-group"><label class="form-label">Monitoring</label><select class="form-select" style="font-size:0.82rem"><option>Datadog</option><option>New Relic</option><option>Grafana</option></select></div>
+              <div class="form-group"><label class="form-label">CDN</label><select class="form-select" style="font-size:0.82rem"><option>Cloudflare</option><option>Fastly</option><option>Akamai</option></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="card-title">Feature Flags</div></div>
+          <div class="admin-card-body" id="featureFlags"></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- SLIDE PANEL -->
+  <div class="admin-slide-panel" id="adminSlidePanel">
+    <div class="panel-header">
+      <h3 id="slidePanelTitle">Detail</h3>
+      <button class="panel-close" onclick="closeAdminSlidePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="panel-body" id="slidePanelBody"><p style="color:var(--titanium)">Select an item to view details</p></div>
+  </div>
+
+  <!-- BULK ACTION BAR -->
+  <div class="admin-bulk-bar" id="adminBulkBar">
+    <span class="count" id="bulkCount">0 selected</span>
+    <div class="actions">
+      <button class="btn btn-primary btn-sm" onclick="showAdminToast('info','Bulk action: restart')">Restart</button>
+      <button class="btn btn-danger btn-sm" onclick="showAdminToast('info','Bulk action: stop')">Stop</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearBulkSelection()">Cancel</button>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
