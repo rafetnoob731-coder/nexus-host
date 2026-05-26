@@ -53,7 +53,7 @@ app.use('/api/bots', botRoutes);
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 const HTML_ROUTES = [
-  '', 'login', 'register', 'dashboard',
+  '', 'login', 'dashboard',
   'create-project', 'instances', 'deployment-console',
   'terminal', 'files', 'ai-assistant', 'analytics', 'admin', 'notifications',
   'forgot-password', 'docs', 'status',
@@ -62,6 +62,7 @@ HTML_ROUTES.forEach(route => {
   const filePath = route === '' ? '/index.html' : `/${route.split('/').pop()}.html`;
   app.get(`/${route}`, (req, res) => res.sendFile(join(__dirname, filePath)));
 });
+app.get('/register', (req, res) => res.redirect('/login'));
 app.get('/admin/*', (req, res) => res.sendFile(join(__dirname, 'admin.html')));
 
 app.use((err, req, res, next) => {
