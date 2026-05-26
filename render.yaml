@@ -14,7 +14,8 @@ services:
         value: 5000
       - key: CORS_ORIGIN
         value: "*"
-    staticPublishPath: .
+      - key: BOT_TOKEN
+        sync: false
     headers:
       - path: /*
         name: X-Frame-Options
