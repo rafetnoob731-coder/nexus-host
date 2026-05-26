@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: nexus-cloud
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm install --prefix api
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: CORS_ORIGIN
+        value: "*"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
