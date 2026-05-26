@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS CLOUD — Instances</title>
+  <meta name="description" content="Manage your NEXUS CLOUD deployment instances">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="config/firebase-config.js"></script>
+  <link rel="stylesheet" href="css/nexus.css">
+  <style>
+    .in-page { display: flex; min-height: 100vh; background: var(--void-black); }
+    .in-main { flex: 1; margin-left: var(--sidebar-width); padding: 1.5rem 2rem; position: relative; }
+    .in-main::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 80% 0, rgba(0,240,255,0.015) 0%, transparent 50%); pointer-events: none; }
+    .in-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; position: relative; z-index: 1; }
+    .in-header h1 { font-size: 1.3rem; font-weight: 800; font-family: var(--font-display); color: var(--signal-white); }
+    .in-header p { color: rgba(255,255,255,0.3); font-size: 0.8rem; }
+    .in-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; position: relative; z-index: 1; }
+    .in-stat { padding: 1rem 1.25rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
+    .in-stat .val { font-size: 1.4rem; font-weight: 800; font-family: var(--font-display); color: var(--signal-white); }
+    .in-stat .label { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 0.15rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .in-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 1rem; position: relative; z-index: 1; }
+    .in-card { border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); overflow: hidden; transition: all 0.3s; }
+    .in-card:hover { border-color: rgba(0,240,255,0.1); }
+    .in-card-header { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: center; }
+    .in-card-name { font-weight: 700; color: var(--signal-white); font-size: 0.9rem; }
+    .in-card-url { font-size: 0.72rem; color: rgba(0,240,255,0.6); font-family: var(--font-mono); }
+    .in-status { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.55rem; border-radius: 20px; }
+    .in-status.running { background: rgba(16,185,129,0.1); color: #10B981; }
+    .in-status.stopped { background: rgba(255,68,68,0.1); color: #ff4444; }
+    .in-status.restarting, .in-status.scaling { background: rgba(255,171,0,0.1); color: #ffab00; animation: pulse 1s ease infinite; }
+    .in-status.creating { background: rgba(0,240,255,0.1); color: var(--nexus-cyan); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .in-card-body { padding: 1rem 1.25rem; }
+    .in-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .in-metric { }
+    .in-metric .metric-label { font-size: 0.65rem; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+    .in-metric .metric-bar { height: 4px; background: rgba(255,255,255,0.04); border-radius: 2px; overflow: hidden; }
+    .in-metric .metric-bar .fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+    .in-metric .metric-bar .fill.cyan { background: linear-gradient(90deg, rgba(0,240,255,0.3), var(--nexus-cyan)); }
+    .in-metric .metric-bar .fill.purple { background: linear-gradient(90deg, rgba(123,97,255,0.3), var(--plasma-purple)); }
+    .in-metric .metric-val { font-size: 0.8rem; font-weight: 600; color: var(--signal-white); font-family: var(--font-mono); margin-top: 0.15rem; }
+    .in-details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+    .in-details .det-row { display: flex; justify-content: space-between; padding: 0.2rem 0; }
+    .in-details .det-row .det-label { color: rgba(255,255,255,0.2); }
+    .in-details .det-row .det-val { color: rgba(255,255,255,0.5); font-family: var(--font-mono); font-size: 0.7rem; }
+    .in-card-actions { padding: 0.75rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.03); display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .in-action { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.5); }
+    .in-action:hover { background: rgba(255,255,255,0.05); color: var(--signal-white); }
+    .in-action.primary { background: rgba(0,240,255,0.08); border-color: rgba(0,240,255,0.15); color: var(--nexus-cyan); }
+    .in-action.primary:hover { background: rgba(0,240,255,0.12); }
+    .in-action.danger { color: #ff4444; }
+    .in-action.danger:hover { background: rgba(255,68,68,0.08); border-color: rgba(255,68,68,0.15); }
+    .in-action.success { color: #10B981; }
+    .in-action.success:hover { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.15); }
+    .in-empty { text-align: center; padding: 4rem 2rem; position: relative; z-index: 1; }
+    .in-empty svg { width: 64px; height: 64px; opacity: 0.15; margin-bottom: 1rem; }
+    .in-empty h3 { font-size: 1.1rem; color: var(--signal-white); font-weight: 600; }
+    .in-empty p { color: rgba(255,255,255,0.2); font-size: 0.85rem; margin: 0.5rem 0 1.5rem; }
+    .in-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 200; display: none; align-items: center; justify-content: center; }
+    .in-modal { background: #0d0d12; border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 2rem; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .in-modal h2 { font-size: 1.1rem; font-weight: 700; color: var(--signal-white); margin-bottom: 1rem; }
+    .in-modal .log-area { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.04); border-radius: 10px; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; max-height: 300px; overflow-y: auto; color: rgba(255,255,255,0.5); line-height: 1.6; }
+    .in-modal .log-area .log-entry { display: flex; gap: 0.5rem; }
+    .in-modal .log-area .log-entry .ts { color: rgba(255,255,255,0.15); }
+    .in-modal .log-area .log-entry .msg { color: rgba(255,255,255,0.5); }
+    .in-modal .log-area .log-entry .msg.error { color: #ff4444; }
+    .in-modal .log-area .log-entry .msg.warn { color: #ffab00; }
+    .btn-close-modal { padding: 0.6rem 1.25rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); cursor: pointer; font-size: 0.8rem; margin-top: 1rem; }
+    .btn-close-modal:hover { background: rgba(255,255,255,0.06); }
+    @media (max-width: 768px) { .in-stats { grid-template-columns: 1fr 1fr; } .in-grid { grid-template-columns: 1fr; } .in-main { margin-left: 0; padding: 1rem; } }
+  </style>
+</head>
+<body>
+  <div class="in-page">
+    <aside class="sidebar" id="inSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">N</div>
+        <div class="sidebar-brand">NEXUS <span>CLOUD</span></div>
+        <div style="font-size:0.55rem;color:var(--titanium);letter-spacing:0.15em;text-transform:uppercase;margin-left:auto;position:absolute;bottom:0.85rem;right:1rem;background:rgba(0,240,255,0.08);padding:0.15rem 0.4rem;border-radius:4px;border:1px solid rgba(0,240,255,0.12)">INSTANCES</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section"><div class="nav-section-title">Main</div>
+          <div class="nav-item" onclick="window.location.href='/dashboard'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item" onclick="window.location.href='/create-project'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Project
+          </div>
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Instances
+          </div>
+        </div>
+        <div class="nav-section"><div class="nav-section-title">Management</div>
+          <div class="nav-item" onclick="window.location.href='/deployment-console'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg>
+            Deploy Console
+          </div>
+          <div class="nav-item" onclick="window.location.href='/terminal'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            Terminal
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-card" onclick="toggleInUserMenu()">
+          <div class="user-avatar" id="inUserAvatar">N</div>
+          <div class="user-info">
+            <div class="user-name" id="inUserName">Loading...</div>
+            <div class="user-email" id="inUserEmail">loading@nexus.host</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="in-main">
+      <div class="in-header">
+        <div><h1>Deployment Instances</h1><p>Manage your running applications and containers</p></div>
+        <button class="btn btn-primary btn-sm" onclick="window.location.href='/create-project'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Deployment
+        </button>
+      </div>
+
+      <div class="in-stats" id="inStats">
+        <div class="in-stat"><div class="val" id="statTotal">0</div><div class="label">Total Instances</div></div>
+        <div class="in-stat"><div class="val" id="statRunning" style="color:#10B981">0</div><div class="label">Running</div></div>
+        <div class="in-stat"><div class="val" id="statStopped" style="color:#ff4444">0</div><div class="label">Stopped</div></div>
+        <div class="in-stat"><div class="val" id="statDomains" style="color:var(--nexus-cyan)">0</div><div class="label">Domains</div></div>
+      </div>
+
+      <div class="in-grid" id="inGrid">
+        <div class="in-empty" id="inEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <h3>No Deployment Instances</h3>
+          <p>Deploy your first project to see it running here</p>
+          <button class="btn btn-primary" onclick="window.location.href='/create-project'">Create Your First Project</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="in-modal-overlay" id="logModal">
+    <div class="in-modal">
+      <h2 id="logModalTitle">Instance Logs</h2>
+      <div class="log-area" id="logModalContent"></div>
+      <button class="btn-close-modal" onclick="document.getElementById('logModal').style.display='none'">Close</button>
+    </div>
+  </div>
+
+  <div class="in-modal-overlay" id="confirmModal">
+    <div class="in-modal" style="max-width:400px">
+      <h2 id="confirmTitle">Confirm Action</h2>
+      <p id="confirmText" style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:1rem"></p>
+      <div style="display:flex;gap:0.75rem">
+        <button class="btn-close-modal" onclick="document.getElementById('confirmModal').style.display='none'">Cancel</button>
+        <button class="btn btn-danger btn-sm" id="confirmActionBtn" style="padding:0.6rem 1.25rem">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/deployment-engine.js"></script>
+  <script src="js/instances.js"></script>
+</body>
+</html>

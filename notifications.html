@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS CLOUD — Notifications</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/nexus.css">
+  <style>
+    body { background: var(--void-black); font-family: 'Inter', sans-serif; display:flex;align-items:center;justify-content:center;min-height:100vh }
+    .nt-page { width:100%;max-width:720px;padding:1.5rem }
+    .nt-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem }
+    .nt-header h1 { font-size:1.3rem;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--signal-white) }
+    .nt-header .count { font-size:0.75rem;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);padding:0.2rem 0.6rem;border-radius:20px }
+    .nt-list { display:flex;flex-direction:column;gap:0.35rem }
+    .nt-item { display:flex;gap:0.75rem;padding:1rem;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);transition:all 0.2s;cursor:pointer }
+    .nt-item:hover { background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08) }
+    .nt-item.unread { border-left:2px solid var(--nexus-cyan);background:rgba(0,240,255,0.02) }
+    .nt-icon { width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.85rem }
+    .nt-icon.success { background:rgba(16,185,129,0.1);color:#10B981 }
+    .nt-icon.error { background:rgba(255,68,68,0.1);color:#ff4444 }
+    .nt-icon.info { background:rgba(0,240,255,0.1);color:var(--nexus-cyan) }
+    .nt-icon.warn { background:rgba(255,171,0,0.1);color:#ffab00 }
+    .nt-body { flex:1;min-width:0 }
+    .nt-body .title { font-size:0.85rem;font-weight:600;color:var(--signal-white);margin-bottom:0.15rem }
+    .nt-body .desc { font-size:0.78rem;color:rgba(255,255,255,0.35);line-height:1.4 }
+    .nt-body .time { font-size:0.65rem;color:rgba(255,255,255,0.15);margin-top:0.25rem }
+    .nt-empty { text-align:center;padding:3rem 2rem }
+    .nt-empty svg { width:48px;height:48px;opacity:0.1;margin-bottom:1rem }
+    .nt-empty h3 { font-size:1rem;color:var(--signal-white);font-weight:600;margin-bottom:0.25rem }
+    .nt-empty p { color:rgba(255,255,255,0.2);font-size:0.8rem }
+  </style>
+</head>
+<body>
+  <div class="nt-page">
+    <div class="nt-header">
+      <h1>🔔 Notifications</h1>
+      <span class="count" id="ntCount">0 unread</span>
+    </div>
+    <div class="nt-list" id="ntList"></div>
+  </div>
+  <script>
+    const NOTIFICATIONS = [
+      { icon:'success', title:'Deployment Successful', desc:'nexus-api-gateway deployed to 3 regions — SSL active, health checks passed', time:'2 min ago', unread:true },
+      { icon:'info', title:'SSL Certificate Renewed', desc:'Wildcard certificate *.nexus.app renewed — expires in 89 days', time:'1 hour ago', unread:true },
+      { icon:'warn', title:'CPU Threshold Warning', desc:'bot-worker instance CPU at 87% — consider scaling up', time:'3 hours ago', unread:true },
+      { icon:'success', title:'Database Backup Complete', desc:'Daily backup completed — 2.4 GB, stored in 3 regions', time:'6 hours ago', unread:false },
+      { icon:'info', title:'New Region Available', desc:'ap-southeast-2 (Sydney) now available for deployments', time:'1 day ago', unread:false },
+      { icon:'error', title:'Deployment Failed', desc:'my-discord-bot build failed — dependency conflict (discord.js v14 vs v13)', time:'2 days ago', unread:false, action:'redeploy' },
+      { icon:'success', title:'Auto-scaling Triggered', desc:'nexus-bot-prod scaled from 2 to 4 instances due to traffic spike', time:'3 days ago', unread:false },
+      { icon:'info', title:'GitHub Integration Updated', desc:'Repository sync token updated — all repos reconnected', time:'5 days ago', unread:false },
+    ];
+    function renderNotifications() { const c=document.getElementById('ntList'); const unread=NOTIFICATIONS.filter(n=>n.unread).length; document.getElementById('ntCount').textContent=unread+' unread'; if(NOTIFICATIONS.length===0){c.innerHTML='<div class="nt-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><h3>All caught up</h3><p>No new notifications</p></div>';return} c.innerHTML=NOTIFICATIONS.map(n=>'<div class="nt-item'+(n.unread?' unread':'')+'" onclick="this.classList.remove(\'unread\');updateCount()"><div class="nt-icon '+n.icon+'">'+{success:'✓',error:'✕',info:'i',warn:'!'}[n.icon]+'</div><div class="nt-body"><div class="title">'+n.title+'</div><div class="desc">'+n.desc+'</div><div class="time">'+n.time+'</div></div></div>').join('') }
+    function updateCount(){const r=document.querySelectorAll('.nt-item.unread').length;document.getElementById('ntCount').textContent=r+' unread'}
+    renderNotifications();
+  </script>
+</body>
+</html>
