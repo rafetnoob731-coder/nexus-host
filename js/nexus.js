@@ -83,10 +83,13 @@ function displayUserInfo() {
 function switchSection(section) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mbn-item').forEach(n => n.classList.remove('active'));
   const target = document.getElementById('section-' + section);
   if (target) target.classList.add('active');
   const navItem = document.querySelector(`.nav-item[data-section="${section}"]`);
   if (navItem) navItem.classList.add('active');
+  const mbnItem = document.querySelector(`.mbn-item[onclick*="'${section}'"]`);
+  if (mbnItem) mbnItem.classList.add('active');
   if (window.innerWidth <= 768) closeMobileSidebar();
 }
 
@@ -850,11 +853,17 @@ function updateRuntimeComposition() {
 
 function startResourceMonitor() {
   if (monitorInterval) clearInterval(monitorInterval);
+  let aiScoreVal = 92;
+  let aiOptVal = 8;
   monitorInterval = setInterval(() => {
     const cpu = Math.round(Math.random() * 60 + 10);
     const mem = Math.round(Math.random() * 50 + 30);
     const storage = Math.round(Math.random() * 30 + 20);
     const bandwidth = Math.round(Math.random() * 500 + 100);
+    aiScoreVal += Math.round((Math.random() - 0.5) * 4);
+    aiScoreVal = Math.max(75, Math.min(100, aiScoreVal));
+    aiOptVal += Math.round((Math.random() - 0.3) * 2);
+    aiOptVal = Math.max(3, Math.min(30, aiOptVal));
     document.getElementById('cpuUsage').textContent = cpu + '%';
     document.getElementById('cpuFill').style.width = cpu + '%';
     document.getElementById('memUsage').textContent = mem + '%';
@@ -866,6 +875,14 @@ function startResourceMonitor() {
     document.getElementById('monCpu').textContent = cpu + '%';
     document.getElementById('monMemory').textContent = Math.round(mem * 0.512) + ' MB';
     document.getElementById('monRequests').textContent = Math.round(Math.random() * 200 + 50);
+    const monCpuSmall = document.getElementById('monCpuSmall');
+    const monMemSmall = document.getElementById('monMemSmall');
+    if (monCpuSmall) monCpuSmall.textContent = cpu + '%';
+    if (monMemSmall) monMemSmall.textContent = Math.round(mem * 0.512) + ' MB';
+    const aiScoreEl = document.getElementById('aiScore');
+    const aiOptEl = document.getElementById('aiOptimizations');
+    if (aiScoreEl) aiScoreEl.textContent = aiScoreVal;
+    if (aiOptEl) aiOptEl.textContent = aiOptVal;
     const total = Math.round(Math.random() * 1000 + 500);
     const _2xx = Math.round(total * 0.85); const _4xx = Math.round(total * 0.1); const _5xx = total - _2xx - _4xx;
     document.getElementById('http2xx').textContent = _2xx; document.getElementById('http2xxFill').style.width = (_2xx / total * 100) + '%';

@@ -4,224 +4,170 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEXUS HOSTING — Deploy. Scale. Dominate.</title>
-  <meta name="description" content="The unified platform for bot hosting. Laravel, Python, JavaScript — deploy any runtime, manage everything from one command center.">
+  <meta name="description" content="AI-powered bot hosting platform. Deploy Python, JavaScript, and ZIP bots with cinematic infrastructure management.">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/nexus.css">
   <style>
-    .landing-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(5,5,7,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-glass); }
-    .landing-nav .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.2rem; font-family: var(--font-display); }
-    .landing-nav .nav-logo span { color: var(--nexus-cyan); text-shadow: 0 0 20px var(--nexus-cyan-glow); }
+    .landing-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0.85rem 2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(5,5,7,0.85); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .landing-nav .nav-logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 1.15rem; font-family: var(--font-display); color: var(--signal-white); }
+    .landing-nav .nav-logo span { background: linear-gradient(135deg, #00F0FF, #0088FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .landing-nav .nav-links { display: flex; align-items: center; gap: 2rem; }
-    .landing-nav .nav-links a { color: var(--titanium); font-size: 0.88rem; font-weight: 500; transition: var(--transition); }
+    .landing-nav .nav-links a { color: rgba(255,255,255,0.4); font-size: 0.85rem; font-weight: 500; transition: var(--transition); text-decoration: none; }
     .landing-nav .nav-links a:hover { color: var(--signal-white); }
-    .landing-footer { padding: 4rem 2rem; border-top: 1px solid var(--border-glass); text-align: center; }
-    .landing-footer p { color: var(--titanium); font-size: 0.85rem; }
-    .how-it-works { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin: 4rem 0; }
-    .hiw-step { text-align: center; padding: 2rem 1.5rem; }
-    .hiw-step .hiw-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; background: var(--surface-glass); border: 1px solid var(--border-glass); font-size: 1.5rem; }
-    .hiw-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .hiw-step p { font-size: 0.85rem; color: var(--titanium); line-height: 1.6; }
-    .ticker-bar { display: flex; align-items: center; gap: 1.5rem; padding: 0.75rem 1.5rem; border-radius: 100px; background: var(--surface-glass); border: 1px solid var(--border-glass); }
-    .ticker-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 600; }
-    .ticker-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .section-label { text-align: center; font-family: var(--font-mono); font-size: 0.8rem; color: var(--nexus-cyan); letter-spacing: 0.15em; margin-bottom: 1rem; }
-    .section-heading { text-align: center; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1rem; }
-    .section-subhead { text-align: center; font-size: 1.05rem; color: var(--titanium); max-width: 600px; margin: 0 auto 3rem; }
-    @media (max-width: 768px) { .how-it-works { grid-template-columns: 1fr 1fr; } .landing-nav .nav-links { display: none; } .hero-section { padding-top: 5rem; } }
-    @media (max-width: 480px) { .how-it-works { grid-template-columns: 1fr; } }
+    .section-title { text-align: center; font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; color: var(--signal-white); margin-bottom: 0.75rem; }
+    .section-sub { text-align: center; font-size: 1rem; color: rgba(255,255,255,0.35); max-width: 560px; margin: 0 auto 3rem; line-height: 1.7; }
+    .section-tag { text-align: center; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neon-blue); letter-spacing: 0.12em; margin-bottom: 1rem; text-transform: uppercase; }
+    .landing-footer { padding: 4rem 2rem; border-top: 1px solid rgba(255,255,255,0.04); text-align: center; position: relative; }
+    @media (max-width: 768px) { .landing-nav .nav-links { display: none; } }
+    @media (max-width: 480px) { .landing-nav { padding: 0.75rem 1rem; } }
   </style>
 </head>
 <body>
+  <canvas id="particleCanvas"></canvas>
+
   <nav class="landing-nav">
     <div class="nav-logo">
-      <div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:var(--signal-white);box-shadow:0 0 20px var(--nexus-cyan-glow)">N</div>
+      <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#00F0FF,#0088FF,#7B61FF);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#fff;box-shadow:0 0 24px rgba(0,136,255,0.25)">N</div>
       <div>NEXUS <span>HOSTING</span></div>
     </div>
     <div class="nav-links">
       <a href="#features">Features</a>
+      <a href="#workflow">Workflow</a>
       <a href="#pricing">Pricing</a>
-      <a href="/docs/runtimes">Docs</a>
-      <a href="/status">Status</a>
-      <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
-      <a href="/login" class="btn btn-primary btn-sm">Get Started</a>
+      <a href="/login" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:var(--signal-white)">Sign In</a>
+      <a href="/login" class="btn btn-primary btn-sm" style="background:linear-gradient(135deg,#00F0FF,#0088FF);border:none;color:#fff;box-shadow:0 4px 20px rgba(0,136,255,0.25)">Get Started</a>
     </div>
   </nav>
 
-  <section class="hero-section container" style="padding-top:2rem">
-    <div class="hero-content">
-      <div class="hero-eyebrow">> MULTI-RUNTIME BOT INFRASTRUCTURE</div>
-      <h1 class="hero-title" style="color:var(--signal-white)">DEPLOY BOTS IN<br>ANY LANGUAGE.<br><span style="background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent">MANAGE FROM ONE NEXUS.</span></h1>
-      <p class="hero-subhead">Laravel, Python, JavaScript — or upload a ZIP. We handle containerization, dependency resolution, and global edge distribution automatically.</p>
-      <div class="runtime-pills">
-        <span class="runtime-pill laravel"><span>●</span> Laravel</span>
-        <span class="runtime-pill python"><span>●</span> Python</span>
-        <span class="runtime-pill js"><span>●</span> JavaScript</span>
-        <span class="runtime-pill zip"><span>●</span> ZIP Upload</span>
+  <section class="hero-cinema">
+    <div class="hero-cinema-bg"></div>
+    <div class="hero-cinema-grid"></div>
+    <div style="position:relative;z-index:2;text-align:center;padding:8rem 2rem 6rem;max-width:1200px;margin:0 auto">
+      <div class="hero-badge" style="margin:0 auto"><span class="ai-glow-dot"></span> AI-POWERED BOT INFRASTRUCTURE</div>
+      <h1 class="hero-title-xl" style="margin-top:1.5rem">DEPLOY BOTS<br>IN ANY LANGUAGE.<br><span class="neon-accent">MANAGE FROM ONE NEXUS.</span></h1>
+      <p class="hero-subtitle-xl">Python, JavaScript, or ZIP upload. We handle containerization, dependency resolution, and global edge distribution autonomously.</p>
+      <div class="hero-cta-group">
+        <a href="/login" class="hero-cta-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg>
+          Deploy Now
+        </a>
+        <a href="/deploy/zip" class="hero-cta-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Upload ZIP
+        </a>
       </div>
-      <div style="display:flex;gap:1rem;flex-wrap:wrap">
-        <a href="/login" class="btn btn-primary btn-lg">Create Project</a>
-        <a href="/deploy/zip" class="btn btn-secondary btn-lg">Upload ZIP</a>
+
+      <div class="hologram-core" style="margin:4rem auto 0;position:relative;z-index:2">
+        <div class="hologram-glow"></div>
+        <div class="hologram-rays"></div>
+        <div class="hologram-ring" style="--hs-scale:0.6"></div>
+        <div class="hologram-ring" style="--hs-scale:0.8"></div>
+        <div class="hologram-ring" style="--hs-scale:1"></div>
+        <div class="hologram-ring" style="--hs-scale:0.7"></div>
+        <div class="hologram-ring" style="--hs-scale:0.9"></div>
+        <div class="hologram-center">N</div>
       </div>
-      <div class="ticker-bar" style="margin-top:2.5rem">
-        <span style="font-size:0.7rem;color:var(--titanium);letter-spacing:0.1em">LIVE</span>
-        <div class="ticker-item"><span class="ticker-dot" style="background:var(--nexus-cyan);box-shadow:0 0 8px var(--nexus-cyan-glow)"></span><span>Laravel: 1,240</span></div>
-        <div class="ticker-item"><span class="ticker-dot" style="background:var(--python-gold);box-shadow:0 0 8px var(--python-gold-glow)"></span><span>Python: 892</span></div>
-        <div class="ticker-item"><span class="ticker-dot" style="background:var(--js-yellow);box-shadow:0 0 8px var(--js-yellow-glow)"></span><span>JavaScript: 1,567</span></div>
-        <div class="ticker-item"><span class="ticker-dot" style="background:var(--plasma-purple);box-shadow:0 0 8px var(--plasma-purple-glow)"></span><span>ZIP Deploys: 342</span></div>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="nexus-core">
-        <div class="orbit orbit-inner"><div class="orbit-satellite"></div></div>
-        <div class="orbit orbit-mid"><div class="orbit-satellite"></div></div>
-        <div class="orbit orbit-outer"><div class="orbit-satellite"></div></div>
-        <div class="core-center">N</div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-top:3rem;padding:1rem 2rem;border-radius:60px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);max-width:640px;margin-left:auto;margin-right:auto">
+        <span style="font-size:0.65rem;color:rgba(255,255,255,0.2);letter-spacing:0.12em;text-transform:uppercase">Live</span>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:rgba(255,255,255,0.5)"><span style="width:6px;height:6px;border-radius:50%;background:var(--neon-blue);box-shadow:0 0 10px var(--neon-blue-glow)"></span>Python: 892</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:rgba(255,255,255,0.5)"><span style="width:6px;height:6px;border-radius:50%;background:var(--js-yellow);box-shadow:0 0 10px var(--js-yellow-glow)"></span>JavaScript: 1,567</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:rgba(255,255,255,0.5)"><span style="width:6px;height:6px;border-radius:50%;background:var(--plasma-purple);box-shadow:0 0 10px var(--plasma-purple-glow)"></span>ZIP: 342</div>
       </div>
     </div>
   </section>
 
-  <section class="container" id="features" style="padding:6rem 0">
-    <div class="section-label">> WORKFLOW</div>
-    <h2 class="section-heading" style="color:var(--signal-white)">How It Works</h2>
-    <p class="section-subhead">From code to live in under 30 seconds. Choose your runtime, deploy, and monitor from one dashboard.</p>
-    <div class="how-it-works">
-      <div class="hiw-step glass-card">
-        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
-        <h3>Choose Runtime</h3>
-        <p>Laravel, Python, JavaScript, or upload a ZIP archive. We auto-detect your stack.</p>
-      </div>
-      <div class="hiw-step glass-card">
-        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-        <h3>Create Project</h3>
-        <p>Organize bots by client, function, or environment with granular access control.</p>
-      </div>
-      <div class="hiw-step glass-card">
-        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="3" y1="3" x2="9" y2="9"/></svg></div>
-        <h3>Deploy</h3>
-        <p>Git push, CLI, or drag-and-drop ZIP. Live in 30 seconds with auto-scaling enabled.</p>
-      </div>
-      <div class="hiw-step glass-card">
-        <div class="hiw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-        <h3>Monitor</h3>
-        <p>Unified telemetry across all runtimes. CPU, memory, requests, and error tracking.</p>
+  <section id="features" style="padding:8rem 0 4rem;position:relative">
+    <div style="max-width:1280px;margin:0 auto;padding:0 2rem">
+      <div class="section-tag">> CAPABILITIES</div>
+      <h2 class="section-title">Enterprise Bot Infrastructure</h2>
+      <p class="section-sub">Everything you need to deploy, manage, and scale bots — powered by AI-driven automation.</p>
+      <div class="luxe-features">
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg></div><h3>AI Server Deployment</h3><p>One-click deployment with auto-detection. AI optimizes container config per runtime.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><h3>Live Terminal Access</h3><p>Real-time command console with AI suggestions. Debug, run commands, and monitor logs live.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><h3>File Manager</h3><p>Drag-and-drop uploads, syntax-highlighted code editor, folder tree navigation with AI analysis.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><h3>Database Control</h3><p>Managed MySQL, PostgreSQL, Redis. Auto-backup, connection pooling, and real-time monitoring.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>SSL Automation</h3><p>Auto-provision Let's Encrypt certificates. One-click HTTPS with automatic renewal.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><h3>Real-time Monitoring</h3><p>CPU, memory, bandwidth, and request analytics. Live graphs with AI anomaly detection.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>AI Error Detection</h3><p>Automatic log analysis pinpoints crashes. AI suggests fixes and optimizations in real-time.</p></div>
+        <div class="luxe-feature-card"><div class="cinema-overlay"></div><div class="luxe-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><h3>GitHub Deployment</h3><p>Connect repos for auto-deploy on push. Branch-based staging with rollback support.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="container" style="padding:4rem 0">
-    <div class="section-label">> RUN TIMES</div>
-    <h2 class="section-heading" style="color:var(--signal-white)">Multi-Runtime Showcase</h2>
-    <p class="section-subhead">Four deployment modes, one unified platform. Pick your stack, we handle the rest.</p>
-    <div class="showcase-grid">
-      <div class="showcase-card laravel">
-        <div class="showcase-icon">L</div>
-        <h3>Native Laravel</h3>
-        <p>Horizon, Queue, Scheduler, Octane. Zero-config deployment with full Artisan CLI support.</p>
-      </div>
-      <div class="showcase-card python">
-        <div class="showcase-icon">Py</div>
-        <h3>Python Bots</h3>
-        <p>Discord.py, python-telegram-bot, FastAPI. Auto pip install with virtual environment isolation.</p>
-      </div>
-      <div class="showcase-card js">
-        <div class="showcase-icon">JS</div>
-        <h3>JavaScript Bots</h3>
-        <p>Discord.js, node-telegram-bot-api, Express. Auto npm install with package manager detection.</p>
-      </div>
-      <div class="showcase-card zip">
-        <div class="showcase-icon">Z</div>
-        <h3>Archive Deploy</h3>
-        <p>Drag-and-drop ZIP. We detect runtime, extract dependencies, and deploy to edge nodes.</p>
+  <section id="workflow" style="padding:6rem 0;position:relative">
+    <div style="max-width:1280px;margin:0 auto;padding:0 2rem">
+      <div class="section-tag">> WORKFLOW</div>
+      <h2 class="section-title">AI-Powered Deployment Pipeline</h2>
+      <p class="section-sub">From code to live in under 30 seconds. Our AI auto-detects, configures, and deploys your bot.</p>
+      <div class="deploy-flow">
+        <div class="deploy-flow-step"><div class="cinema-overlay"></div><div class="dfs-num">1</div><div class="dfs-content"><h4>Upload Project</h4><p>ZIP, GitHub, or drag-drop</p></div></div>
+        <div class="deploy-flow-step"><div class="cinema-overlay"></div><div class="dfs-num">2</div><div class="dfs-content"><h4>AI Detect Runtime</h4><p>Python, JS auto-detected</p></div></div>
+        <div class="deploy-flow-step"><div class="cinema-overlay"></div><div class="dfs-num">3</div><div class="dfs-content"><h4>Install Dependencies</h4><p>pip/npm with caching</p></div></div>
+        <div class="deploy-flow-step"><div class="cinema-overlay"></div><div class="dfs-num">4</div><div class="dfs-content"><h4>Containerize</h4><p>Isolated Docker runtime</p></div></div>
+        <div class="deploy-flow-step"><div class="cinema-overlay"></div><div class="dfs-num">5</div><div class="dfs-content"><h4>Deploy to Edge</h4><p>Global node distribution</p></div></div>
       </div>
     </div>
   </section>
 
-  <section class="container" style="padding:4rem 0">
-    <div class="section-label">> TERMINAL</div>
-    <h2 class="section-heading" style="color:var(--signal-white)">Multi-Runtime CLI</h2>
-    <p class="section-subhead">Create and deploy projects across any runtime from the command line.</p>
-    <div class="terminal" style="max-width:720px;margin:0 auto">
-      <div class="terminal-header">
-        <span class="terminal-dot red"></span>
-        <span class="terminal-dot yellow"></span>
-        <span class="terminal-dot green"></span>
-        <span class="terminal-title">nexus — multi-runtime CLI</span>
-      </div>
-      <div class="terminal-body" style="max-height:none;font-size:0.85rem">
-        <div class="line system">$ nexus project create --name="multi-bot" --runtime=python</div>
-        <div class="line success">> Detected runtime: Python 3.11</div>
-        <div class="line success">> Creating virtual environment... [OK]</div>
-        <div class="line success">> Installing dependencies from requirements.txt... [OK]</div>
-        <div class="line highlight">> Project 'multi-bot' ready.</div>
-        <div class="line" style="margin-top:0.75rem"></div>
-        <div class="line system">$ nexus bot deploy --project=multi-bot --source=./discord-bot.zip</div>
-        <div class="line success">> Detected archive: ZIP format</div>
-        <div class="line success">> Extracting... [OK]</div>
-        <div class="line success">> Runtime auto-detected: Python</div>
-        <div class="line success">> Building container... [OK]</div>
-        <div class="line success">> Deploying to edge nodes... [OK]</div>
-        <div class="line highlight">> Bot live at: https://discord-bot.nexus.host</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="container" id="pricing" style="padding:6rem 0">
-    <div class="section-label">> PRICING</div>
-    <h2 class="section-heading" style="color:var(--signal-white)">Plans for Every Scale</h2>
-    <p class="section-subhead">All runtimes included. No extra fees for Python, JavaScript, or Laravel. ZIP uploads count toward your plan limits.</p>
-    <div class="pricing-grid">
-      <div class="pricing-card glass-card">
-        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Starter</h3>
-        <p style="color:var(--titanium);font-size:0.88rem">For small bots and testing</p>
-        <div class="pricing-price">$9<span>/mo</span></div>
-        <span style="display:inline-block;margin-top:0.25rem;font-size:0.82rem;color:var(--titanium)">or $99/yr</span>
-        <ul>
-          <li>1 Project</li>
-          <li>2 Bots</li>
-          <li>All Runtimes</li>
-          <li>5 ZIP Uploads / mo</li>
-          <li>50MB Max ZIP</li>
-          <li>5 min Build Time</li>
-        </ul>
-        <a href="/login" class="btn btn-primary" style="width:100%;justify-content:center">Get Started</a>
-      </div>
-      <div class="pricing-card glass-card featured">
-        <div style="position:absolute;top:1rem;right:1rem;font-size:0.7rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:100px;background:rgba(0,240,255,0.15);color:var(--nexus-cyan);border:1px solid rgba(0,240,255,0.2)">POPULAR</div>
-        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Pro</h3>
-        <p style="color:var(--titanium);font-size:0.88rem">For production bots</p>
-        <div class="pricing-price">$29<span>/mo</span></div>
-        <span style="display:inline-block;margin-top:0.25rem;font-size:0.82rem;color:var(--titanium)">or $299/yr</span>
-        <ul>
-          <li>5 Projects</li>
-          <li>10 Bots</li>
-          <li>All Runtimes</li>
-          <li>Unlimited ZIP Uploads</li>
-          <li>100MB Max ZIP</li>
-          <li>15 min Build Time</li>
-          <li>Custom Domains</li>
-          <li>Priority Support</li>
-        </ul>
-        <a href="/login" class="btn btn-primary" style="width:100%;justify-content:center">Get Started</a>
-      </div>
-      <div class="pricing-card glass-card">
-        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Enterprise</h3>
-        <p style="color:var(--titanium);font-size:0.88rem">For large-scale operations</p>
-        <div class="pricing-price">Custom</div>
-        <span style="display:inline-block;margin-top:0.25rem;font-size:0.82rem;color:var(--titanium)">Contact sales</span>
-        <ul>
-          <li>Unlimited Projects</li>
-          <li>Unlimited Bots</li>
-          <li>All Runtimes</li>
-          <li>Unlimited ZIP Uploads</li>
-          <li>500MB Max ZIP</li>
-          <li>60 min Build Time</li>
-          <li>Custom Domains</li>
-          <li>Priority Support</li>
-          <li>SLA Guarantee</li>
-        </ul>
-        <a href="/login" class="btn btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+  <section id="pricing" style="padding:6rem 0 8rem;position:relative">
+    <div style="max-width:1280px;margin:0 auto;padding:0 2rem">
+      <div class="section-tag">> PRICING</div>
+      <h2 class="section-title">Plans for Every Scale</h2>
+      <p class="section-sub">All runtimes included. No extra fees for Python, JavaScript, or ZIP bots.</p>
+      <div class="luxe-pricing-grid">
+        <div class="luxe-pricing-card">
+          <div class="cinema-overlay"></div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--signal-white);margin-bottom:0.25rem">Starter</h3>
+          <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;margin-bottom:1rem">For small bots and testing</p>
+          <div class="price">$9<span>/mo</span></div>
+          <p style="color:rgba(255,255,255,0.2);font-size:0.8rem;margin-top:0.25rem">or $99/yr</p>
+          <ul>
+            <li>1 Project</li>
+            <li>2 Bots</li>
+            <li>All Runtimes</li>
+            <li>5 ZIP Uploads / mo</li>
+            <li>50MB Max ZIP</li>
+          </ul>
+          <a href="/login" class="btn btn-primary" style="width:100%;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--signal-white)">Get Started</a>
+        </div>
+        <div class="luxe-pricing-card featured">
+          <div class="cinema-overlay"></div>
+          <div class="popular-tag">POPULAR</div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--signal-white);margin-bottom:0.25rem">Pro</h3>
+          <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;margin-bottom:1rem">For production bots</p>
+          <div class="price">$29<span>/mo</span></div>
+          <p style="color:rgba(255,255,255,0.2);font-size:0.8rem;margin-top:0.25rem">or $299/yr</p>
+          <ul>
+            <li>5 Projects</li>
+            <li>10 Bots</li>
+            <li>All Runtimes</li>
+            <li>Unlimited ZIP Uploads</li>
+            <li>100MB Max ZIP</li>
+            <li>Custom Domains</li>
+            <li>Priority Support</li>
+          </ul>
+          <a href="/login" class="hero-cta-primary" style="justify-content:center;width:100%;text-decoration:none">Get Started</a>
+        </div>
+        <div class="luxe-pricing-card">
+          <div class="cinema-overlay"></div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:var(--signal-white);margin-bottom:0.25rem">Enterprise</h3>
+          <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;margin-bottom:1rem">For large-scale operations</p>
+          <div class="price">Custom</div>
+          <p style="color:rgba(255,255,255,0.2);font-size:0.8rem;margin-top:0.25rem">Contact sales</p>
+          <ul>
+            <li>Unlimited Projects</li>
+            <li>Unlimited Bots</li>
+            <li>All Runtimes</li>
+            <li>Unlimited ZIP Uploads</li>
+            <li>500MB Max ZIP</li>
+            <li>SLA Guarantee</li>
+            <li>Dedicated Support</li>
+          </ul>
+          <a href="/login" class="btn btn-secondary" style="width:100%;justify-content:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--signal-white)">Contact Sales</a>
+        </div>
       </div>
     </div>
   </section>
@@ -229,21 +175,88 @@
   <footer class="landing-footer">
     <div style="max-width:1280px;margin:0 auto">
       <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:1.5rem">
-        <div style="width:32px;height:32px;border-radius:8px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.9rem;color:var(--signal-white)">N</div>
-        <span style="font-weight:800;font-size:1.1rem;font-family:var(--font-display)">NEXUS <span style="color:var(--nexus-cyan)">HOSTING</span></span>
+        <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#00F0FF,#0088FF,#7B61FF);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;color:#fff">N</div>
+        <span style="font-weight:800;font-size:1rem;font-family:var(--font-display);color:var(--signal-white)">NEXUS <span style="background:linear-gradient(135deg,#00F0FF,#0088FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent">HOSTING</span></span>
       </div>
-      <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:2rem">
-        <a href="/docs/runtimes" style="color:var(--titanium);font-size:0.85rem">Documentation</a>
-        <a href="/pricing" style="color:var(--titanium);font-size:0.85rem">Pricing</a>
-        <a href="/status" style="color:var(--titanium);font-size:0.85rem">Status</a>
-        <a href="/login" style="color:var(--titanium);font-size:0.85rem">Dashboard</a>
+      <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-bottom:1.5rem">
+        <a href="/docs/runtimes" style="color:rgba(255,255,255,0.3);font-size:0.82rem;text-decoration:none;transition:var(--transition)">Documentation</a>
+        <a href="/status" style="color:rgba(255,255,255,0.3);font-size:0.82rem;text-decoration:none;transition:var(--transition)">Status</a>
+        <a href="/login" style="color:rgba(255,255,255,0.3);font-size:0.82rem;text-decoration:none;transition:var(--transition)">Dashboard</a>
       </div>
-      <p>Deploy. Scale. Dominate. — NEXUS HOSTING Multi-Runtime Platform</p>
-      <p style="margin-top:0.5rem;font-size:0.75rem;color:rgba(255,255,255,0.2)">NEXUS HOST — All Credit Nexus</p>
+      <p style="color:rgba(255,255,255,0.2);font-size:0.82rem">Deploy. Scale. Dominate. — NEXUS HOSTING Bot Platform</p>
+      <p style="margin-top:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.08);letter-spacing:0.1em">NEXUS HOST — All Credit Nexus</p>
     </div>
   </footer>
 
   <script>
+    (function() {
+      const canvas = document.getElementById('particleCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let animId;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = document.documentElement.scrollHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const count = Math.min(80, Math.floor(window.innerWidth / 16));
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3 - 0.1,
+          r: Math.random() * 1.5 + 0.5,
+          o: Math.random() * 0.3 + 0.05,
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,136,255,${p.o})`;
+          ctx.fill();
+        }
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(0,136,255,${0.04 * (1 - dist / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+        animId = requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    document.querySelectorAll('.luxe-feature-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+      });
+    });
+
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         e.preventDefault();
