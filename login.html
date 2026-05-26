@@ -4,135 +4,237 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEXUS HOSTING — Sign In</title>
-  <meta name="description" content="Sign in to NEXUS HOSTING — Multi-Runtime Bot Hosting Platform.">
+  <meta name="description" content="Sign in to NEXUS HOSTING — AI-Powered Cloud Infrastructure Platform">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <link rel="stylesheet" href="css/nexus.css">
   <style>
-    body { background: #0a0a0f; overflow-y: auto; overflow-x: hidden; }
-    body { background: #050507; overflow-y: auto; overflow-x: hidden; }
-    .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
-    #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.3; }
-    .auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, rgba(5,5,7,0.3) 0%, #050507 80%); z-index: 1; }
-    .particles-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-    .auth-card { position: relative; z-index: 2; width: 100%; max-width: 480px; padding: 3rem; }
-    .logo-section { text-align: center; margin-bottom: 2.5rem; }
-    .logo-section img { width: 72px; height: 72px; border-radius: 20px; margin-bottom: 1rem; filter: drop-shadow(0 0 30px rgba(0,240,255,0.3)); }
-    .logo-section h1 { font-size: 2.25rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; background: var(--gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
-    .logo-section p { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; }
-    .auth-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
-    .auth-tab { flex: 1; padding: 0.85rem; text-align: center; border-radius: 12px; cursor: pointer; font-weight: 600; color: rgba(255,255,255,0.4); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); background: transparent; border: none; font-size: 0.9rem; letter-spacing: 0.02em; }
-    .auth-tab.active { background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(123,97,255,0.08)); color: #fff; box-shadow: 0 0 30px rgba(0,240,255,0.08); }
-    .auth-form { display: none; animation: fadeInUp 0.6s ease; }
+    body { background: var(--void-black); overflow-y: auto; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+    .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .auth-bg-grid { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px); background-size: 60px 60px; z-index: 0; mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 70%); }
+    .auth-bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .auth-bg-glow::before { content: ''; position: absolute; top: -40%; left: -20%; width: 80%; height: 80%; background: radial-gradient(ellipse, rgba(0,240,255,0.08) 0%, transparent 60%); }
+    .auth-bg-glow::after { content: ''; position: absolute; bottom: -30%; right: -10%; width: 60%; height: 60%; background: radial-gradient(ellipse, rgba(123,97,255,0.06) 0%, transparent 50%); }
+    .auth-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .auth-hologram { position: fixed; right: 5%; top: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; opacity: 0.15; display: none; }
+    @media (min-width: 1200px) { .auth-hologram { display: block; } }
+    .auth-container { position: relative; z-index: 2; width: 100%; max-width: 480px; padding: 1.5rem; margin: 2rem auto; }
+    .auth-card { position: relative; border-radius: 24px; padding: 2.5rem 2.5rem 2rem; background: rgba(5,5,7,0.8); backdrop-filter: blur(40px) saturate(1.8); -webkit-backdrop-filter: blur(40px) saturate(1.8); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 0 80px rgba(0,240,255,0.04), 0 0 0 1px rgba(255,255,255,0.02) inset; overflow: hidden; }
+    .auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,240,255,0.3), transparent); }
+    .auth-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg at 50% 50%, transparent, rgba(0,240,255,0.03), transparent, rgba(123,97,255,0.03), transparent); animation: authSpin 20s linear infinite; pointer-events: none; }
+    @keyframes authSpin { to { transform: rotate(360deg); } }
+    .auth-card-inner { position: relative; z-index: 1; }
+    .auth-logo { text-align: center; margin-bottom: 2rem; }
+    .auth-logo-icon { width: 64px; height: 64px; margin: 0 auto 1rem; background: var(--gradient-brand); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; color: #fff; box-shadow: 0 0 40px rgba(0,240,255,0.2); }
+    .auth-logo h1 { font-size: 1.75rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.03em; background: var(--gradient-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .auth-logo p { color: rgba(255,255,255,0.35); font-size: 0.75rem; margin-top: 0.35rem; letter-spacing: 0.25em; text-transform: uppercase; }
+    .auth-tabs { display: flex; gap: 0.35rem; margin-bottom: 1.75rem; background: rgba(255,255,255,0.03); border-radius: 14px; padding: 0.4rem; border: 1px solid rgba(255,255,255,0.05); }
+    .auth-tab { flex: 1; padding: 0.75rem; text-align: center; border-radius: 10px; cursor: pointer; font-weight: 600; color: rgba(255,255,255,0.35); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); background: transparent; border: none; font-size: 0.85rem; letter-spacing: 0.02em; }
+    .auth-tab.active { background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(123,97,255,0.06)); color: #fff; box-shadow: 0 0 20px rgba(0,240,255,0.06); }
+    .auth-form { display: none; animation: authFadeIn 0.5s ease; }
     .auth-form.active { display: block; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label { display: block; color: rgba(255,255,255,0.6); font-size: 0.8rem; font-weight: 500; margin-bottom: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase; }
-    .form-group input { width: 100%; padding: 1rem 1.25rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; color: #F4F6FF; font-size: 0.95rem; font-family: inherit; transition: all 0.3s ease; outline: none; }
-    .form-group input:focus { border-color: rgba(0,240,255,0.5); box-shadow: 0 0 30px rgba(0,240,255,0.08); background: rgba(255,255,255,0.06); }
-    .form-group input::placeholder { color: rgba(255,255,255,0.2); }
-    .btn-auth { width: 100%; padding: 1rem; background: linear-gradient(135deg, #00F0FF, #7B61FF); border: none; border-radius: 12px; color: #F4F6FF; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; letter-spacing: 0.02em; }
-    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 20px 60px rgba(0,240,255,0.3); }
+    @keyframes authFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label { display: flex; align-items: center; gap: 0.35rem; color: rgba(255,255,255,0.5); font-size: 0.7rem; font-weight: 600; margin-bottom: 0.4rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .form-group .input-wrap { position: relative; }
+    .form-group input { width: 100%; padding: 0.85rem 1.1rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: var(--signal-white); font-size: 0.9rem; font-family: inherit; transition: all 0.3s ease; outline: none; box-sizing: border-box; }
+    .form-group input:focus { border-color: rgba(0,240,255,0.4); box-shadow: 0 0 0 3px rgba(0,240,255,0.06), 0 0 20px rgba(0,240,255,0.04); background: rgba(255,255,255,0.06); }
+    .form-group input::placeholder { color: rgba(255,255,255,0.15); }
+    .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .form-options label { display: flex; align-items: center; gap: 0.5rem; color: rgba(255,255,255,0.35); font-size: 0.8rem; cursor: pointer; }
+    .form-options label input[type="checkbox"] { width: auto; accent-color: var(--nexus-cyan); }
+    .form-options a { color: rgba(0,240,255,0.6); font-size: 0.8rem; text-decoration: none; transition: color 0.2s; }
+    .form-options a:hover { color: var(--nexus-cyan); }
+    .btn-auth { width: 100%; padding: 0.85rem; background: var(--gradient-brand); border: none; border-radius: 10px; color: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.4s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; letter-spacing: 0.02em; }
+    .btn-auth:hover { transform: translateY(-1px); box-shadow: 0 16px 40px rgba(0,240,255,0.2); }
     .btn-auth:active { transform: translateY(0); }
-    .btn-google { width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #F4F6FF; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.4s ease; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
-    .btn-google:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
-    .btn-google svg { width: 20px; height: 20px; }
-    .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: rgba(255,255,255,0.2); font-size: 0.8rem; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); }
-    .error-msg { color: #ff4444; font-size: 0.85rem; margin-top: 0.75rem; text-align: center; display: none; }
-    .auth-footer { text-align: center; margin-top: 1.5rem; color: rgba(255,255,255,0.3); font-size: 0.85rem; }
-    .auth-footer a { color: #00F0FF; text-decoration: none; font-weight: 500; }
-    .auth-footer a:hover { color: #7B61FF; }
-    .loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+    .btn-alt { width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--signal-white); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+    .btn-alt:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.14); transform: translateY(-1px); }
+    .btn-alt svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .btn-alt .github-icon { color: #fff; }
+    .divider { display: flex; align-items: center; gap: 1rem; margin: 1.25rem 0; color: rgba(255,255,255,0.15); font-size: 0.7rem; letter-spacing: 0.05em; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); }
+    .error-msg { color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem; text-align: center; display: none; }
+    .auth-footer { text-align: center; margin-top: 1.5rem; color: rgba(255,255,255,0.2); font-size: 0.75rem; }
+    .auth-footer a { color: rgba(0,240,255,0.6); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+    .auth-footer a:hover { color: var(--nexus-cyan); }
+    .loading-spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.15); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .btn-auth.loading .btn-text { display: none; }
     .btn-auth.loading .loading-spinner { display: block; }
+    .auth-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem; }
+    .auth-method { padding: 0.65rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; cursor: pointer; transition: all 0.3s ease; text-align: center; }
+    .auth-method:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+    .auth-method svg { width: 22px; height: 22px; opacity: 0.5; margin-bottom: 0.25rem; }
+    .auth-method div { font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+    .twofa-inputs { display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; }
+    .twofa-inputs input { width: 42px; height: 52px; text-align: center; font-size: 1.3rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: var(--signal-white); outline: none; transition: all 0.3s; }
+    .twofa-inputs input:focus { border-color: rgba(0,240,255,0.5); box-shadow: 0 0 20px rgba(0,240,255,0.08); }
+    .twofa-label { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-bottom: 0.75rem; }
   </style>
 </head>
 <body id="loginBody">
-  <div class="auth-container">
-    <video id="bg-video" autoplay muted loop playsinline>
-      <source src="assets/background.mp4" type="video/mp4">
-    </video>
-    <div class="auth-overlay"></div>
-    <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40vw;font-weight:900;color:rgba(6,230,242,0.015);pointer-events:none;z-index:1;font-family:'Poppins',sans-serif;letter-spacing:-0.05em;user-select:none">NEXUS</div>
-    <canvas class="particles-canvas" id="particlesCanvas"></canvas>
+  <div class="auth-page">
+    <div class="auth-bg-grid"></div>
+    <div class="auth-bg-glow"></div>
+    <canvas class="auth-particles" id="particlesCanvas"></canvas>
 
-    <div class="glass-panel auth-card" style="animation: fadeInUp 0.8s ease;">
-      <div class="logo-section">
-        <img src="assets/logo.png" alt="NEXUS HOST" onerror="this.style.display='none'">
-        <h1 style="background:linear-gradient(135deg, #06E6F2, #B026FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Poppins',sans-serif">NEXUS HOSTING</h1>
-        <p><span style="color:#06E6F2;font-weight:700">BOT</span> HOSTING PLATFORM</p>
-      </div>
+    <div class="auth-hologram">
+      <svg width="360" height="460" viewBox="0 0 360 460" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 60px rgba(0,240,255,0.15))">
+        <ellipse cx="180" cy="230" rx="140" ry="180" stroke="rgba(0,240,255,0.06)" stroke-width="0.5"/>
+        <ellipse cx="180" cy="230" rx="110" ry="150" stroke="rgba(0,240,255,0.1)" stroke-width="0.5"/>
+        <ellipse cx="180" cy="230" rx="80" ry="110" stroke="rgba(0,240,255,0.15)" stroke-width="0.5">
+          <animateTransform attributeName="transform" type="rotate" from="0 180 230" to="360 180 230" dur="30s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="180" cy="230" rx="60" ry="85" stroke="rgba(123,97,255,0.12)" stroke-width="0.5">
+          <animateTransform attributeName="transform" type="rotate" from="0 180 230" to="-360 180 230" dur="25s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="180" cy="230" rx="35" ry="50" stroke="rgba(0,240,255,0.2)" stroke-width="0.5">
+          <animateTransform attributeName="transform" type="rotate" from="0 180 230" to="360 180 230" dur="20s" repeatCount="indefinite"/>
+        </ellipse>
+        <circle cx="180" cy="230" r="12" fill="rgba(0,240,255,0.15)">
+          <animate attributeName="r" values="12;16;12" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.15;0.3;0.15" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="180" cy="230" r="4" fill="rgba(0,240,255,0.4)">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
 
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
-        <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
-      </div>
-
-      <div id="loginForm" class="auth-form active">
-        <form onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="loginEmail" placeholder="you@company.com" required>
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-card-inner">
+          <div class="auth-logo">
+            <div class="auth-logo-icon">N</div>
+            <h1>NEXUS HOSTING</h1>
+            <p>Cloud Infrastructure Platform</p>
           </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="loginPassword" placeholder="••••••••" required>
-          </div>
-          <button type="submit" class="btn-auth" id="loginBtn">
-            <span class="btn-text">Sign In to Dashboard</span>
-            <div class="loading-spinner"></div>
-          </button>
-          <div class="error-msg" id="loginError"></div>
-        </form>
 
-        <div class="divider">or continue with</div>
-
-        <button class="btn-google" onclick="handleGoogleLogin()">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-          Continue with Google
-        </button>
-      </div>
-
-      <div id="registerForm" class="auth-form">
-        <form onsubmit="handleRegister(event)">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="regName" placeholder="John Doe" required>
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+            <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+            <button class="auth-tab" onclick="switchAuthTab('otp')">Magic Link</button>
           </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="regEmail" placeholder="you@company.com" required>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="regPassword" placeholder="Min. 8 characters" minlength="8" required>
-          </div>
-          <button type="submit" class="btn-auth" id="registerBtn">
-            <span class="btn-text">Create Account</span>
-            <div class="loading-spinner"></div>
-          </button>
-          <div class="error-msg" id="registerError"></div>
-        </form>
-      </div>
 
-      <div class="auth-footer">
-        By continuing, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-      </div>
-      <div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.05)">
-        <span style="color:rgba(255,255,255,0.2);font-size:0.75rem;letter-spacing:0.05em">
-          POWERED BY <span style="color:#06E6F2;font-weight:700">NEXUS</span> HOSTING
-          <span style="margin:0 0.5rem;opacity:0.3">|</span>
-          <span style="color:#B026FF;font-weight:600">BOT</span> HOSTING
-          <span style="margin:0 0.5rem;opacity:0.3">|</span>
-          ALL CREDIT NEXUS
-        </span>
+          <div id="loginForm" class="auth-form active">
+            <form onsubmit="handleLogin(event)">
+              <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrap">
+                  <input type="email" id="loginEmail" placeholder="you@company.com" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrap">
+                  <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+              </div>
+              <div class="form-options">
+                <label><input type="checkbox" checked> Remember me</label>
+                <a href="#" onclick="switchAuthTab('otp');return false">Forgot password?</a>
+              </div>
+              <button type="submit" class="btn-auth" id="loginBtn">
+                <span class="btn-text">Sign In to Dashboard</span>
+                <div class="loading-spinner"></div>
+              </button>
+              <div class="error-msg" id="loginError"></div>
+            </form>
+
+            <div class="divider">or continue with</div>
+
+            <button class="btn-alt" onclick="handleGoogleLogin()">
+              <svg viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </button>
+            <button class="btn-alt" style="margin-top:0.5rem" onclick="handleGitHubLogin()">
+              <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              Continue with GitHub
+            </button>
+          </div>
+
+          <div id="registerForm" class="auth-form">
+            <form onsubmit="handleRegister(event)">
+              <div class="form-group">
+                <label>Full Name</label>
+                <div class="input-wrap">
+                  <input type="text" id="regName" placeholder="John Doe" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrap">
+                  <input type="email" id="regEmail" placeholder="you@company.com" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrap">
+                  <input type="password" id="regPassword" placeholder="Min. 8 characters" minlength="8" required>
+                </div>
+              </div>
+              <button type="submit" class="btn-auth" id="registerBtn">
+                <span class="btn-text">Create Account</span>
+                <div class="loading-spinner"></div>
+              </button>
+              <div class="error-msg" id="registerError"></div>
+            </form>
+
+            <div class="auth-methods">
+              <div class="auth-method" onclick="switchAuthTab('otp')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(0,240,255,0.6)" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div>Passkey</div>
+              </div>
+              <div class="auth-method" onclick="switchAuthTab('otp')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(123,97,255,0.6)" stroke-width="1.5"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                <div>Magic Link</div>
+              </div>
+              <div class="auth-method">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,212,59,0.6)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div>2FA</div>
+              </div>
+              <div class="auth-method" onclick="handleGoogleLogin()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <div>SSO</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="otpForm" class="auth-form">
+            <form onsubmit="handleOTP(event)">
+              <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrap">
+                  <input type="email" id="otpEmail" placeholder="you@company.com" required>
+                </div>
+              </div>
+              <button type="submit" class="btn-auth" id="otpBtn">
+                <span class="btn-text">Send Magic Link</span>
+                <div class="loading-spinner"></div>
+              </button>
+              <div class="error-msg" id="otpError"></div>
+              <div class="twofa-label" style="margin-top:1rem">or enter 2FA code</div>
+              <div class="twofa-inputs">
+                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="move2FA(this, 0)" autofocus>
+                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="move2FA(this, 1)">
+                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="move2FA(this, 2)">
+                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="move2FA(this, 3)">
+                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="move2FA(this, 4)">
+                <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="verify2FA(this)">
+              </div>
+            </form>
+          </div>
+
+          <div class="auth-footer">
+            By continuing, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -142,23 +244,42 @@
     function switchAuthTab(tab) {
       document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-      document.querySelector(`.auth-tab[onclick*="${tab}"]`).classList.add('active');
+      const tabs = document.querySelectorAll('.auth-tab');
+      const tabMap = { login: 0, register: 1, otp: 2 };
+      if (tabs[tabMap[tab]]) tabs[tabMap[tab]].classList.add('active');
       document.getElementById(tab + 'Form').classList.add('active');
-      document.getElementById('loginError').style.display = 'none';
-      document.getElementById('registerError').style.display = 'none';
+      ['loginError','registerError','otpError'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
     }
 
     function setLoading(btnId, loading) {
       const btn = document.getElementById(btnId);
+      if (!btn) return;
       if (loading) { btn.classList.add('loading'); btn.disabled = true; }
       else { btn.classList.remove('loading'); btn.disabled = false; }
     }
 
     function showError(id, msg) {
       const el = document.getElementById(id);
+      if (!el) return;
       el.textContent = msg;
       el.style.display = 'block';
       setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    function move2FA(input, idx) {
+      if (input.value.length >= 1) {
+        const next = input.parentElement.children[idx + 1];
+        if (next) next.focus();
+      }
+    }
+
+    function verify2FA(input) {
+      if (input.value.length >= 1) {
+        const code = Array.from(input.parentElement.children).map(i => i.value).join('');
+        if (code.length === 6) {
+          showError('otpError', '2FA verification endpoint not yet connected');
+        }
+      }
     }
 
     async function handleLogin(e) {
@@ -209,14 +330,46 @@
           const snap = await d.ref('users/' + user.uid + '/profile').once('value');
           if (!snap.exists()) {
             await d.ref('users/' + user.uid + '/profile').set({
-              displayName: user.displayName,
-              email: user.email,
-              createdAt: Date.now()
+              displayName: user.displayName, email: user.email, createdAt: Date.now()
             });
           }
         }
         window.location.href = 'dashboard.html';
       } catch (err) { showError('loginError', err.message); }
+    }
+
+    async function handleGitHubLogin() {
+      try {
+        var a = window.auth || window.NEXUS_AUTH;
+        var p = new a.GithubAuthProvider();
+        var d = window.db || window.NEXUS_DB;
+        const result = await a.signInWithPopup(p);
+        const user = result.user;
+        if (user) {
+          const snap = await d.ref('users/' + user.uid + '/profile').once('value');
+          if (!snap.exists()) {
+            await d.ref('users/' + user.uid + '/profile').set({
+              displayName: user.displayName, email: user.email, createdAt: Date.now()
+            });
+          }
+        }
+        window.location.href = 'dashboard.html';
+      } catch (err) { showError('loginError', err.message); }
+    }
+
+    async function handleOTP(e) {
+      e.preventDefault();
+      setLoading('otpBtn', true);
+      try {
+        var a = window.auth || window.NEXUS_AUTH;
+        await a.sendSignInLinkToEmail(document.getElementById('otpEmail').value, {
+          url: window.location.origin + '/dashboard.html',
+          handleCodeInApp: true
+        });
+        showError('otpError', 'Magic link sent! Check your email.');
+      } catch (err) {
+        showError('otpError', err.message);
+      } finally { setLoading('otpBtn', false); }
     }
 
     if (window.NEXUS_INITIALIZED) {
@@ -232,44 +385,62 @@
 
     const canvas = document.getElementById('particlesCanvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const particles = Array.from({length: 80}, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      r: Math.random() * 2 + 0.5,
-      a: Math.random() * 0.5 + 0.1
+    let W, H;
+
+    function resizeCanvas() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+
+    const PARTICLE_COUNT = 60;
+    const CONNECTION_DIST = 120;
+    const particles = Array.from({length: PARTICLE_COUNT}, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.8 + 0.3
     }));
+
     function drawParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
         p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(6,230,242,${p.a})`;
+        ctx.fillStyle = 'rgba(0,240,255,0.3)';
         ctx.fill();
-      });
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dx = p.x - q.x, dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECTION_DIST) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = `rgba(0,240,255,${(1 - dist / CONNECTION_DIST) * 0.08})`;
+            ctx.stroke();
+          }
+        }
+      }
       requestAnimationFrame(drawParticles);
     }
     drawParticles();
-    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    window.addEventListener('resize', resizeCanvas);
 
     (function waitForFirebase(attempts) {
       if (window.NEXUS_INITIALIZED) return;
       if (attempts > 10) {
         var fbLoaded = typeof firebase !== 'undefined';
         var hasConfig = window.NEXUS_CONFIG && window.NEXUS_CONFIG.apiKey && window.NEXUS_CONFIG.apiKey.length > 10;
-        var setupMsg = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0a0a0f;padding:2rem">' +
+        var setupMsg = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#050507;padding:2rem">' +
           '<div style="max-width:520px;text-align:center">' +
-          '<div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#F9322C,#ff6a33);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;margin:0 auto 1.5rem;box-shadow:0 0 60px rgba(249,50,44,0.3)">N</div>' +
-          '<h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin-bottom:0.5rem">NEXUS HOST</h1>' +
-          '<p style="color:rgba(255,255,255,0.4);margin-bottom:2rem;font-size:0.95rem">' +         (fbLoaded ? 'Firebase config issue' : 'Firebase SDK not loaded') + '</p>' +
+          '<div style="width:72px;height:72px;border-radius:20px;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#fff;margin:0 auto 1.5rem;box-shadow:0 0 60px rgba(0,240,255,0.3)">N</div>' +
+          '<h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin-bottom:0.5rem">NEXUS HOSTING</h1>' +
+          '<p style="color:rgba(255,255,255,0.4);margin-bottom:2rem;font-size:0.95rem">' + (fbLoaded ? 'Firebase config issue' : 'Firebase SDK not loaded') + '</p>' +
           '<div style="background:rgba(255,255,255,0.03);backdrop-filter:blur(20px);border:1px solid rgba(0,240,255,0.1);border-radius:16px;padding:2rem;text-align:left">' +
           '<h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem;color:#00F0FF">Debug Info</h2>' +
           '<div style="margin-bottom:1rem">' +
@@ -277,10 +448,7 @@
           '<div style="display:flex;justify-content:space-between;padding:0.3rem 0;font-size:0.85rem;color:rgba(255,255,255,0.6)"><span>Config File:</span><span style="font-weight:600;color:' + (hasConfig ? '#00e676' : '#ffab00') + '">' + (hasConfig ? 'Found' : 'Check file path') + '</span></div>' +
           '<div style="display:flex;justify-content:space-between;padding:0.3rem 0;font-size:0.85rem;color:rgba(255,255,255,0.6)"><span>API Key:</span><span style="font-weight:600;color:' + (hasConfig ? '#00e676' : '#ff4444') + ';font-family:monospace;font-size:0.75rem">' + (hasConfig ? window.NEXUS_CONFIG.apiKey.substring(0, 15) + '...' : 'Missing') + '</span></div>' +
           '</div>' +
-          '<p style="color:rgba(255,255,255,0.4);font-size:0.85rem">Check browser console (F12 → Console) for errors.<br>Verify Firebase SDK CDN is accessible from your network.</p>' +
-          '</div>' +
-          '<p style="color:rgba(255,255,255,0.15);font-size:0.7rem;margin-top:2rem;letter-spacing:0.1em;text-transform:uppercase">Powered by NEXUS HOST — All Credit Nexus</p>' +
-          '</div></div>';
+          '<p style="color:rgba(255,255,255,0.4);font-size:0.85rem">Check browser console (F12 Console) for errors.</p></div></div></div>';
         document.getElementById('loginBody').innerHTML = setupMsg;
         return;
       }

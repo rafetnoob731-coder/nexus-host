@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS HOSTING — Analytics</title>
+  <meta name="description" content="NEXUS HOSTING Analytics — Real-time monitoring and performance metrics">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  <script src="config/firebase-config.js"></script>
+  <link rel="stylesheet" href="css/nexus.css">
+  <style>
+    .an-page { display: flex; height: 100vh; background: var(--void-black); }
+    .an-main { flex: 1; display: flex; flex-direction: column; margin-left: var(--sidebar-width); position: relative; }
+    .an-main::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 20%, rgba(0,240,255,0.02) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+    .an-body { flex: 1; overflow-y: auto; position: relative; z-index: 1; padding: 1.5rem; }
+    .an-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .an-header h1 { font-size: 1.3rem; font-weight: 800; font-family: var(--font-display); color: var(--signal-white); }
+    .an-header .time-range { display: flex; gap: 0.35rem; }
+    .an-header .time-btn { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s; }
+    .an-header .time-btn.active { background: rgba(0,240,255,0.1); border-color: rgba(0,240,255,0.2); color: var(--nexus-cyan); }
+    .an-header .time-btn:hover { background: rgba(255,255,255,0.06); }
+    .an-grid { display: grid; gap: 1rem; }
+    .an-grid-top { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .an-grid-mid { grid-template-columns: 2fr 1fr; }
+    .an-grid-bot { grid-template-columns: 1fr 1fr; }
+    .an-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 1.25rem; transition: all 0.3s; }
+    .an-card:hover { border-color: rgba(0,240,255,0.08); }
+    .an-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .an-card-title { font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em; }
+    .an-card-value { font-size: 1.6rem; font-weight: 800; font-family: var(--font-display); color: var(--signal-white); }
+    .an-card-change { font-size: 0.72rem; margin-top: 0.15rem; }
+    .an-card-change.up { color: #10B981; }
+    .an-card-change.down { color: #ff4444; }
+    .an-chart-container { width: 100%; height: 200px; position: relative; }
+    .an-chart-container canvas { width: 100% !important; height: 100% !important; border-radius: 8px; }
+    .an-metric-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .an-metric-row:last-child { border-bottom: none; }
+    .an-metric-name { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .an-metric-value { font-size: 0.82rem; font-weight: 600; color: var(--signal-white); font-family: var(--font-mono); }
+    .an-metric-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.04); border-radius: 2px; margin-top: 0.5rem; overflow: hidden; }
+    .an-metric-bar .fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .an-metric-bar .fill.cyan { background: linear-gradient(90deg, rgba(0,240,255,0.3), var(--nexus-cyan)); }
+    .an-metric-bar .fill.purple { background: linear-gradient(90deg, rgba(123,97,255,0.3), var(--plasma-purple)); }
+    .an-metric-bar .fill.gold { background: linear-gradient(90deg, rgba(255,212,59,0.3), var(--python-gold)); }
+    .an-metric-bar .fill.green { background: linear-gradient(90deg, rgba(16,185,129,0.3), #10B981); }
+    .an-error-item { padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; font-size: 0.8rem; }
+    .an-error-item .path { color: rgba(255,255,255,0.5); font-family: var(--font-mono); font-size: 0.75rem; }
+    .an-error-item .count { color: #ff4444; font-weight: 700; font-family: var(--font-mono); }
+    .an-error-item .last { color: rgba(255,255,255,0.2); font-size: 0.7rem; }
+    @media (max-width: 768px) { .an-grid-top, .an-grid-mid, .an-grid-bot { grid-template-columns: 1fr; } .an-main { margin-left: 0; } }
+  </style>
+</head>
+<body>
+  <div class="an-page">
+    <aside class="sidebar" id="anSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">N</div>
+        <div class="sidebar-brand">NEXUS <span>HOSTING</span></div>
+        <div style="font-size:0.55rem;color:var(--titanium);letter-spacing:0.15em;text-transform:uppercase;margin-left:auto;position:absolute;bottom:0.85rem;right:1rem;background:rgba(0,240,255,0.08);padding:0.15rem 0.4rem;border-radius:4px;border:1px solid rgba(0,240,255,0.12)">ANALYTICS</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <div class="nav-item" onclick="window.location.href='/dashboard'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            Analytics
+          </div>
+          <div class="nav-item" onclick="window.location.href='/ai-assistant'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/></svg>
+            AI Assistant
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Monitoring</div>
+          <div class="nav-item" onclick="window.location.href='/terminal'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            Terminal
+          </div>
+          <div class="nav-item" onclick="window.location.href='/files'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Files
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-card" onclick="toggleAnUserMenu()">
+          <div class="user-avatar" id="anUserAvatar">N</div>
+          <div class="user-info">
+            <div class="user-name" id="anUserName">Loading...</div>
+            <div class="user-email" id="anUserEmail">loading@nexus.host</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="an-main">
+      <div class="an-body">
+        <div class="an-header">
+          <h1>📊 Analytics & Monitoring</h1>
+          <div class="time-range">
+            <button class="time-btn" onclick="switchTimeRange('1h')">1H</button>
+            <button class="time-btn active" onclick="switchTimeRange('24h')">24H</button>
+            <button class="time-btn" onclick="switchTimeRange('7d')">7D</button>
+            <button class="time-btn" onclick="switchTimeRange('30d')">30D</button>
+          </div>
+        </div>
+
+        <div class="an-grid an-grid-top" style="margin-bottom:1rem">
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">Requests</div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(0,240,255,0.5)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="an-card-value" id="anRequests">14,892</div>
+            <div class="an-card-change up">↑ 12.3% vs yesterday</div>
+          </div>
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">Avg Response</div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(16,185,129,0.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="an-card-value">142<span style="font-size:0.8rem;font-weight:400;color:rgba(255,255,255,0.4)">ms</span></div>
+            <div class="an-card-change up">↓ 8% from last week</div>
+          </div>
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">Error Rate</div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,68,68,0.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <div class="an-card-value" style="color:#ff4444">0.15%</div>
+            <div class="an-card-change up">↓ 0.02% from yesterday</div>
+          </div>
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">CDN Hit Rate</div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(123,97,255,0.5)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="an-card-value" style="color:#7B61FF">87.3%</div>
+            <div class="an-card-change up">↑ 2.1% this month</div>
+          </div>
+        </div>
+
+        <div class="an-grid an-grid-mid" style="margin-bottom:1rem">
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">CPU Usage</div>
+            </div>
+            <div class="an-chart-container"><canvas id="cpuChart"></canvas></div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.2)">
+              <span>Avg: 23%</span> <span>Peak: 47%</span> <span>Min: 8%</span>
+            </div>
+          </div>
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">Memory Usage</div>
+            </div>
+            <div class="an-chart-container"><canvas id="memoryChart"></canvas></div>
+            <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.2)">
+              <span>Avg: 128 MB</span> <span>Peak: 198 MB</span> <span>Limit: 256 MB</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="an-grid an-grid-bot">
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">Traffic Overview</div>
+            </div>
+            <div class="an-chart-container" style="height:180px"><canvas id="trafficChart"></canvas></div>
+          </div>
+          <div class="an-card">
+            <div class="an-card-header">
+              <div class="an-card-title">Error Log (last 24h)</div>
+            </div>
+            <div id="anErrorList">
+              <div class="an-error-item"><span class="path">GET /api/analytics/aggregate</span><span class="count">3</span></div>
+              <div class="an-error-item"><span class="path">POST /api/deploy</span><span class="count">2</span></div>
+              <div class="an-error-item"><span class="path">GET /api/users/sync</span><span class="count">1</span></div>
+              <div class="an-error-item"><span class="path">PUT /api/env/update</span><span class="count">1</span></div>
+              <div class="an-error-item"><span class="path">DELETE /api/bots/cleanup</span><span class="count">1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/analytics.js"></script>
+</body>
+</html>

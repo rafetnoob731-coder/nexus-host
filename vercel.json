@@ -20,6 +20,9 @@
     { "src": "/pricing", "dest": "/index.html" },
     { "src": "/status", "dest": "/status.html" },
     { "src": "/docs", "dest": "/docs.html" },
+    { "src": "/terminal", "dest": "/terminal.html" },
+    { "src": "/ai-assistant", "dest": "/ai-assistant.html" },
+    { "src": "/analytics", "dest": "/analytics.html" },
     { "src": "/admin", "dest": "/admin.html" },
     { "src": "/admin/(.*)", "dest": "/admin.html" },
     { "src": "/(.*)", "dest": "/$1" }
